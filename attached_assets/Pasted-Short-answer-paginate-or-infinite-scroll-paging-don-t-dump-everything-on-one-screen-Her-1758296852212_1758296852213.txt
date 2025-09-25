@@ -1,0 +1,34 @@
+Short answer: **paginate (or infinite-scroll “paging”)—don’t dump everything on one screen.**
+
+Here’s the quick decision:
+
+# Recommendation
+
+Use **paged loading with infinite scroll** for the main results and a **“Load more” fallback button**. Keep each page small (≈8 cards). This gives you fast first paint, predictable API cost, and smoother UX—exactly what you need given flight lookups.
+
+# Why this beats one giant screen
+
+* **Speed:** You can **stop after the first 8** (abort the rest) and show results in \~8–12s, then fetch page 2 only if the user scrolls.
+* **Cost & stability:** Limits Amadeus calls per view; easier to cache `(origin,dest,month,page)` slices.
+* **Memory/JS footprint:** Fewer DOM nodes; smoother scrolling, especially on mobile.
+* **UX control:** You can reorder later pages, down-rank timeouts, and avoid blocking on slow cities.
+
+# Practical defaults (copy to your spec)
+
+* **limit:** 8 per page (can A/B 6 or 10).
+* **max pages returned:** cap at 5–6 pages (48 total) to prevent runaway queries.
+* **API contract:** `/api/travel/recs?limit=8&page=1&...` returns `{ results, nextPage, partial }`.
+* **Early stop:** once `results.length === limit`, **abort in-flight tasks** for that page.
+* **Prefetch:** when the user hits 70–80% scroll, request `nextPage` (show 2–3 skeleton cards).
+* **Fallback:** show a **“Load more”** button if IntersectionObserver fails or bandwidth is poor.
+* **Sticky filters:** keep tier/budget/month in query params so page 2+ matches page 1.
+* **Caps:** if nothing new after 2 timeouts, short-circuit the nextPage with a friendly message.
+
+# Nice extras
+
+* **“View all (table)”**: provide a compact table modal for power users to scan many cities quickly (still page the data under the hood).
+* **Retry line-items:** let users re-try a single failed city card without refetching the whole page.
+* **Telemetry:** log TTFP (time to first page), page-1 success rate, cache hit rate, abort count.
+
+If you want a one-liner for Replit Agent:
+“Implement **paged results with infinite scroll**: backend honors `limit/page` with **early stop + abort**, frontend loads 8 cards, **prefetches nextPage**, shows a **Load more** fallback, and preserves filters across pages.”

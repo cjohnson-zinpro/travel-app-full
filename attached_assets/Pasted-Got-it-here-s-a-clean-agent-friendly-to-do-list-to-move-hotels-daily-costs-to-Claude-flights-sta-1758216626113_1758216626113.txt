@@ -1,0 +1,82 @@
+Got it—here’s a clean, agent-friendly to-do list to move hotels & daily costs to Claude (flights stay on Amadeus). No code—just the steps.
+
+# Claude for Hotels & Daily Costs — To-Do
+
+## 1) Config & Mode
+
+* [ ] Set env:
+
+  * `ANTHROPIC_API_KEY` (already connected)
+  * `CLAUDE_MODEL=claude-3-5-sonnet-20240620` (or your preferred)
+  * `HOTEL_PRICING_MODE=claude`
+* [ ] Confirm Amadeus flight creds remain set (for flights only).
+
+## 2) Behavior Changes (Backend)
+
+* [ ] Replace hotel pricing source with Claude estimates (return p25/p50/p75 in USD per night).
+* [ ] Keep Amadeus for **flights only**; remove/skip any hotel calls to Amadeus in recommendation flow.
+* [ ] Use Claude for **daily costs** (food, transport, misc) in USD per day.
+* [ ] Enforce guardrails on Claude outputs:
+
+  * Hotels clamp: **15–400 USD/night**, monotonic **p25 ≤ p50 ≤ p75**.
+  * Daily costs clamps (suggested): food **8–120**, transport **2–60**, misc **2–80** (USD/day).
+
+## 3) Caching (Stability + Cost Control)
+
+* [ ] Cache **hotel percentiles** per key: `(cityIata, nights, monthBucket)`; monthBucket = `YYYY-MM` or `MM`.
+* [ ] Cache **daily costs** per key: `(cityIata, monthBucket)`.
+* [ ] TTL suggestion: **60–90 days** for both.
+* [ ] Response-level cache remains as is (by query params).
+
+## 4) API Contract & Notes
+
+* [ ] Keep output fields the same; mark hotel ranges as **estimates** in any `rangeNote`/metadata.
+* [ ] If `includeEstimates=false`, skip cities where Claude fails (rare). Otherwise, include with an “estimate” note.
+* [ ] Respect `month` query param for seasonality hints (bucket cache by month).
+
+## 5) Health & Diagnostics
+
+* [ ] Add/verify a simple health endpoint for Claude (e.g., `/api/health/claude`) that returns a small sample payload.
+* [ ] Keep existing Amadeus health for flights.
+* [ ] Log one-liners per city: `ClaudeHotels samples: p25/50/75 USD/night`, `ClaudeDaily: food/transport/misc USD/day`.
+
+## 6) Frontend UX (Small Copy Tweaks)
+
+* [ ] Update any labels/tooltips to: “Hotel prices are **estimated** (Claude). Flights are **live** (Amadeus).”
+* [ ] If you surface confidence, show `estimate` for hotel & daily costs.
+
+## 7) Performance Knobs (optional)
+
+* [ ] Claude temperature: **0.2** (stable).
+* [ ] Max tokens: \~600.
+* [ ] Consider short timeouts + retries (1 retry) before falling back to cached value.
+
+## 8) Rollback / Modes
+
+* [ ] Support modes via env:
+
+  * `claude` (default): hotels & daily costs from Claude only.
+  * `hybrid`: try tiny Amadeus hotel sample first, else Claude.
+  * `live`: (if ever needed) hotels from Amadeus; Claude only if allowed by `includeEstimates`.
+* [ ] Document how to flip modes (env change + restart).
+
+## 9) Acceptance Criteria (Quick QA)
+
+* [ ] A sample query (e.g., `PHX → Asia, 10 nights, month=11`) returns:
+
+  * Live flight prices present.
+  * Hotel p25/p50/p75 in **USD** with reasonable values (no zeros, no out-of-range).
+  * Daily costs present (food/transport/misc) in **USD**.
+  * Subsequent identical query is **served from cache** (check logs/metrics).
+* [ ] Health checks:
+
+  * `/api/health/claude` → `success: true`.
+  * `/api/health/amadeus` → `success: true` (for flights).
+
+## 10) Nice-to-Have (later)
+
+* [ ] Admin endpoint to **invalidate or refresh** Claude caches per city/month.
+* [ ] Optional manual overrides file for hot fixes (city > country > default).
+* [ ] Periodic audit job: sample a few cities quarterly and compare against a quick live check; adjust clamps if needed.
+
+That’s the whole plan—hand this to Replit Agent and you’ll have Claude handling hotel and daily cost estimates, with live flights unchanged.

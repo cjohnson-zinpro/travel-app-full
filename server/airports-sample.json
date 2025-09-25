@@ -1,0 +1,102 @@
+[
+  {
+    "iataCode": "JFK",
+    "name": "John F. Kennedy International Airport",
+    "cityName": "New York",
+    "countryName": "United States",
+    "countryCode": "US",
+    "type": "airport",
+    "displayText": "JFK - John F. Kennedy International Airport, New York",
+    "coordinates": { "latitude": 40.6413, "longitude": -73.7781 }
+  },
+  {
+    "iataCode": "LAX",
+    "name": "Los Angeles International Airport",
+    "cityName": "Los Angeles",
+    "countryName": "United States",
+    "countryCode": "US",
+    "type": "airport",
+    "displayText": "LAX - Los Angeles International Airport, Los Angeles",
+    "coordinates": { "latitude": 33.9416, "longitude": -118.4085 }
+  },
+  {
+    "iataCode": "ORD",
+    "name": "O'Hare International Airport",
+    "cityName": "Chicago",
+    "countryName": "United States",
+    "countryCode": "US",
+    "type": "airport",
+    "displayText": "ORD - O'Hare International Airport, Chicago",
+    "coordinates": { "latitude": 41.9742, "longitude": -87.9073 }
+  },
+  {
+    "iataCode": "PHX",
+    "name": "Phoenix Sky Harbor International Airport",
+    "cityName": "Phoenix",
+    "countryName": "United States",
+    "countryCode": "US",
+    "type": "airport",
+    "displayText": "PHX - Phoenix Sky Harbor International Airport, Phoenix",
+    "coordinates": { "latitude": 33.4342, "longitude": -112.0116 }
+  },
+  {
+    "iataCode": "LHR",
+    "name": "Heathrow Airport",
+    "cityName": "London",
+    "countryName": "United Kingdom",
+    "countryCode": "GB",
+    "type": "airport",
+    "displayText": "LHR - Heathrow Airport, London",
+    "coordinates": { "latitude": 51.4700, "longitude": -0.4543 }
+  },
+  {
+    "iataCode": "CDG",
+    "name": "Charles de Gaulle Airport",
+    "cityName": "Paris",
+    "countryName": "France",
+    "countryCode": "FR",
+    "type": "airport",
+    "displayText": "CDG - Charles de Gaulle Airport, Paris",
+    "coordinates": { "latitude": 49.0097, "longitude": 2.5479 }
+  },
+  {
+    "iataCode": "NRT",
+    "name": "Narita International Airport",
+    "cityName": "Tokyo",
+    "countryName": "Japan",
+    "countryCode": "JP",
+    "type": "airport",
+    "displayText": "NRT - Narita International Airport, Tokyo",
+    "coordinates": { "latitude": 35.7719, "longitude": 140.3929 }
+  },
+  {
+    "iataCode": "CUN",
+    "name": "Cancun International Airport",
+    "cityName": "Cancun",
+    "countryName": "Mexico",
+    "countryCode": "MX",
+    "type": "airport",
+    "displayText": "CUN - Cancun International Airport, Cancun",
+    "coordinates": { "latitude": 21.0365, "longitude": -86.8771 }
+  },
+  {
+    "iataCode": "FRA",
+    "name": "Frankfurt Airport",
+    "cityName": "Frankfurt",
+    "countryName": "Germany",
+    "countryCode": "DE",
+    "type": "airport",
+    "displayText": "FRA - Frankfurt Airport, Frankfurt",
+    "coordinates": { "latitude": 50.0379, "longitude": 8.5622 }
+  },
+  {
+    "iataCode": "GRU",
+    "name": "São Paulo/Guarulhos International Airport",
+    "cityName": "São Paulo",
+    "countryName": "Brazil",
+    "countryCode": "BR",
+    "type": "airport",
+    "displayText": "GRU - São Paulo/Guarulhos International Airport, São Paulo",
+    "coordinates": { "latitude": -23.4356, "longitude": -46.4731 }
+  }
+]

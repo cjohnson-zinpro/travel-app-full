@@ -1,0 +1,97 @@
+Totally fair critique from Agent. Let’s keep the win big + scope small. Here’s a **clean, phased checklist** you can hand to Replit Agent that gets you to \~sub-5s without a gnarly architecture.
+
+# Speed Plan (practical MVP)
+
+## Phase 0 — Quick wins (today)
+
+* [ ] **Fix the typo** (“cityies” → “cities”).
+* [ ] **Redis must work** (your log shows fallback every time).
+
+  * Set `REDIS_URL` and verify a successful ping on boot; if Redis is down, **hard-switch to cache-only mode** (no live calls) and show a banner.
+* [ ] **Switch default sort to “Best value”** (numeric total), not alphabetical—so we don’t feel forced to compute everything first.
+
+## Phase 1 — Make flight lookups cheap & bounded
+
+* [ ] **Flight anchor cache (48h TTL)** keyed by `(origin, destIATA, month)`.
+
+  * On **miss**: call Amadeus with a **tiny sample** (3 queries total):
+
+    * 1 weekday date (2nd Tue), 1 weekend date (4th Sun), both with `max=3` results.
+    * Take the **median of the cheapest totals** → store as `p50`, plus `min`/`max` if you want.
+  * On **hit**: use the anchor immediately (no live call).
+* [ ] **Per-request budget**:
+
+  * Max **cities processed** = 12 (first wave) + 4 (second wave) if time remains.
+  * **Concurrency** = 10 (anchors are cached, Claude is cached).
+  * **Global hard deadline** = 4.5s; return what you have; queue the rest to warm in background.
+* [ ] **Circuit breaker & timeouts**:
+
+  * Amadeus request timeout **900ms**, **1 retry** with jitter; if still failing, **skip** and mark route “estimate pending”.
+  * If ≥5 Amadeus errors in 60s → **open circuit** for 2 minutes (use cached anchors only).
+
+## Phase 2 — Pre-filter so we do less work
+
+* [ ] **Cheap flight estimate before any network** (drop obvious money-pits):
+
+  * Use a distance CPM rough guess:
+
+    * domestic/regional: `$0.08/mile`, long-haul: `$0.05/mile` (heuristic).
+  * Compute quick total: `flight_est + (hotel_p50 * nights) + (daily_mid * nights)` using **cached Claude** (or last known) for hotel/daily.
+  * If quick total > budget×1.25 → **defer** that city to the second wave (or skip entirely on cold start).
+* [ ] **Cap Claude calls** (but you’re already cached):
+
+  * Hotels & daily costs: **per-city/month cache** with **90-day TTL**.
+  * On cache miss during a timed request, **fall back** to last static number *for this response*, and **fetch in background** to seed cache.
+
+## Phase 3 — Perceived speed
+
+* [ ] **Progressive results**: return first 6–8 cards as soon as they’re ready; load the rest via follow-up fetch.
+* [ ] Add a subtle pill: “Updating live flight prices…” while background anchors refresh.
+
+---
+
+## Guardrails (to fix “off” results)
+
+* [ ] **Totals math** (make it explicit & test):
+  `total = flight_p50 (round-trip) + hotel_tier_nightly * nights + daily_tier_total * nights`
+
+  * Use **nights** for both hotel and daily (keep it consistent; don’t mix nights vs days).
+  * Default tier = **Mid-range** (hotel p50; daily multipliers 1.0×).
+* [ ] **Claude clamps** (already suggested):
+
+  * Hotels 15–400 USD/night, enforce p25 ≤ p50 ≤ p75.
+  * Daily: Food 8–120, Transport 2–60, Misc 2–80 (USD/day).
+* [ ] **Sanity checks**:
+
+  * If a **new flight anchor** differs from prior cached by **>30%**, keep old value for current response; refresh cache afterward.
+  * If hotel p50 < \$25 in high-cost countries, bump to min(\$35, p25×1.4).
+
+---
+
+## Caching keys & TTLs (tell Agent to use exactly these)
+
+* Flight anchor: `flight_anchor:{origin}:{dest}:{month}` → TTL **48h**
+  `{ p50, min, max, lastRefreshed }`
+* Claude hotels: `hotel_claude:{iata}:{nights}:{month}` → TTL **90d**
+  `{ p25, p50, p75 }`
+* Claude daily: `daily_claude:{iata}:{month}` → TTL **90d**
+  `{ food, transport, misc }`
+* Response cache (page): unchanged, TTL **30–60 min**
+
+---
+
+## Rate limits & costs
+
+* **Amadeus**: At most **3 calls per new (origin,dest,month)** when warming; anchors reused for 48h.
+* **Concurrent** city processing = 10; with anchors cached, request should complete in **<5s**.
+
+---
+
+## Acceptance checklist (for you to verify)
+
+* First request (cold) for 16 cities returns **in ≤5s** with at least 8 cards; follow-up fetch fills the rest.
+* Warm requests (same origin/month) return **in ≤3s**.
+* No Redis errors in logs; circuits don’t open during normal traffic.
+* Totals equal the formula above; tier toggle changes both hotel and daily pieces.
+
+If you want, I can also draft the exact **feature flags/env** to let you toggle these behaviors on/off without redeploy.

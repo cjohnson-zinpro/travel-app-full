@@ -1,0 +1,74 @@
+/**
+ * Apply travel style adjustments with SEPARATE hotel and daily calculations based on cost-of-living
+ */
+private applyTravelStyleAdjustments(
+  flightCost: number,
+  hotelP25: number,
+  hotelP50: number,
+  hotelP75: number,
+  dailyCost: number,
+  nights: number,
+  travelStyle: "budget" | "mid" | "luxury" = "budget"
+) {
+  let hotelPerNight = 0;
+  let adjustedDaily = 0;
+  
+  // Get cost of living for BOTH hotel and daily adjustments
+  const costOfLiving = this.estimateCostOfLiving(hotelP50, dailyCost);
+
+  switch (travelStyle) {
+    case "budget":
+      // Budget hotel calculation (cost-of-living based)
+      const budgetMultiplier = this.getBudgetHotelMultiplier(costOfLiving);
+      const maxBudgetPrice = this.getMaxBudgetHotelPrice(costOfLiving);
+      const minBudgetPrice = this.getMinBudgetHotelPrice(costOfLiving);
+      
+      const budgetBase = Math.round((hotelP25 || hotelP50 || hotelP75) * budgetMultiplier);
+      hotelPerNight = Math.min(maxBudgetPrice, Math.max(minBudgetPrice, budgetBase));
+      
+      // Budget daily calculation (separate from hotel)
+      adjustedDaily = this.getBudgetDailyCost(dailyCost, costOfLiving);
+      break;
+      
+    case "mid":
+      // Mid-range hotel calculation (cost-of-living based)
+      const midMultiplier = this.getMidRangeHotelMultiplier(costOfLiving);
+      const minMidPrice = this.getMinMidRangeHotelPrice(costOfLiving);
+      const maxMidPrice = this.getMaxMidRangeHotelPrice(costOfLiving);
+      
+      const midBase = Math.round((hotelP50 || hotelP75 || hotelP25) * midMultiplier);
+      hotelPerNight = Math.min(maxMidPrice, Math.max(minMidPrice, midBase));
+      
+      // Mid-range daily calculation (separate from hotel)
+      adjustedDaily = this.getMidRangeDailyCost(dailyCost, costOfLiving);
+      break;
+      
+    case "luxury":
+      // Luxury calculations (already cost-of-living based)
+      const luxuryMultiplier = this.getLuxuryMultiplier(costOfLiving);
+      const minLuxuryPrice = this.getMinLuxuryPrice(costOfLiving);
+      
+      const luxuryBase = Math.round((hotelP75 || hotelP50 || hotelP25) * luxuryMultiplier);
+      hotelPerNight = Math.max(minLuxuryPrice, luxuryBase);
+      
+      // Luxury daily calculation
+      adjustedDaily = this.getLuxuryDailyCost(dailyCost, costOfLiving);
+      break;
+  }
+
+  // Ensure minimum viable hotel price
+  if (hotelPerNight === 0) {
+    hotelPerNight = travelStyle === "budget" ? this.getMinBudgetHotelPrice(costOfLiving) : 
+                   travelStyle === "mid" ? this.getMinMidRangeHotelPrice(costOfLiving) : 
+                   this.getMinLuxuryPrice(costOfLiving);
+  }
+
+  // Calculate total
+  const total = flightCost + nights * (hotelPerNight + adjustedDaily);
+
+  return {
+    hotelPerNight,
+    adjustedDaily,
+    total,
+  };
+}

@@ -1,0 +1,262 @@
+/**
+ * Apply travel style adjustments with SEPARATE hotel and daily calculations based on cost-of-living
+ */
+private applyTravelStyleAdjustments(
+  flightCost: number,
+  hotelP25: number,
+  hotelP50: number,
+  hotelP75: number,
+  dailyCost: number,
+  nights: number,
+  travelStyle: "budget" | "mid" | "luxury" = "budget"
+) {
+  let hotelPerNight = 0;
+  let adjustedDaily = 0;
+  
+  // Get cost of living for BOTH hotel and daily adjustments
+  const costOfLiving = this.estimateCostOfLiving(hotelP50, dailyCost);
+
+  switch (travelStyle) {
+    case "budget":
+      // Budget hotel calculation (cost-of-living based)
+      const budgetMultiplier = this.getBudgetHotelMultiplier(costOfLiving);
+      const maxBudgetPrice = this.getMaxBudgetHotelPrice(costOfLiving);
+      const minBudgetPrice = this.getMinBudgetHotelPrice(costOfLiving);
+      
+      const budgetBase = Math.round((hotelP25 || hotelP50 || hotelP75) * budgetMultiplier);
+      hotelPerNight = Math.min(maxBudgetPrice, Math.max(minBudgetPrice, budgetBase));
+      
+      // Budget daily calculation (separate from hotel)
+      adjustedDaily = this.getBudgetDailyCost(dailyCost, costOfLiving);
+      break;
+      
+    case "mid":
+      // Mid-range hotel calculation (cost-of-living based)
+      const midMultiplier = this.getMidRangeHotelMultiplier(costOfLiving);
+      const minMidPrice = this.getMinMidRangeHotelPrice(costOfLiving);
+      const maxMidPrice = this.getMaxMidRangeHotelPrice(costOfLiving);
+      
+      const midBase = Math.round((hotelP50 || hotelP75 || hotelP25) * midMultiplier);
+      hotelPerNight = Math.min(maxMidPrice, Math.max(minMidPrice, midBase));
+      
+      // Mid-range daily calculation (separate from hotel)
+      adjustedDaily = this.getMidRangeDailyCost(dailyCost, costOfLiving);
+      break;
+      
+    case "luxury":
+      // Luxury calculations (already cost-of-living based)
+      const luxuryMultiplier = this.getLuxuryMultiplier(costOfLiving);
+      const minLuxuryPrice = this.getMinLuxuryPrice(costOfLiving);
+      
+      const luxuryBase = Math.round((hotelP75 || hotelP50 || hotelP25) * luxuryMultiplier);
+      hotelPerNight = Math.max(minLuxuryPrice, luxuryBase);
+      
+      // Luxury daily calculation
+      adjustedDaily = this.getLuxuryDailyCost(dailyCost, costOfLiving);
+      break;
+  }
+
+  // Ensure minimum viable hotel price
+  if (hotelPerNight === 0) {
+    hotelPerNight = travelStyle === "budget" ? this.getMinBudgetHotelPrice(costOfLiving) : 
+                   travelStyle === "mid" ? this.getMinMidRangeHotelPrice(costOfLiving) : 
+                   this.getMinLuxuryPrice(costOfLiving);
+  }
+
+  // Calculate total
+  const total = flightCost + nights * (hotelPerNight + adjustedDaily);
+
+  return {
+    hotelPerNight,
+    adjustedDaily,
+    total,
+  };
+}
+
+/**
+ * Estimate cost of living based on HOTEL P50 ONLY (not combined with daily costs)
+ */
+private estimateCostOfLiving(hotelP50: number, dailyCost: number): 'low' | 'medium' | 'high' | 'very-high' {
+  // Use hotel P50 as the primary indicator of local cost of living
+  if (hotelP50 < 50) return 'low';        // Bangkok ($45), Manila ($35), Delhi ($40)
+  if (hotelP50 < 100) return 'medium';    // Prague ($80), Madrid ($90), Berlin ($85)  
+  if (hotelP50 < 160) return 'high';      // Paris ($140), Tokyo ($150), Sydney ($145)
+  return 'very-high';                     // NYC ($180), London ($200), Zurich ($220)
+}
+
+/**
+ * BUDGET HOTEL multipliers (cost-of-living based)
+ */
+private getBudgetHotelMultiplier(costOfLiving: 'low' | 'medium' | 'high' | 'very-high'): number {
+  switch (costOfLiving) {
+    case 'low': return 0.9;       // Bangkok: $40 × 0.9 = $36 (realistic budget)
+    case 'medium': return 1.0;    // Prague: $60 × 1.0 = $60 (good budget)
+    case 'high': return 0.8;      // Paris: $100 × 0.8 = $80 (budget in expensive city)
+    case 'very-high': return 0.7; // NYC: $120 × 0.7 = $84 (budget NYC)
+  }
+}
+
+private getMinBudgetHotelPrice(costOfLiving: 'low' | 'medium' | 'high' | 'very-high'): number {
+  switch (costOfLiving) {
+    case 'low': return 25;        // Bangkok min budget
+    case 'medium': return 45;     // Prague min budget  
+    case 'high': return 65;       // Paris min budget
+    case 'very-high': return 80;  // NYC min budget
+  }
+}
+
+private getMaxBudgetHotelPrice(costOfLiving: 'low' | 'medium' | 'high' | 'very-high'): number {
+  switch (costOfLiving) {
+    case 'low': return 50;        // Bangkok max budget
+    case 'medium': return 75;     // Prague max budget
+    case 'high': return 100;      // Paris max budget  
+    case 'very-high': return 120; // NYC max budget
+  }
+}
+
+/**
+ * BUDGET DAILY costs (cost-of-living based)
+ */
+private getBudgetDailyCost(baseDailyCost: number, costOfLiving: 'low' | 'medium' | 'high' | 'very-high'): number {
+  const multiplier = {
+    'low': 0.7,       // Bangkok: $30 × 0.7 = $21 (street food, local transport)
+    'medium': 0.8,    // Prague: $40 × 0.8 = $32 (budget options)
+    'high': 0.85,     // Paris: $60 × 0.85 = $51 (careful budget)
+    'very-high': 0.9  // NYC: $80 × 0.9 = $72 (even budget is expensive)
+  }[costOfLiving];
+  
+  return Math.round(baseDailyCost * multiplier);
+}
+
+/**
+ * MID-RANGE HOTEL multipliers (cost-of-living based)
+ */
+private getMidRangeHotelMultiplier(costOfLiving: 'low' | 'medium' | 'high' | 'very-high'): number {
+  switch (costOfLiving) {
+    case 'low': return 1.6;       // Bangkok: $45 × 1.6 = $72 (nice mid-range)
+    case 'medium': return 1.3;    // Prague: $80 × 1.3 = $104 (solid mid-range)
+    case 'high': return 1.2;      // Paris: $140 × 1.2 = $168 (realistic mid-range)
+    case 'very-high': return 1.1; // NYC: $180 × 1.1 = $198 (mid-range NYC)
+  }
+}
+
+private getMinMidRangeHotelPrice(costOfLiving: 'low' | 'medium' | 'high' | 'very-high'): number {
+  switch (costOfLiving) {
+    case 'low': return 60;
+    case 'medium': return 90;
+    case 'high': return 130;
+    case 'very-high': return 170;
+  }
+}
+
+private getMaxMidRangeHotelPrice(costOfLiving: 'low' | 'medium' | 'high' | 'very-high'): number {
+  switch (costOfLiving) {
+    case 'low': return 110;
+    case 'medium': return 140;
+    case 'high': return 200;
+    case 'very-high': return 280;
+  }
+}
+
+/**
+ * MID-RANGE DAILY costs (cost-of-living based)
+ */
+private getMidRangeDailyCost(baseDailyCost: number, costOfLiving: 'low' | 'medium' | 'high' | 'very-high'): number {
+  const multiplier = {
+    'low': 1.2,       // Bangkok: $30 × 1.2 = $36 (nice restaurants, some tours)
+    'medium': 1.0,    // Prague: $40 × 1.0 = $40 (normal tourist spending)
+    'high': 1.0,      // Paris: $60 × 1.0 = $60 (standard mid-range)
+    'very-high': 0.95 // NYC: $80 × 0.95 = $76 (slightly conservative)
+  }[costOfLiving];
+  
+  return Math.round(baseDailyCost * multiplier);
+}
+
+/**
+ * LUXURY DAILY costs (cost-of-living based)
+ */
+private getLuxuryDailyCost(baseDailyCost: number, costOfLiving: 'low' | 'medium' | 'high' | 'very-high'): number {
+  const multiplier = {
+    'low': 2.0,       // Bangkok: $30 × 2.0 = $60 (fine dining, private tours)
+    'medium': 1.8,    // Prague: $40 × 1.8 = $72 (excellent experiences)
+    'high': 1.5,      // Paris: $60 × 1.5 = $90 (luxury but restrained)
+    'very-high': 1.3  // NYC: $80 × 1.3 = $104 (luxury with limits)
+  }[costOfLiving];
+  
+  return Math.round(baseDailyCost * multiplier);
+}
+
+/**
+ * Apply travel style adjustments with SEPARATE hotel and daily calculations based on cost-of-living
+ */
+private applyTravelStyleAdjustments(
+  flightCost: number,
+  hotelP25: number,
+  hotelP50: number,
+  hotelP75: number,
+  dailyCost: number,
+  nights: number,
+  travelStyle: "budget" | "mid" | "luxury" = "budget"
+) {
+  let hotelPerNight = 0;
+  let adjustedDaily = 0;
+  
+  // Get cost of living for BOTH hotel and daily adjustments
+  const costOfLiving = this.estimateCostOfLiving(hotelP50, dailyCost);
+
+  switch (travelStyle) {
+    case "budget":
+      // Budget hotel calculation (cost-of-living based)
+      const budgetMultiplier = this.getBudgetHotelMultiplier(costOfLiving);
+      const maxBudgetPrice = this.getMaxBudgetHotelPrice(costOfLiving);
+      const minBudgetPrice = this.getMinBudgetHotelPrice(costOfLiving);
+      
+      const budgetBase = Math.round((hotelP25 || hotelP50 || hotelP75) * budgetMultiplier);
+      hotelPerNight = Math.min(maxBudgetPrice, Math.max(minBudgetPrice, budgetBase));
+      
+      // Budget daily calculation (separate from hotel)
+      adjustedDaily = this.getBudgetDailyCost(dailyCost, costOfLiving);
+      break;
+      
+    case "mid":
+      // Mid-range hotel calculation (cost-of-living based)
+      const midMultiplier = this.getMidRangeHotelMultiplier(costOfLiving);
+      const minMidPrice = this.getMinMidRangeHotelPrice(costOfLiving);
+      const maxMidPrice = this.getMaxMidRangeHotelPrice(costOfLiving);
+      
+      const midBase = Math.round((hotelP50 || hotelP75 || hotelP25) * midMultiplier);
+      hotelPerNight = Math.min(maxMidPrice, Math.max(minMidPrice, midBase));
+      
+      // Mid-range daily calculation (separate from hotel)
+      adjustedDaily = this.getMidRangeDailyCost(dailyCost, costOfLiving);
+      break;
+      
+    case "luxury":
+      // Luxury calculations (already cost-of-living based)
+      const luxuryMultiplier = this.getLuxuryMultiplier(costOfLiving);
+      const minLuxuryPrice = this.getMinLuxuryPrice(costOfLiving);
+      
+      const luxuryBase = Math.round((hotelP75 || hotelP50 || hotelP25) * luxuryMultiplier);
+      hotelPerNight = Math.max(minLuxuryPrice, luxuryBase);
+      
+      // Luxury daily calculation
+      adjustedDaily = this.getLuxuryDailyCost(dailyCost, costOfLiving);
+      break;
+  }
+
+  // Ensure minimum viable hotel price
+  if (hotelPerNight === 0) {
+    hotelPerNight = travelStyle === "budget" ? this.getMinBudgetHotelPrice(costOfLiving) : 
+                   travelStyle === "mid" ? this.getMinMidRangeHotelPrice(costOfLiving) : 
+                   this.getMinLuxuryPrice(costOfLiving);
+  }
+
+  // Calculate total
+  const total = flightCost + nights * (hotelPerNight + adjustedDaily);
+
+  return {
+    hotelPerNight,
+    adjustedDaily,
+    total,
+  };
+}

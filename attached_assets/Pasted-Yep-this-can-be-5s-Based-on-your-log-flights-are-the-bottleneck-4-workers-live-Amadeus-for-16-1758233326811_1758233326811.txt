@@ -1,0 +1,70 @@
+Yep, this can be <5s. Based on your log, flights are the bottleneck (4 workers + live Amadeus for 16 cities = \~40s). Here’s a clean, agent-ready plan—no code, just what to implement.
+
+# Make results load in <5s (16 cities)
+
+## A) Fix caching first (biggest win)
+
+* [ ] **Redis must work.** You’re cold every request: “Redis connection failed… in-memory cache.”
+
+  * Set a working `REDIS_URL` (or use Upstash).
+  * TTLs: flight anchors 7–14 days; Claude (hotel/daily) 60–90 days; response cache 30–60 min.
+* [ ] **Warm cache on boot** for the top 50 routes per origin you care about (origin + month). (Precompute flight anchors; see B.)
+
+## B) Stop calling Amadeus for every city on every request
+
+* [ ] Introduce **Monthly Flight Anchor** cache keyed by `(origin, destinationIATA, month)`:
+
+  * When **MISSING**: query Amadeus **once** with **2 sample outbound dates** (e.g., 2nd Tue & 4th Sun) and `max=3` results; store **p25/p50/p75** total.
+  * When **PRESENT**: use anchor instantly (no live call).
+  * Refresh anchors **weekly** (background job), not at request time.
+* [ ] Add a **cheap fallback** on timeout: if an anchor fetch exceeds **600–800ms**, use a **distance-based CPM estimate** (e.g., \$0.05–\$0.08/mile regionalized) and mark as “estimate.” Cache that too with a short TTL (24h).
+
+## C) Increase concurrency—but cap external pressure
+
+* [ ] Raise city processing concurrency from **4 → 10–12** (your hotel/daily are cached and cheap; flights are now anchors).
+* [ ] Keep a **hard deadline** at \~4.5s; return what you have and **background-fill** the rest (see F).
+
+## D) Make hotel & daily costs instant
+
+* [ ] **Claude only** for hotels & daily (you already added this) + **per-city/month cache**.
+* [ ] If cache miss, call Claude once and cache for 90d—**never** block longer than **300ms**; else fall back to your static table for this request and backfill cache in the background.
+
+## E) Limit city count early (cheap heuristic)
+
+* [ ] Build a quick **pre-filter** before any network calls:
+
+  * Use **distance + CPM estimate** to drop cities that are obviously > budget after adding (hotel p50 × nights + daily mid × nights).
+  * Process at most **the 12 most promising** cities first; queue the rest for background fill.
+
+## F) Progressive results UX (feels instant)
+
+* [ ] Return **page shell in \~1–2s** with the best 6–8 cities using cached anchors.
+* [ ] Stream/hydrate remaining cards via SSE or a follow-up fetch (same endpoint with `page=2&useCacheOnly=true`).
+* [ ] Show a tiny “Updating live prices…” pill while background fills.
+
+## G) Guardrails to keep numbers “not off”
+
+* [ ] Clamp Claude outputs (already in place): hotels **\$15–\$400**, enforce p25≤p50≤p75; daily food **\$8–\$120**, transport **\$2–\$60**, misc **\$2–\$80**.
+* [ ] Standardize **USD only** everywhere (no local currency leakage).
+* [ ] Add a **sanity check**: if total swings >25% between cached anchor and a new live pull, keep cached value for this response; refresh cache afterward.
+
+## H) Sorting & pagination defaults
+
+* [ ] Default **sort by “Best value”** (lowest total) using anchors; alphabetical forces you to compute everything first.
+* [ ] Cap **per-request** cities to **16** (already done), but compute in **waves of 8** so something renders fast.
+
+## I) Observability (so you can prove the win)
+
+* [ ] Log per-city timings: `t_flight_anchor`, `t_claude_hotels`, `t_claude_daily`, `t_total_city`.
+* [ ] Emit aggregate: `t_first_byte`, `t_full_render`, `cities_returned`, `cities_background`.
+* [ ] Metric to watch: **% served fully from cache**; goal: >80% after first day.
+
+---
+
+## Expected outcome
+
+* Cold start (no anchors): \~4–6s (most from 10–12 concurrent Amadeus calls for anchors).
+* Warm path (typical): **1.5–3.5s** for 16 cities (all cache hits).
+* Perceived speed improves further with progressive render (partial results in \~1–2s).
+
+If you want, I can turn this into a precise “implementation checklist” for Agent (step-by-step with key names for cache keys, TTLs, and fallback thresholds).

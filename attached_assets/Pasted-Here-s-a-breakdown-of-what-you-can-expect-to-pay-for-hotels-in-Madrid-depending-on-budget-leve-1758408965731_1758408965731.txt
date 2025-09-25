@@ -1,0 +1,27 @@
+Here’s a breakdown of what you can expect to pay for hotels in **Madrid** — depending on budget level (low / budget, mid-range, luxury). Prices are approximate, per night, and can vary greatly with season, location (central vs outskirts), and how far in advance you book.
+
+---
+
+| Tier                  | Approx Price (US\$)                                | What you typically get                                                                                                                                                                                            |
+| --------------------- | -------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Low / Budget**      | **US\$ 40–80**                                     | Basic hotels, hostels or 1-2 star places. Often small rooms, fewer amenities. Good for short stays or just sleeping. Locations may be a bit away from the prime center. ([KAYAK][1])                              |
+| **Mid-Range**         | **US\$ 90–180**                                    | 3-star or lower 4-star hotels in quite good locations. More amenities (breakfast, maybe a nicer lobby, better service). Better decor, more comfort. ([Budget Your Trip][2])                                       |
+| **Luxury / High-End** | **US\$ 200–500+** (and much more in top-end cases) | 5-star hotels, premium boutique hotels, excellent locations. Deluxe rooms, high end services (spa, gourmet restaurants, rooftop bars etc.). Some ultra-luxury or iconic hotels may cost much more. ([trivago][3]) |
+
+---
+
+Some examples / notes:
+
+* The average hotel price in Madrid is about **US\$ 89/night**, with higher rates (around **US\$ 167**) during peak season. ([Budget Your Trip][2])
+* Luxury hotel examples: Four Seasons Madrid has rooms starting around **€ 500+** (\~US\$ 500-600+ depending on exchange rate) and suites that are far more. ([Wikipedia][4])
+* The newly renovated Hotel Palace: its cheapest rooms are much more expensive now, especially for luxury or iconic rooms. ([El País][5])
+
+---
+
+If you tell me the time of year and what part of Madrid you want to stay in (center vs suburbs), I can give you a more precise estimate for *your trip*.
+
+[1]: https://www.kayak.com/Madrid-Hotels.32213.hotel.ksp?utm_source=chatgpt.com "16 Best Hotels in Madrid. Hotels from $41/night"
+[2]: https://www.budgetyourtrip.com/hotels/spain/madrid-3117735?utm_source=chatgpt.com "How Much Do Hotels Cost in Madrid? Hotel Prices ..."
+[3]: https://www.trivago.com/en-US/odr/hotels-madrid-spain?search=200-13628&utm_source=chatgpt.com "Madrid Hotels | Find and compare great deals on trivago"
+[4]: https://en.wikipedia.org/wiki/Four_Seasons_Hotel_Madrid?utm_source=chatgpt.com "Four Seasons Hotel Madrid"
+[5]: https://elpais.com/elviajero/2025-06-25/los-secretos-del-nuevo-hotel-palace-una-pequena-ciudad-en-el-corazon-de-madrid.html?utm_source=chatgpt.com "Los secretos del nuevo Hotel Palace, una pequeña ciudad en el corazón de Madrid"
