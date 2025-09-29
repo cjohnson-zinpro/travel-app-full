@@ -52,11 +52,11 @@ export function SearchForm({
   } = useForm<SearchFormData>({
     resolver: zodResolver(searchFormSchema),
     defaultValues: {
-      budget: initialValues?.budget || 2000,
+      budget: initialValues?.budget || 3000,
       origin: initialValues?.origin || "",
       nights: initialValues?.nights || 10,
       month: initialValues?.month || undefined,
-      region: initialValues?.region || "",
+      region: initialValues?.region || undefined,
       country: initialValues?.country || "",
       travelStyle: "budget", // ADD THIS LINE
     },
@@ -118,17 +118,19 @@ export function SearchForm({
 
   return (
     <Card
-      className="shadow-lg border border-border"
+      className="shadow-lg border border-border bg-background"
       data-testid="search-form-card"
     >
-      <CardContent className="p-6">
+      <CardContent className="p-6 md:p-8">
         <form
           onSubmit={handleSubmit(onSubmit)}
           data-testid="travel-search-form"
+          className="space-y-6"
         >
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6 gap-4">
+          {/* First Row: Basic Inputs */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
             {/* Budget Input */}
-            <div className="xl:col-span-1">
+            <div>
               <Label
                 htmlFor="budget"
                 className="block text-sm font-medium text-foreground mb-2"
@@ -157,7 +159,7 @@ export function SearchForm({
             </div>
 
             {/* Origin */}
-            <div className="xl:col-span-1">
+            <div>
               <Label
                 htmlFor="origin"
                 className="block text-sm font-medium text-foreground mb-2"
@@ -176,7 +178,7 @@ export function SearchForm({
             </div>
 
             {/* Nights */}
-            <div className="xl:col-span-1">
+            <div>
               <Label
                 htmlFor="nights"
                 className="block text-sm font-medium text-foreground mb-2"
@@ -200,65 +202,8 @@ export function SearchForm({
               </Select>
             </div>
 
-            {/* Travel Style Selector */}
-            <div className="xl:col-span-2">
-              <Label className="block text-sm font-medium text-foreground mb-2">
-                Travel Style
-              </Label>
-              <div className="grid grid-cols-3 gap-2">
-                <div
-                  className={`flex items-center space-x-2 rounded-lg border p-3 cursor-pointer hover:bg-muted ${
-                    watch("travelStyle") === "budget"
-                      ? "border-primary bg-primary/5"
-                      : ""
-                  }`}
-                  onClick={() => setValue("travelStyle", "budget")}
-                  data-testid="button-tier-budget"
-                >
-                  <div className="space-y-1 flex-1">
-                    <div className="text-sm font-medium">Budget</div>
-                    <p className="text-xs text-muted-foreground">
-                      2-3★ stays, street food
-                    </p>
-                  </div>
-                </div>
-                <div
-                  className={`flex items-center space-x-2 rounded-lg border p-3 cursor-pointer hover:bg-muted ${
-                    watch("travelStyle") === "mid"
-                      ? "border-primary bg-primary/5"
-                      : ""
-                  }`}
-                  onClick={() => setValue("travelStyle", "mid")}
-                  data-testid="button-tier-mid"
-                >
-                  <div className="space-y-1 flex-1">
-                    <div className="text-sm font-medium">Mid-range</div>
-                    <p className="text-xs text-muted-foreground">
-                      3★ hotels, mix dining
-                    </p>
-                  </div>
-                </div>
-                <div
-                  className={`flex items-center space-x-2 rounded-lg border p-3 cursor-pointer hover:bg-muted ${
-                    watch("travelStyle") === "luxury"
-                      ? "border-primary bg-primary/5"
-                      : ""
-                  }`}
-                  onClick={() => setValue("travelStyle", "luxury")}
-                  data-testid="button-tier-luxury"
-                >
-                  <div className="space-y-1 flex-1">
-                    <div className="text-sm font-medium">Luxury</div>
-                    <p className="text-xs text-muted-foreground">
-                      4-5★ hotels, fine dining
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
             {/* Month */}
-            <div className="xl:col-span-1">
+            <div>
               <Label
                 htmlFor="month"
                 className="block text-sm font-medium text-foreground mb-2"
@@ -269,16 +214,16 @@ export function SearchForm({
                 </span>
               </Label>
               <Select
-                value={watch("month")?.toString() || "0"}
+                value={watch("month")?.toString() || "any"}
                 onValueChange={(value) =>
-                  setValue("month", value === "0" ? undefined : parseInt(value))
+                  setValue("month", value === "any" ? undefined : parseInt(value))
                 }
               >
                 <SelectTrigger data-testid="select-month">
                   <SelectValue placeholder="Any month" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="0">Any month</SelectItem>
+                  <SelectItem value="any">Any month</SelectItem>
                   {months.map((month) => (
                     <SelectItem key={month.value} value={month.value}>
                       {month.label}
@@ -287,9 +232,69 @@ export function SearchForm({
                 </SelectContent>
               </Select>
             </div>
+          </div>
 
+          {/* Second Row: Travel Style (Full Width) */}
+          <div>
+            <Label className="block text-sm font-medium text-foreground mb-3">
+              Travel Style
+            </Label>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <div
+                className={`flex items-center space-x-2 rounded-lg border p-4 cursor-pointer hover:bg-muted transition-colors ${
+                  watch("travelStyle") === "budget"
+                    ? "border-primary bg-primary/5"
+                    : ""
+                }`}
+                onClick={() => setValue("travelStyle", "budget")}
+                data-testid="button-tier-budget"
+              >
+                <div className="space-y-1 flex-1">
+                  <div className="text-sm font-medium">Budget</div>
+                  <p className="text-xs text-muted-foreground">
+                    2-3★ stays, street food
+                  </p>
+                </div>
+              </div>
+              <div
+                className={`flex items-center space-x-2 rounded-lg border p-4 cursor-pointer hover:bg-muted transition-colors ${
+                  watch("travelStyle") === "mid"
+                    ? "border-primary bg-primary/5"
+                    : ""
+                }`}
+                onClick={() => setValue("travelStyle", "mid")}
+                data-testid="button-tier-mid"
+              >
+                <div className="space-y-1 flex-1">
+                  <div className="text-sm font-medium">Mid-range</div>
+                  <p className="text-xs text-muted-foreground">
+                    3★ hotels, mix dining
+                  </p>
+                </div>
+              </div>
+              <div
+                className={`flex items-center space-x-2 rounded-lg border p-4 cursor-pointer hover:bg-muted transition-colors ${
+                  watch("travelStyle") === "luxury"
+                    ? "border-primary bg-primary/5"
+                    : ""
+                }`}
+                onClick={() => setValue("travelStyle", "luxury")}
+                data-testid="button-tier-luxury"
+              >
+                <div className="space-y-1 flex-1">
+                  <div className="text-sm font-medium">Luxury</div>
+                  <p className="text-xs text-muted-foreground">
+                    4-5★ hotels, fine dining
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Third Row: Region and Search Button */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 items-end">
             {/* Region */}
-            <div className="xl:col-span-1">
+            <div>
               <Label
                 htmlFor="region"
                 className="block text-sm font-medium text-foreground mb-2"
@@ -322,15 +327,19 @@ export function SearchForm({
               </Select>
             </div>
 
+            {/* Empty space for alignment */}
+            <div></div>
+
             {/* Search Button */}
-            <div className="xl:col-span-1 flex items-end">
+            <div>
               <Button
                 type="submit"
-                className="w-full"
+                className="w-full h-16 text-xl font-bold rounded-2xl bg-primary hover:bg-primary/90 transition-all duration-200 shadow-xl hover:shadow-2xl transform hover:scale-105"
+                size="lg"
                 disabled={isLoading}
                 data-testid="button-search"
               >
-                <Search className="h-4 w-4 mr-2" />
+                <Search className="h-6 w-6 mr-4" />
                 {isLoading ? "Searching..." : "Search Destinations"}
               </Button>
             </div>

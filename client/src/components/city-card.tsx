@@ -8,7 +8,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { getCountryFlag } from "@/lib/flag-utils";
+import { getCountryFlag, getFlagImageComponent } from "@/lib/flag-utils";
+import { ClaudeDailyCosts } from "@shared/data/claude-daily-costs";
 import type { CityRecommendation } from "@/types/travel";
 
 interface CityCardProps {
@@ -22,6 +23,10 @@ export function CityCard({
   onClick,
   travelStyle = "budget",
 }: CityCardProps) {
+  // Feature flag to show/hide flight costs
+  // In Vite, environment variables are accessed via import.meta.env
+  const showFlightCosts = import.meta.env.VITE_SHOW_FLIGHT_COSTS === 'true';
+  
   const confidenceClasses = {
     high: "bg-green-100 text-green-800 border-green-200 hover:bg-green-200",
     medium:
@@ -55,7 +60,10 @@ export function CityCard({
   const getSourceTooltip = (
     source: "amadeus" | "claude" | "estimate",
     type: string,
+    style: "budget" | "mid" | "luxury" = "budget"
   ) => {
+    const styleText = style === "mid" ? "mid-range" : style;
+    
     switch (source) {
       case "amadeus":
         if (type === "flight") {
@@ -64,18 +72,26 @@ export function CityCard({
         return `Live ${type} pricing from Amadeus API`;
       case "claude":
         if (type === "hotel") {
-          return "AI hotel estimates: Claude analyzes local rates, removes luxury outliers (top 15%) for budget focus";
+          return `AI hotel estimates: Claude analyzes local rates for ${styleText} travelers, factoring in location and amenities`;
         }
         if (type === "daily") {
-          return "AI daily costs: Budget traveler perspective (local transport, street food, budget activities)";
+          const descriptions = {
+            budget: "Budget traveler perspective (local transport, street food, budget activities)",
+            mid: "Mid-range traveler perspective (mix of local/tourist transport, restaurants, standard attractions)",
+            luxury: "Luxury traveler perspective (premium transport, fine dining, exclusive experiences)"
+          };
+          return `AI daily costs: ${descriptions[style]} using Claude's knowledge of local pricing`;
         }
-        return `AI-powered ${type} estimates from Claude`;
+        return `AI-powered ${type} estimates from Claude for ${styleText} travelers`;
       case "estimate":
-        return `Fallback ${type} estimates based on historical data when live sources unavailable`;
+        return `Fallback ${type} estimates for ${styleText} travelers based on historical data when live sources unavailable`;
     }
   };
 
-  const formatCurrency = (amount: number) => `$${amount.toLocaleString()}`;
+  const formatCurrency = (amount: number | undefined | null) => {
+    if (amount == null || isNaN(amount)) return '$0';
+    return `$${amount.toLocaleString()}`;
+  };
   const formatDate = (isoString: string) => {
     try {
       return new Date(isoString).toLocaleDateString("en-US", {
@@ -88,72 +104,121 @@ export function CityCard({
     }
   };
 
-  // Calculate tier-adjusted pricing with non-overlapping ranges
-  const getTierAdjustedPricing = (
+  // Get Claude-based daily costs with fallback to original logic
+  const getClaudeDailyCosts = (
     city: CityRecommendation,
     style: "budget" | "mid" | "luxury",
   ) => {
-    // Use pre-calculated travel-style-adjusted costs from backend if available
-    // This avoids double adjustment and ensures consistent filtering/display costs
-    if (city.travelStyleAdjusted && city.travelStyleAdjusted.style === style) {
+    // Try to get costs from Claude database first
+    const claudeCosts = ClaudeDailyCosts.getDailyCosts(city.city);
+    
+    if (claudeCosts) {
+      // Use accommodation costs if available (realistic hotel + Airbnb blended pricing)
+      if (claudeCosts.accommodation) {
+        const styleKey = style === "mid" ? "midRange" : style;
+        const hotelPerNight = claudeCosts.accommodation[styleKey as keyof typeof claudeCosts.accommodation];
+        
+        // Use daily costs for other expenses
+        const dailyCost = claudeCosts.dailyCost[styleKey as keyof typeof claudeCosts.dailyCost];
+        const adjustedDaily = dailyCost;
+        
+        // Calculate total (flights unchanged if available, or 0 if no flight data)
+        const flightCost = city.breakdown?.flight || 0;
+        const total = flightCost + city.nights * (hotelPerNight + adjustedDaily);
+        
+        return {
+          hotelPerNight,
+          adjustedDaily,
+          total,
+          source: 'claude-accommodation' as const
+        };
+      }
+      
+      // Fallback to daily costs only with estimated hotel costs
+      const styleKey = style === "mid" ? "midRange" : style;
+      const dailyCost = claudeCosts.dailyCost[styleKey as keyof typeof claudeCosts.dailyCost];
+      
+      // Hotel cost estimates when accommodation data not available
+      const hotelEstimates = {
+        budget: { base: 45, multiplier: 1.0 },
+        mid: { base: 85, multiplier: 1.2 },
+        luxury: { base: 200, multiplier: 1.5 }
+      };
+      
+      const estimate = style === "mid" ? hotelEstimates.mid : hotelEstimates[style as keyof typeof hotelEstimates];
+      const hotelPerNight = Math.round(estimate.base * estimate.multiplier);
+      
+      // Daily costs from Claude are already the complete daily expenses
+      const adjustedDaily = dailyCost;
+      
+      // Calculate total (flights unchanged if available, or 0 if no flight data)
+      const flightCost = city.breakdown?.flight || 0;
+      const total = flightCost + city.nights * (hotelPerNight + adjustedDaily);
+      
       return {
-        hotelPerNight: city.travelStyleAdjusted.hotelPerNight,
-        adjustedDaily: city.travelStyleAdjusted.dailyPerDay,
-        total: city.travelStyleAdjusted.total,
+        hotelPerNight,
+        adjustedDaily,
+        total,
+        source: 'claude' as const
       };
     }
 
-    // Fallback to frontend calculation for backwards compatibility
-    // Get base percentile values from Claude data
-    const p25 = city.breakdown.hotelPerNightP25 || 0;
-    const p50 = city.breakdown.hotelPerNightP50 || 0;
-    const p75 = city.breakdown.hotelPerNightP75 || 0;
-
-    let hotelPerNight = 0;
-    let dailyMultiplier = 1.0;
-
-    switch (style) {
-      case "budget":
-        // Budget: p25 × 1.3, capped at $80
-        hotelPerNight = Math.min(80, Math.round((p25 || p50 || p75) * 1.3));
-        dailyMultiplier = 0.85;
-        break;
-      case "mid":
-        // Mid-range: max($85, p50 × 2.1), capped at $180
-        const midBase = Math.round((p50 || p75 || p25) * 2.1);
-        hotelPerNight = Math.min(180, Math.max(85, midBase));
-        dailyMultiplier = 1.0;
-        break;
-      case "luxury":
-        // Luxury: max($185, p75 × 3.2)
-        const luxuryBase = Math.round((p75 || p50 || p25) * 3.2);
-        hotelPerNight = Math.max(185, luxuryBase);
-        dailyMultiplier = 1.6;
-        break;
+    // Fallback to original logic if city not in Claude database
+    if ('travelStyleAdjusted' in city && city.travelStyleAdjusted && 
+        typeof city.travelStyleAdjusted === 'object' &&
+        'style' in city.travelStyleAdjusted && 
+        'hotelPerNight' in city.travelStyleAdjusted &&
+        'dailyPerDay' in city.travelStyleAdjusted &&
+        'total' in city.travelStyleAdjusted &&
+        city.travelStyleAdjusted.style === style) {
+      return {
+        hotelPerNight: city.travelStyleAdjusted.hotelPerNight as number,
+        adjustedDaily: city.travelStyleAdjusted.dailyPerDay as number,
+        total: city.travelStyleAdjusted.total as number,
+        source: 'backend' as const
+      };
     }
 
-    // Ensure minimum viable hotel price
-    if (hotelPerNight === 0) {
-      hotelPerNight = style === "budget" ? 45 : style === "mid" ? 85 : 185;
-    }
-
-    // Adjust daily costs
-    const adjustedDaily = Math.round(
-      city.breakdown.dailyPerDay * dailyMultiplier,
-    );
-
-    // Calculate total (flights unchanged)
-    const total =
-      city.breakdown.flight + city.nights * (hotelPerNight + adjustedDaily);
+    // Final fallback with simplified calculation
+    const baseDaily = city.breakdown?.dailyPerDay || (style === "budget" ? 25 : style === "mid" ? 50 : 120);
+    const multiplier = style === "budget" ? 0.85 : style === "mid" ? 1.0 : 1.6;
+    const adjustedDaily = Math.round(baseDaily * multiplier);
+    const hotelPerNight = style === "budget" ? 45 : style === "mid" ? 85 : 185;
+    const flightCost = city.breakdown?.flight || 0;
+    const total = flightCost + city.nights * (hotelPerNight + adjustedDaily);
 
     return {
       hotelPerNight,
-      adjustedDaily,
+      adjustedDaily, 
       total,
+      source: 'fallback' as const
     };
   };
 
-  const tierPricing = getTierAdjustedPricing(city, travelStyle);
+  // Use backend-provided totals instead of recalculating
+  // Backend already handles travel style adjustments and Claude data integration
+  const getDisplayTotal = (city: CityRecommendation, style: "budget" | "mid" | "luxury") => {
+    // Use backend's calculated totals based on travel style
+    if (city.totals) {
+      if (style === "luxury") {
+        return city.totals.p75;
+      } else if (style === "mid") {
+        return city.totals.p50;
+      } else {
+        return city.totals.p25;
+      }
+    }
+    
+    // Fallback to Claude calculation if backend totals not available
+    const claudeCalculation = getClaudeDailyCosts(city, style);
+    return claudeCalculation.total;
+  };
+
+  const displayTotal = getDisplayTotal(city, travelStyle);
+  
+  // For breakdown display, use Claude calculation for hotel/daily breakdown
+  // since backend totals don't provide per-night breakdown in the right format
+  const tierPricing = getClaudeDailyCosts(city, travelStyle);
 
   // Small internal component for the three mini boxes
   // replace StatBox in components/city-card.tsx
@@ -161,19 +226,25 @@ export function CityCard({
     label,
     tooltip,
     value,
+    emphasized = false,
   }: {
     label: React.ReactNode;
     tooltip: string;
     value: React.ReactNode;
+    emphasized?: boolean;
   }) => (
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger asChild>
           <div
             role="button"
-            className="min-h-[78px] rounded-lg border border-border/60 bg-background p-3.5 transition-colors hover:border-primary/40"
+            className={`min-h-[78px] rounded-lg border transition-colors hover:border-primary/40 flex flex-col items-center justify-center text-center p-3.5 ${
+              emphasized 
+                ? 'border-primary/30 bg-primary/5 hover:bg-primary/10' 
+                : 'border-border/60 bg-background'
+            }`}
           >
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-center">
               <span className="whitespace-nowrap text-xs font-medium text-muted-foreground">
                 {label}
               </span>
@@ -212,7 +283,14 @@ export function CityCard({
               data-testid={`text-city-info-${city.cityId}`}
               title={`${city.country} • ${city.region}`}
             >
-              {getCountryFlag(city.country)} {city.country} • {city.region}
+              <span 
+                className="inline-block mr-1" 
+                data-country={city.country}
+                title={`Flag for ${city.country}`}
+              >
+                {getFlagImageComponent(city.country)}
+              </span>
+              {city.country} • {city.region}
             </p>
           </div>
 
@@ -250,40 +328,58 @@ export function CityCard({
 
         {/* PRICE CLUSTER */}
         <div className="mt-3 flex items-baseline justify-between">
-          <span className="text-sm text-muted-foreground">Trip Total</span>
+          <span className="text-sm text-muted-foreground">
+            {showFlightCosts ? 'Trip Total' : 'Trip Total (no flights)'}
+          </span>
           <span
             className="text-[26px] font-semibold leading-none text-foreground"
             data-testid={`text-total-${travelStyle}-${city.cityId}`}
           >
-            {formatCurrency(tierPricing.total)}
+            {formatCurrency(showFlightCosts ? displayTotal : (displayTotal - city.breakdown.flight))}
           </span>
         </div>
 
         {/* BREAKDOWN — cleaned up */}
         <div
-          className="mt-5 grid grid-cols-3 gap-4 border-t border-border pt-5"
+          className={`mt-5 gap-4 border-t border-border pt-5 ${showFlightCosts ? 'grid grid-cols-3' : 'grid grid-cols-2'}`}
           data-testid={`breakdown-${city.cityId}`}
         >
-          <StatBox
-            label="Flight"
-            tooltip={getSourceTooltip(city.breakdown.flightSource, "flight")}
-            value={formatCurrency(city.breakdown.flight)}
-          />
+          {showFlightCosts && (
+            <StatBox
+              label="Flight"
+              tooltip={getSourceTooltip(city.breakdown.flightSource, "flight", travelStyle)}
+              value={formatCurrency(city.breakdown.flight)}
+            />
+          )}
 
           <StatBox
             label={
               <span className="whitespace-nowrap">Hotel&nbsp;/&nbsp;night</span>
             }
-            tooltip={getSourceTooltip(city.breakdown.hotelSource, "hotel")}
+            tooltip={getSourceTooltip(city.breakdown.hotelSource, "hotel", travelStyle)}
             value={formatCurrency(tierPricing.hotelPerNight)}
+            emphasized={!showFlightCosts}
           />
 
           <StatBox
             label="Daily costs"
-            tooltip={getSourceTooltip(city.breakdown.dailySource, "daily")}
+            tooltip={getSourceTooltip(city.breakdown.dailySource, "daily", travelStyle)}
             value={formatCurrency(tierPricing.adjustedDaily)}
+            emphasized={!showFlightCosts}
           />
         </div>
+
+        {/* Daily cost summary when flights are hidden */}
+        {!showFlightCosts && (
+          <div className="mt-4 rounded-lg bg-primary/5 p-3 text-center">
+            <div className="text-lg font-semibold text-primary">
+              ${tierPricing.hotelPerNight + tierPricing.adjustedDaily}/day
+            </div>
+            <div className="text-xs text-muted-foreground">
+              Daily cost to stay here
+            </div>
+          </div>
+        )}
 
         {/* FOOTER */}
         <div className="mt-4 border-t border-border pt-4">

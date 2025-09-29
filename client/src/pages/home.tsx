@@ -121,11 +121,9 @@ export default function Home() {
             onSearch={handleSearch}
             isLoading={isLoading}
             initialValues={{
-              budget: 2000,
+              budget: 3000,
               origin: "PHX",
               nights: 10,
-              month: 11,
-              region: "asia",
             }}
           />
         </div>

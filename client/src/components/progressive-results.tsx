@@ -4,6 +4,7 @@ import { Progress } from "@/components/ui/progress";
 import { CityCard } from "@/components/city-card";
 import { MobileCityCarousel } from "@/components/mobile-city-carousel";
 import { Button } from "@/components/ui/button";
+import { getFlagImageComponent } from "@/lib/flag-utils";
 import {
   Select,
   SelectContent,
@@ -364,7 +365,7 @@ export function ProgressiveResults({
               <div className="space-y-6">
                 <div className="border-b-2 border-green-200 dark:border-green-800 pb-3">
                   <h3 className="text-xl font-bold text-green-700 dark:text-green-400" data-testid="header-within-budget">
-                    ✅ Within Your Budget
+                    Within Your Budget
                   </h3>
                   <p className="text-sm text-muted-foreground mt-1">
                     These destinations fit comfortably within your budget
@@ -406,14 +407,21 @@ export function ProgressiveResults({
                           data-testid={`group-within-budget-${countryName.toLowerCase().replace(/\s+/g, "-")}`}
                         >
                           {/* Country Header */}
-                          <div className="border-b border-border pb-2">
+                          <div className="bg-gradient-to-r from-secondary/50 to-secondary/20 rounded-lg p-4 border border-border/60 shadow-sm">
                             <div className="flex items-center justify-between">
-                              <h4 className="text-lg font-semibold text-foreground">
-                                {countryName}
-                              </h4>
-                              <div className="text-sm text-muted-foreground">
-                                {cities.length} destination{cities.length !== 1 ? "s" : ""}
-                                {avgPrice > 0 && <> • Avg: ${avgPrice.toLocaleString()}</>}
+                              <div className="flex items-center space-x-3">
+                                <div className="flex items-center justify-center w-7 h-7 bg-background rounded-full border-2 border-primary/20">
+                                  {getFlagImageComponent(countryName)}
+                                </div>
+                                <div>
+                                  <h4 className="text-lg font-bold text-foreground tracking-tight">
+                                    {countryName}
+                                  </h4>
+                                  <div className="text-sm text-muted-foreground font-medium">
+                                    {cities.length} destination{cities.length !== 1 ? "s" : ""}
+                                    {avgPrice > 0 && <span className="ml-2 text-primary font-semibold">Avg: ${avgPrice.toLocaleString()}</span>}
+                                  </div>
+                                </div>
                               </div>
                             </div>
                           </div>
@@ -462,7 +470,7 @@ export function ProgressiveResults({
               <div className="space-y-6">
                 <div className="border-b-2 border-orange-200 dark:border-orange-800 pb-3">
                   <h3 className="text-xl font-bold text-orange-700 dark:text-orange-400" data-testid="header-slightly-above-budget">
-                    ⚠️ Slightly Above Budget (5-10% over)
+                    Slightly Above Budget (5-10% over)
                   </h3>
                   <p className="text-sm text-muted-foreground mt-1">
                     These destinations are close to your budget but might require a small stretch
@@ -504,14 +512,21 @@ export function ProgressiveResults({
                           data-testid={`group-slightly-above-budget-${countryName.toLowerCase().replace(/\s+/g, "-")}`}
                         >
                           {/* Country Header */}
-                          <div className="border-b border-border pb-2">
+                          <div className="bg-gradient-to-r from-yellow-50/50 to-orange-50/30 rounded-lg p-4 border border-orange-200/60 shadow-sm">
                             <div className="flex items-center justify-between">
-                              <h4 className="text-lg font-semibold text-foreground">
-                                {countryName}
-                              </h4>
-                              <div className="text-sm text-muted-foreground">
-                                {cities.length} destination{cities.length !== 1 ? "s" : ""}
-                                {avgPrice > 0 && <> • Avg: ${avgPrice.toLocaleString()}</>}
+                              <div className="flex items-center space-x-3">
+                                <div className="flex items-center justify-center w-7 h-7 bg-background rounded-full border-2 border-orange-300/40">
+                                  {getFlagImageComponent(countryName)}
+                                </div>
+                                <div>
+                                  <h4 className="text-lg font-bold text-foreground tracking-tight">
+                                    {countryName}
+                                  </h4>
+                                  <div className="text-sm text-muted-foreground font-medium">
+                                    {cities.length} destination{cities.length !== 1 ? "s" : ""}
+                                    {avgPrice > 0 && <span className="ml-2 text-orange-600 font-semibold">Avg: ${avgPrice.toLocaleString()}</span>}
+                                  </div>
+                                </div>
                               </div>
                             </div>
                           </div>
@@ -605,22 +620,26 @@ export function ProgressiveResults({
                       .replace(/\s+/g, "-")}`}
                   >
                     {/* Country Header */}
-                    <div className="border-b border-border pb-2">
+                    <div className="bg-gradient-to-r from-blue-50/50 to-indigo-50/30 rounded-lg p-4 border border-blue-200/60 shadow-sm">
                       <div className="flex items-center justify-between">
-                        <h4
-                          className="text-lg font-semibold text-foreground"
-                          data-testid={`text-progressive-country-${countryName
-                            .toLowerCase()
-                            .replace(/\s+/g, "-")}`}
-                        >
-                          {countryName}
-                        </h4>
-                        <div className="text-sm text-muted-foreground">
-                          {cities.length} destination
-                          {cities.length !== 1 ? "s" : ""}
-                          {avgPrice > 0 && (
-                            <> • Avg: ${avgPrice.toLocaleString()}</>
-                          )}
+                        <div className="flex items-center space-x-3">
+                          <div className="flex items-center justify-center w-7 h-7 bg-background rounded-full border-2 border-blue-300/40">
+                            {getFlagImageComponent(countryName)}
+                          </div>
+                          <div>
+                            <h4
+                              className="text-lg font-bold text-foreground tracking-tight"
+                              data-testid={`text-progressive-country-${countryName
+                                .toLowerCase()
+                                .replace(/\s+/g, "-")}`}
+                            >
+                              {countryName}
+                            </h4>
+                            <div className="text-sm text-muted-foreground font-medium">
+                              {cities.length} destination{cities.length !== 1 ? "s" : ""}
+                              {avgPrice > 0 && <span className="ml-2 text-blue-600 font-semibold">Avg: ${avgPrice.toLocaleString()}</span>}
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </div>

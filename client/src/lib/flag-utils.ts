@@ -1,151 +1,101 @@
-// Country name to flag emoji mapping
-// Uses Unicode flag emojis based on ISO 3166-1 alpha-2 country codes
+import React from 'react';
 
-const countryToCode: Record<string, string> = {
-  // Asia
-  "China": "CN",
-  "Japan": "JP",
-  "South Korea": "KR",
-  "Thailand": "TH",
-  "Vietnam": "VN",
-  "Singapore": "SG",
-  "Malaysia": "MY",
-  "Indonesia": "ID",
-  "Philippines": "PH",
-  "India": "IN",
-  "Taiwan": "TW",
-  "Hong Kong": "HK",
-  "Macau": "MO",
-  "Cambodia": "KH",
-  "Laos": "LA",
-  "Myanmar": "MM",
-  "Bangladesh": "BD",
-  "Sri Lanka": "LK",
-  
-  // Europe
-  "United Kingdom": "GB",
-  "France": "FR",
-  "Germany": "DE",
-  "Italy": "IT",
-  "Spain": "ES",
-  "Netherlands": "NL",
-  "Belgium": "BE",
-  "Switzerland": "CH",
-  "Austria": "AT",
-  "Portugal": "PT",
-  "Greece": "GR",
-  "Poland": "PL",
-  "Czech Republic": "CZ",
-  "Hungary": "HU",
-  "Sweden": "SE",
-  "Norway": "NO",
-  "Denmark": "DK",
-  "Finland": "FI",
-  "Ireland": "IE",
-  "Iceland": "IS",
-  "Croatia": "HR",
-  "Slovenia": "SI",
-  "Slovakia": "SK",
-  "Romania": "RO",
-  "Bulgaria": "BG",
-  "Estonia": "EE",
-  "Latvia": "LV",
-  "Lithuania": "LT",
-  "Luxembourg": "LU",
-  "Malta": "MT",
-  "Cyprus": "CY",
-  
-  // North America
-  "United States": "US",
-  "Canada": "CA",
-  "Mexico": "MX",
-  
-  // South America
-  "Brazil": "BR",
-  "Argentina": "AR",
-  "Chile": "CL",
-  "Peru": "PE",
-  "Colombia": "CO",
-  "Venezuela": "VE",
-  "Ecuador": "EC",
-  "Bolivia": "BO",
-  "Paraguay": "PY",
-  "Uruguay": "UY",
-  "Guyana": "GY",
-  "Suriname": "SR",
-  
-  // Africa
-  "South Africa": "ZA",
-  "Egypt": "EG",
-  "Morocco": "MA",
-  "Kenya": "KE",
-  "Nigeria": "NG",
-  "Ghana": "GH",
-  "Tanzania": "TZ",
-  "Uganda": "UG",
-  "Ethiopia": "ET",
-  "Tunisia": "TN",
-  "Algeria": "DZ",
-  
-  // Oceania
-  "Australia": "AU",
-  "New Zealand": "NZ",
-  "Fiji": "FJ",
-  
-  // Middle East
-  "Israel": "IL",
-  "Jordan": "JO",
-  "Lebanon": "LB",
-  "Turkey": "TR",
-  "United Arab Emirates": "AE",
-  "Saudi Arabia": "SA",
-  "Qatar": "QA",
-  "Kuwait": "KW",
-  "Bahrain": "BH",
-  "Oman": "OM",
+const FLAG_IMAGES: Record<string, string> = {
+  'Portugal': 'https://flagcdn.com/24x18/pt.png',
+  'Belgium': 'https://flagcdn.com/24x18/be.png',
+  'Germany': 'https://flagcdn.com/24x18/de.png',
+  'France': 'https://flagcdn.com/24x18/fr.png',
+  'Japan': 'https://flagcdn.com/24x18/jp.png',
+  'United States': 'https://flagcdn.com/24x18/us.png',
+  'Canada': 'https://flagcdn.com/24x18/ca.png',
+  'United Kingdom': 'https://flagcdn.com/24x18/gb.png',
+  'UK': 'https://flagcdn.com/24x18/gb.png',
+  'Spain': 'https://flagcdn.com/24x18/es.png',
+  'Italy': 'https://flagcdn.com/24x18/it.png',
+  'Netherlands': 'https://flagcdn.com/24x18/nl.png',
+  'Switzerland': 'https://flagcdn.com/24x18/ch.png',
+  'Austria': 'https://flagcdn.com/24x18/at.png',
+  'Greece': 'https://flagcdn.com/24x18/gr.png',
+  'Poland': 'https://flagcdn.com/24x18/pl.png',
+  'Czech Republic': 'https://flagcdn.com/24x18/cz.png',
+  'Czechia': 'https://flagcdn.com/24x18/cz.png',
+  'Hungary': 'https://flagcdn.com/24x18/hu.png',
+  'Sweden': 'https://flagcdn.com/24x18/se.png',
+  'Norway': 'https://flagcdn.com/24x18/no.png',
+  'Denmark': 'https://flagcdn.com/24x18/dk.png',
+  'Finland': 'https://flagcdn.com/24x18/fi.png',
+  'Ireland': 'https://flagcdn.com/24x18/ie.png',
+  'Iceland': 'https://flagcdn.com/24x18/is.png',
+  'Croatia': 'https://flagcdn.com/24x18/hr.png',
+  'Slovenia': 'https://flagcdn.com/24x18/si.png',
+  'Slovakia': 'https://flagcdn.com/24x18/sk.png',
+  'Romania': 'https://flagcdn.com/24x18/ro.png',
+  'Bulgaria': 'https://flagcdn.com/24x18/bg.png',
+  'China': 'https://flagcdn.com/24x18/cn.png',
+  'South Korea': 'https://flagcdn.com/24x18/kr.png',
+  'Korea': 'https://flagcdn.com/24x18/kr.png',
+  'Thailand': 'https://flagcdn.com/24x18/th.png',
+  'Vietnam': 'https://flagcdn.com/24x18/vn.png',
+  'Singapore': 'https://flagcdn.com/24x18/sg.png',
+  'Malaysia': 'https://flagcdn.com/24x18/my.png',
+  'Indonesia': 'https://flagcdn.com/24x18/id.png',
+  'Philippines': 'https://flagcdn.com/24x18/ph.png',
+  'India': 'https://flagcdn.com/24x18/in.png',
+  'Taiwan': 'https://flagcdn.com/24x18/tw.png',
+  'Hong Kong': 'https://flagcdn.com/24x18/hk.png',
+  'Australia': 'https://flagcdn.com/24x18/au.png',
+  'New Zealand': 'https://flagcdn.com/24x18/nz.png',
+  'Brazil': 'https://flagcdn.com/24x18/br.png',
+  'Argentina': 'https://flagcdn.com/24x18/ar.png',
+  'Chile': 'https://flagcdn.com/24x18/cl.png',
+  'Mexico': 'https://flagcdn.com/24x18/mx.png',
+  'Russia': 'https://flagcdn.com/24x18/ru.png',
+  'Turkey': 'https://flagcdn.com/24x18/tr.png',
+  'Israel': 'https://flagcdn.com/24x18/il.png',
+  'Egypt': 'https://flagcdn.com/24x18/eg.png',
+  'Morocco': 'https://flagcdn.com/24x18/ma.png',
+  'South Africa': 'https://flagcdn.com/24x18/za.png',
+  'Kenya': 'https://flagcdn.com/24x18/ke.png',
+  'Nigeria': 'https://flagcdn.com/24x18/ng.png'
 };
 
-/**
- * Converts a country code to flag emoji
- * Uses Unicode regional indicator symbols (U+1F1E6-U+1F1FF)
- */
-function countryCodeToFlag(countryCode: string): string {
-  if (!countryCode || countryCode.length !== 2) {
-    return "🏁"; // Fallback flag
-  }
-  
-  const codePoints = countryCode
-    .toUpperCase()
-    .split('')
-    .map(char => 127397 + char.charCodeAt(0));
-  
-  return String.fromCodePoint(...codePoints);
-}
-
-/**
- * Gets flag emoji for a country name
- * @param countryName - The full country name (e.g., "United States", "Japan")
- * @returns Flag emoji string (e.g., "🇺🇸", "🇯🇵") or fallback "🏁"
- */
 export function getCountryFlag(countryName: string): string {
-  if (!countryName) {
-    return "🏁";
-  }
+  if (!countryName) return '';
   
   // Try exact match first
-  const countryCode = countryToCode[countryName];
-  if (countryCode) {
-    return countryCodeToFlag(countryCode);
+  if (FLAG_IMAGES[countryName]) return FLAG_IMAGES[countryName];
+  
+  // Try case-insensitive exact match
+  const lowerName = countryName.toLowerCase();
+  for (const [country, flagUrl] of Object.entries(FLAG_IMAGES)) {
+    if (country.toLowerCase() === lowerName) return flagUrl;
   }
   
-  // Try partial matches for variations like "Korea" vs "South Korea"
-  const normalizedName = countryName.toLowerCase();
-  for (const [country, code] of Object.entries(countryToCode)) {
-    if (country.toLowerCase().includes(normalizedName) || 
-        normalizedName.includes(country.toLowerCase())) {
-      return countryCodeToFlag(code);
+  // Try partial matches
+  for (const [country, flagUrl] of Object.entries(FLAG_IMAGES)) {
+    if (country.toLowerCase().includes(lowerName) || lowerName.includes(country.toLowerCase())) {
+      return flagUrl;
     }
   }
   
-  return "🏁"; // Default fallback flag
+  return '';
+}
+
+export function getFlagImageComponent(countryName: string): React.ReactElement | null {
+  const flagUrl = getCountryFlag(countryName);
+  
+  if (!flagUrl) {
+    return React.createElement('span', {
+      className: 'inline-block w-6 h-4 bg-gray-200 rounded-sm'
+    });
+  }
+  
+  return React.createElement('img', {
+    src: flagUrl,
+    alt: `${countryName} flag`,
+    className: 'inline-block w-6 h-4 object-cover rounded-sm border border-gray-200',
+    onError: (e: React.SyntheticEvent<HTMLImageElement>) => {
+      e.currentTarget.style.display = 'none';
+    }
+  });
 }
