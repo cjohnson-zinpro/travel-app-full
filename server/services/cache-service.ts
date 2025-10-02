@@ -71,31 +71,12 @@ export class CacheService {
   }
 
   async get(params: TravelSearchParams): Promise<TravelRecommendationsResponse | null> {
-    const key = this.generateCacheKey(params);
+    // TEMPORARY: Complete cache disable to force fresh accommodation data processing
+    console.log(`🔧 CACHE COMPLETELY DISABLED - forcing fresh accommodation processing`);
     this.metrics.totalRequests++;
-
-    const entry = this.store.get(key);
-    if (!entry) {
-      this.metrics.misses++;
-      console.log(`Cache MISS for key: ${key}`);
-      this.updateHitRate();
-      return null;
-    }
-
-    const now = Date.now();
-    if (now > entry.expiresAt) {
-      // Entry has expired, remove it
-      this.store.delete(key);
-      this.metrics.misses++;
-      console.log(`Cache EXPIRED for key: ${key}`);
-      this.updateHitRate();
-      return null;
-    }
-
-    this.metrics.hits++;
-    console.log(`Cache HIT for key: ${key}`);
+    this.metrics.misses++;
     this.updateHitRate();
-    return entry.data;
+    return null;
   }
 
   async set(params: TravelSearchParams, data: TravelRecommendationsResponse): Promise<void> {

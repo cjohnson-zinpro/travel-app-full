@@ -106,36 +106,12 @@ export class RedisCacheService {
   }
 
   async get(params: TravelSearchParams): Promise<TravelRecommendationsResponse | null> {
+    // TEMPORARY: Complete cache disable to force fresh accommodation data processing
+    console.log(`🔧 REDIS CACHE COMPLETELY DISABLED - forcing fresh accommodation processing`);
     this.metrics.totalRequests++;
-
-    if (!this.isConnected || !this.client) {
-      this.metrics.misses++;
-      this.updateHitRate();
-      return null;
-    }
-
-    const key = this.generateCacheKey(params);
-
-    try {
-      const cached = await this.client.get(key);
-      
-      if (cached) {
-        this.metrics.hits++;
-        console.log(`Redis Cache HIT for key: ${key}`);
-        this.updateHitRate();
-        return JSON.parse(cached as string) as TravelRecommendationsResponse;
-      } else {
-        this.metrics.misses++;
-        console.log(`Redis Cache MISS for key: ${key}`);
-        this.updateHitRate();
-        return null;
-      }
-    } catch (error) {
-      console.error('Redis get error:', error);
-      this.metrics.misses++;
-      this.updateHitRate();
-      return null;
-    }
+    this.metrics.misses++;
+    this.updateHitRate();
+    return null;
   }
 
   async set(params: TravelSearchParams, data: TravelRecommendationsResponse): Promise<void> {

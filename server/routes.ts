@@ -410,44 +410,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Test flight calculations endpoint
-  app.get("/api/test/flight", async (req, res) => {
-    try {
-      const origin = req.query.origin as string || 'PHX';
-      const destination = req.query.destination as string || 'DXB';
-      const month = req.query.month ? Number(req.query.month) : undefined;
-      
-      console.log(`🧪 Testing flight calculation: ${origin} → ${destination}${month ? ` (month ${month})` : ''}`);
-      
-      const flightData = await claudeService.getFlightCosts(
-        origin,
-        destination,
-        origin, // originCity
-        destination, // destinationCity
-        'Unknown', // countryName
-        month,
-        7 // nights
-      );
-      
-      res.json({
-        success: true,
-        route: `${origin} → ${destination}`,
-        cost: flightData.cost,
-        confidence: flightData.confidence,
-        month: month || 'any',
-        calculationType: 'distance-based',
-        timestamp: new Date().toISOString()
-      });
-    } catch (error) {
-      console.error("Flight test calculation failed:", error);
-      res.status(500).json({
-        success: false,
-        message: error instanceof Error ? error.message : "Unknown error",
-        timestamp: new Date().toISOString()
-      });
-    }
-  });
-
   // Health check endpoint
   app.get("/api/health", (req, res) => {
     res.json({

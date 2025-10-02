@@ -9,12 +9,14 @@ interface MobileCityCarouselProps {
   cities: CityRecommendation[];
   onCityClick?: (city: CityRecommendation) => void;
   travelStyle?: "budget" | "mid" | "luxury";
+  originAirport?: string;
 }
 
 export function MobileCityCarousel({
   cities,
   onCityClick,
   travelStyle = "budget",
+  originAirport,
 }: MobileCityCarouselProps) {
   const [emblaRef, emblaApi] = useEmblaCarousel({
     align: "start",
@@ -72,6 +74,7 @@ export function MobileCityCarousel({
             city={city}
             onClick={onCityClick}
             travelStyle={travelStyle}
+            originAirport={originAirport}
           />
         ))}
       </div>
@@ -93,6 +96,7 @@ export function MobileCityCarousel({
                 city={city}
                 onClick={onCityClick}
                 travelStyle={travelStyle}
+                originAirport={originAirport}
               />
             </div>
           ))}

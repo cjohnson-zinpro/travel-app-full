@@ -83,6 +83,7 @@ export function SearchForm({
     { value: "asia", label: "Asia" },
     { value: "europe", label: "Europe" },
     { value: "north-america", label: "North America" },
+    { value: "central-america-caribbean", label: "Central America / Caribbean" },
     { value: "south-america", label: "South America" },
     { value: "africa", label: "Africa" },
     { value: "oceania", label: "Oceania" },

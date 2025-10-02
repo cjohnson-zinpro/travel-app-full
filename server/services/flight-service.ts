@@ -231,6 +231,19 @@ export class FlightService {
       return budgetMultipliers['South America'];
     }
     
+    // US domestic detection (should be very competitive)
+    console.log(`🔍 Regional multiplier check: destination="${destination}", country="${country}"`);
+    if ((destLower.includes('los angeles') || destLower.includes('las vegas') || 
+         destLower.includes('san francisco') || destLower.includes('phoenix') || 
+         destLower.includes('denver') || destLower.includes('dallas') || 
+         destLower.includes('houston') || destLower.includes('philadelphia') ||
+         destLower.includes('new york') || destLower.includes('chicago') ||
+         destLower.includes('miami') || destLower.includes('seattle')) &&
+        countryLower.includes('united states')) {
+      console.log(`🇺🇸 US DOMESTIC route detected! Applying 0.75x multiplier`);
+      return 0.75; // US domestic flights are very competitive with budget airlines
+    }
+    
     return budgetMultipliers.default;
   }
 
@@ -522,7 +535,8 @@ export class FlightService {
     destination: string, 
     month?: number, 
     originCoords?: [number, number], 
-    destCoords?: [number, number]
+    destCoords?: [number, number],
+    country?: string
   ): Promise<{ cost: number; confidence: string }> {
     try {
       // Use provided coordinates or look up in airport data
@@ -553,8 +567,8 @@ export class FlightService {
         // Short cross-border: Mexico, Caribbean, Central America, Canada, etc.
         baseCost = (distance * 0.18) + 180;
       } else if (!isInternational && distance < 3000) {
-        // Domestic
-        baseCost = (distance * 0.05) + 80;
+        // Domestic - more aggressive pricing for US domestic flights
+        baseCost = (distance * 0.03) + 50; // Reduced from 0.05 + 80
       } else if (distance < 6000) {
         // Medium international
         baseCost = (distance * 0.08) + 200;
@@ -570,7 +584,7 @@ export class FlightService {
       flightCost = flightCost * seasonalMultiplier;
       
       // Apply regional multiplier (the key differentiator for accuracy)
-      const regionalMultiplier = this.getRegionalMultiplier(destination);
+      const regionalMultiplier = this.getRegionalMultiplier(destination, country);
       flightCost = flightCost * regionalMultiplier;
 
       // Ensure reasonable bounds
@@ -688,7 +702,7 @@ export class FlightService {
     originCoords?: [number, number],
     destCoords?: [number, number]
   ): Promise<{ cost: number; confidence: string }> {
-    return this.getFlightCosts(originCode, destinationCode, month, originCoords, destCoords);
+    return this.getFlightCosts(originCode, destinationCode, month, originCoords, destCoords, countryName);
   }
 }
 

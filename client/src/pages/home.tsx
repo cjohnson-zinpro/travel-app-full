@@ -138,6 +138,8 @@ export default function Home() {
               progress={progressiveResults.progress}
               totalResults={progressiveResults.totalResults}
               travelStyle={travelStyle}
+              userBudget={searchParams?.budget}
+              originAirport={searchParams?.origin}
             />
           </div>
         )}

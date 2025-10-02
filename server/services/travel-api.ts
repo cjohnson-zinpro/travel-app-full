@@ -3,6 +3,7 @@ import { getCacheServiceInstance } from "./cache-service";
 import { claudeService } from "./claude-service";
 import { flightService } from "./flight-service";
 import { claudeRateLimiter } from "./rate-limiter";
+import { ClaudeDailyCosts } from "@shared/data/claude-daily-costs";
 import {
   type TravelSearchParams,
   type TravelRecommendationsResponse,
@@ -68,6 +69,18 @@ setInterval(() => {
 export class TravelApiService {
   constructor() {
     console.log("🚀 TravelApiService initialized with Claude-based cost estimation");
+    
+    // Clear cache on startup to ensure fresh accommodation data
+    this.clearCacheOnStartup();
+  }
+
+  private async clearCacheOnStartup() {
+    try {
+      // Skip cache clearing during initialization - will be done after cache service is ready
+      console.log("🧹 Cache clearing will be handled after cache service initialization");
+    } catch (error) {
+      console.log("⚠️ Could not clear cache on startup:", error);
+    }
   }
 
   // Progressive search method for fast initial results
@@ -233,8 +246,19 @@ export class TravelApiService {
           const cache = getCacheServiceInstance();
           const countries = this.buildCountrySummaries(finalSession.results);
           await cache.set(params, {
+            query: params,
             results: finalSession.results,
-            countries
+            countries,
+            pagination: {
+              page: 1,
+              limit: finalSession.results.length,
+              total: finalSession.results.length,
+              totalPages: 1,
+            },
+            meta: {
+              source: ["claude"],
+              disclaimer: "Estimates powered by Claude AI",
+            },
           });
           console.log(`💾 Cached ${finalSession.results.length} results for future searches`);
         } catch (error) {
@@ -302,32 +326,45 @@ export class TravelApiService {
         let hotelEstimate = false;
         let hotelSourceFromClaude = false; // Track if data came from Claude vs fallback
 
-        try {
-          const claudeHotelData = await claudeService.getHotelPricingFromDatabase(
-            city.iataCode,
-            city.name,
-            city.address.countryName,
-            params.nights,
-            params.month,
+        // PRIORITY 1: Try to get accommodation from Claude static database
+        const claudeAccommodationData = this.getAccommodationFromClaudeDatabase(city.name);
+        if (claudeAccommodationData) {
+          hotelPercentiles = claudeAccommodationData;
+          hotelSourceFromClaude = true;
+          hotelEstimate = false; // Static Claude data is high confidence
+          
+          console.log(
+            `🏨 Claude accommodation pricing for ${city.name}: $${hotelPercentiles.p25}/$${hotelPercentiles.p50}/$${hotelPercentiles.p75} USD/night (static blended data)`,
           );
+        } else {
+          // PRIORITY 2: Try dynamic Claude API hotel pricing
+          try {
+            const claudeHotelData = await claudeService.getHotelPricingFromDatabase(
+              city.iataCode,
+              city.name,
+              city.address.countryName,
+              params.nights,
+              params.month,
+            );
 
-          const p25 = parseFloat(claudeHotelData.p25Usd) || 0;
-          const p50 = parseFloat(claudeHotelData.p50Usd) || 0;
-          const p75 = parseFloat(claudeHotelData.p75Usd) || 0;
+            const p25 = parseFloat(claudeHotelData.p25Usd) || 0;
+            const p50 = parseFloat(claudeHotelData.p50Usd) || 0;
+            const p75 = parseFloat(claudeHotelData.p75Usd) || 0;
 
-          hotelPercentiles = {
-            p25,
-            p35: Math.min(p50, Math.round(p25 + 0.4 * (p50 - p25))), // Budget-focused percentile, ensure p25 ≤ p35 ≤ p50
-            p50,
-            p75,
-          };
+            hotelPercentiles = {
+              p25,
+              p35: Math.min(p50, Math.round(p25 + 0.4 * (p50 - p25))), // Budget-focused percentile, ensure p25 ≤ p35 ≤ p50
+              p50,
+              p75,
+            };
 
-          hotelSourceFromClaude = true; // Data came from Claude
-          hotelEstimate =
-            claudeHotelData.confidence === "low" ||
-            claudeHotelData.confidence === "medium";
-        } catch {
-          // Use fallback estimates
+            hotelSourceFromClaude = true; // Data came from Claude
+            hotelEstimate =
+              claudeHotelData.confidence === "low" ||
+              claudeHotelData.confidence === "medium";
+          } catch {
+            // Use fallback estimates
+          }
         }
 
         if (!hotelPercentiles) {
@@ -401,9 +438,29 @@ export class TravelApiService {
           params.travelStyle || "budget"
         );
 
-        // Budget filtering - use travel style adjusted total for accurate budget compliance
+        // Use travel style adjusted total for budget filtering (matches frontend display)
+        const travelStyle = params.travelStyle || "budget";
+        let budgetFilteringTotal: number;
+        
+        // Match frontend behavior: use travel style appropriate percentile
+        if (travelStyle === "luxury") {
+          budgetFilteringTotal = totalP75;
+        } else if (travelStyle === "mid") {
+          budgetFilteringTotal = totalP50;
+        } else {
+          budgetFilteringTotal = totalP25;
+        }
+        
+        // Match frontend flight cost behavior
+        const showFlightCosts = process.env.VITE_SHOW_FLIGHT_COSTS === 'true';
+        if (!showFlightCosts) {
+          // Frontend subtracts flight cost: (total - city.breakdown.flight)
+          budgetFilteringTotal = budgetFilteringTotal - flightCost;
+        }
+
+        // Budget filtering - use Claude-based total when available for consistency with display
         // Exclude destinations more than 10% over budget
-        if (travelStyleAdjusted.total > params.budget * 1.1) {
+        if (budgetFilteringTotal > params.budget * 1.1) {
           // City over budget, count attempt and skip
           const session = progressSessions.get(sessionId);
           if (session) {
@@ -413,9 +470,10 @@ export class TravelApiService {
           return; // Skip if over budget
         }
 
-        // Determine budget category based on travel style adjusted total
+        // Determine budget category based on consistent calculation
+        // Determine budget category based on consistent calculation
         const budgetCategory: "within_budget" | "slightly_above_budget" =
-          travelStyleAdjusted.total <= params.budget
+          budgetFilteringTotal <= params.budget
             ? "within_budget"
             : "slightly_above_budget";
 
@@ -493,7 +551,7 @@ export class TravelApiService {
         }
 
         console.log(
-          `${isPriority ? "🟢 Priority" : "🔵 Regular"} city processed: ${city.name} - Raw: $${Math.round(totalP50)}, Adjusted (${params.travelStyle || 'budget'}): $${travelStyleAdjusted.total}, Category: ${budgetCategory}`,
+          `${isPriority ? "🟢 Priority" : "🔵 Regular"} city processed: ${city.name} - Raw: $${Math.round(totalP50)}, Budget Filter (${params.travelStyle || 'budget'}): $${budgetFilteringTotal}, Category: ${budgetCategory}`,
         );
       } catch (error) {
         console.error(`Failed to process city ${city.name}:`, error);
@@ -619,10 +677,11 @@ export class TravelApiService {
   async getRecommendations(
     params: TravelSearchParams,
   ): Promise<TravelRecommendationsResponse> {
-    // Check cache first
+    // Check cache first 
     const cache = getCacheServiceInstance();
     const cached = await cache.get(params);
     if (cached) {
+      console.log(`💾 Serving ${cached.results?.length || 0} results from cache for region: ${params.region}, origin: ${params.origin}`);
       return cached;
     }
 
@@ -992,7 +1051,18 @@ export class TravelApiService {
         let hotelPercentiles;
         let hotelEstimate = false;
         let hotelSourceFromClaude = false; // Track if data came from Claude vs fallback
-        if (hotelResult.status === "fulfilled" && hotelResult.value) {
+        
+        // PRIORITY 1: Try to get accommodation from Claude static database
+        const claudeAccommodationData = this.getAccommodationFromClaudeDatabase(city.name);
+        if (claudeAccommodationData) {
+          hotelPercentiles = claudeAccommodationData;
+          hotelSourceFromClaude = true;
+          hotelEstimate = false; // Static Claude data is high confidence
+          
+          console.log(
+            `🏨 Claude accommodation pricing for ${city.name}: $${hotelPercentiles.p25}/$${hotelPercentiles.p50}/$${hotelPercentiles.p75} USD/night (static blended data)`,
+          );
+        } else if (hotelResult.status === "fulfilled" && hotelResult.value) {
           // Claude returns InsertHotelStats with p25Usd, p50Usd, p75Usd
           const claudeHotelData = hotelResult.value as any;
           const p25 = parseFloat(claudeHotelData.p25Usd) || 0;
@@ -1844,7 +1914,10 @@ export class TravelApiService {
     }
 
     // Insert flight averages
-    const flightAverages = generateMockFlightAverages(insertedCities);
+    const flightAverages = generateMockFlightAverages(insertedCities.map(city => ({
+      id: city.id,
+      iataCityCode: city.iataCityCode ?? null
+    })));
     for (const flight of flightAverages) {
       await storage.createFlightAverage(flight);
     }
@@ -2154,12 +2227,14 @@ export class TravelApiService {
       }
 
       // Use our new flight service with coordinates
+      console.log(`🔍 Travel API passing to flight service: origin="${originIata}", destination="${destinationCity.name}", country="${destinationCity.address?.countryName}"`);
       const flightResult = await flightService.getFlightCosts(
         originIata,
-        destinationCity.iataCode,
+        destinationCity.name, // Pass city name for regional detection (not iataCode)
         month, // Pass the month for seasonal pricing
         [originCoords.lat, originCoords.lon] as [number, number],
-        [destLat, destLon] as [number, number]
+        [destLat, destLon] as [number, number],
+        destinationCity.address?.countryName // Pass country for regional multipliers
       );
 
       console.log(`✈️ New flight service cost: ${originIata} → ${destinationCity.name} = $${flightResult.cost} (${flightResult.confidence} confidence)`);
@@ -2221,6 +2296,61 @@ export class TravelApiService {
             ? error.message
             : "Failed to test Claude connection",
       };
+    }
+  }
+
+  /**
+   * Get realistic accommodation costs from Claude database (blended hotel + Airbnb)
+   */
+  private getAccommodationFromClaudeDatabase(cityName: string): {
+    p25: number;
+    p35: number;
+    p50: number; 
+    p75: number;
+  } | null {
+    try {
+      console.log(`🔍 Looking for accommodation data for: "${cityName}"`);
+      
+      // Get city data from Claude database
+      const claudeCityData = ClaudeDailyCosts.getDailyCosts(cityName);
+      
+      if (!claudeCityData || !claudeCityData.accommodation) {
+        console.log(`❌ No accommodation data found for: "${cityName}"`);
+        return null;
+      }
+
+      const accommodation = claudeCityData.accommodation;
+      
+      // ALWAYS LOG MEXICO CITY PROCESSING  
+      if (cityName.toLowerCase().includes('mexico city') || cityName.toLowerCase().includes('mexico-city')) {
+        console.log(`🇲🇽🇲🇽🇲🇽 MEXICO CITY ACCOMMODATION FOUND IN CLAUDE DB! 🇲🇽🇲🇽🇲🇽`);
+        console.log(`🇲🇽 Budget: $${accommodation.budget}, Mid-Range: $${accommodation.midRange}, Luxury: $${accommodation.luxury}`);
+      }
+      
+      // ALWAYS LOG NEW YORK PROCESSING
+      if (cityName.toLowerCase().includes('new york') || cityName.toLowerCase().includes('new-york')) {
+        console.log(`🗽🗽🗽 NEW YORK ACCOMMODATION FOUND IN CLAUDE DB! 🗽🗽🗽`);
+        console.log(`🗽 Budget: $${accommodation.budget}, Mid-Range: $${accommodation.midRange}, Luxury: $${accommodation.luxury}`);
+      }
+      
+      // Map budget/midRange/luxury to percentiles
+      // budget = p25, midRange = p50, luxury = p75
+      // p35 = interpolated between budget and midRange
+      const p35 = Math.round(accommodation.budget + (accommodation.midRange - accommodation.budget) * 0.4);
+      
+      const result = {
+        p25: accommodation.budget,
+        p35: p35,
+        p50: accommodation.midRange,
+        p75: accommodation.luxury
+      };
+      
+      console.log(`✅ Claude accommodation data for ${cityName}: $${result.p25}/$${result.p35}/$${result.p50}/$${result.p75} USD/night`);
+      return result;
+      
+    } catch (error) {
+      console.error(`❌ Error getting accommodation from Claude database for ${cityName}:`, error);
+      return null;
     }
   }
 }

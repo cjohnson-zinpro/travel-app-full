@@ -1,7 +1,9 @@
 import { useState, useEffect, useRef } from "react";
-import { CityRecommendation, CountrySummary } from "@shared/schema";
+import { CountrySummary, CityRecommendation as SharedCityRecommendation } from "@shared/schema";
+import { CityRecommendation } from "@/types/travel";
 import { Progress } from "@/components/ui/progress";
 import { CityCard } from "@/components/city-card";
+import { CityModal } from "@/components/city-modal";
 import { MobileCityCarousel } from "@/components/mobile-city-carousel";
 import { Button } from "@/components/ui/button";
 import { getFlagImageComponent } from "@/lib/flag-utils";
@@ -21,7 +23,7 @@ import {
 import { HelpCircle } from "lucide-react";
 
 interface ProgressiveResultsProps {
-  results: CityRecommendation[];
+  results: SharedCityRecommendation[];
   countries: CountrySummary[];
   status: "idle" | "loading" | "processing" | "completed" | "error";
   progress: {
@@ -30,6 +32,8 @@ interface ProgressiveResultsProps {
     percentage: number;
   };
   totalResults: number;
+  userBudget?: number;
+  originAirport?: string;
 }
 
 export function ProgressiveResults({
@@ -39,14 +43,78 @@ export function ProgressiveResults({
   progress,
   totalResults,
   travelStyle = "budget",
+  userBudget = 0,
+  originAirport,
 }: ProgressiveResultsProps & { travelStyle?: "budget" | "mid" | "luxury" }) {
   const [displayedResults, setDisplayedResults] = useState<
-    CityRecommendation[]
+    SharedCityRecommendation[]
   >([]);
   const [selectedCountries, setSelectedCountries] = useState<string[]>([]);
   const [sortOption, setSortOption] = useState<
     "alphabetical" | "price-low-high" | "confidence" | "region"
   >("price-low-high");
+  
+  // Modal state
+  const [selectedCity, setSelectedCity] = useState<SharedCityRecommendation | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // Create a mock comparison city from origin airport for cost comparison
+  const getComparisonCity = (): CityRecommendation | null => {
+    if (!originAirport) return null;
+    
+    // Map of major airports to city data for cost comparison
+    const airportToCityMap: Record<string, { city: string, country: string, pricing: { budget: number, mid: number, luxury: number } }> = {
+      'PHX': { city: 'Phoenix', country: 'United States', pricing: { budget: 1200, mid: 1800, luxury: 3200 } },
+      'LAX': { city: 'Los Angeles', country: 'United States', pricing: { budget: 1800, mid: 2800, luxury: 5000 } },
+      'JFK': { city: 'New York', country: 'United States', pricing: { budget: 2200, mid: 3500, luxury: 6000 } },
+      'ORD': { city: 'Chicago', country: 'United States', pricing: { budget: 1600, mid: 2400, luxury: 4200 } },
+      'DFW': { city: 'Dallas', country: 'United States', pricing: { budget: 1400, mid: 2200, luxury: 3800 } },
+      'SFO': { city: 'San Francisco', country: 'United States', pricing: { budget: 2000, mid: 3200, luxury: 5500 } },
+      'YYZ': { city: 'Toronto', country: 'Canada', pricing: { budget: 1500, mid: 2300, luxury: 4000 } },
+      'YVR': { city: 'Vancouver', country: 'Canada', pricing: { budget: 1600, mid: 2500, luxury: 4300 } },
+      'LHR': { city: 'London', country: 'United Kingdom', pricing: { budget: 1800, mid: 2800, luxury: 5200 } },
+      'CDG': { city: 'Paris', country: 'France', pricing: { budget: 1700, mid: 2600, luxury: 4800 } },
+      'FRA': { city: 'Frankfurt', country: 'Germany', pricing: { budget: 1600, mid: 2400, luxury: 4400 } },
+      'NRT': { city: 'Tokyo', country: 'Japan', pricing: { budget: 1900, mid: 3000, luxury: 5500 } },
+      'SIN': { city: 'Singapore', country: 'Singapore', pricing: { budget: 1400, mid: 2200, luxury: 4000 } },
+      'SYD': { city: 'Sydney', country: 'Australia', pricing: { budget: 1800, mid: 2800, luxury: 5000 } }
+    };
+    
+    const cityData = airportToCityMap[originAirport];
+    if (!cityData) return null;
+    
+    const totalForStyle = cityData.pricing[travelStyle];
+    
+    return {
+      cityId: originAirport,
+      city: cityData.city,
+      country: cityData.country,
+      region: 'home',
+      nights: 10,
+      totals: {
+        p25: Math.round(totalForStyle * 0.85),
+        p35: Math.round(totalForStyle * 0.92),
+        p50: totalForStyle,
+        p75: Math.round(totalForStyle * 1.15),
+      },
+      breakdown: {
+        flight: 0, // No flight cost from home city
+        flightSource: 'estimate' as const,
+        hotelPerNightP25: Math.round(totalForStyle * 0.4 * 0.85),
+        hotelPerNightP35: Math.round(totalForStyle * 0.4 * 0.92),
+        hotelPerNightP50: Math.round(totalForStyle * 0.4),
+        hotelPerNightP75: Math.round(totalForStyle * 0.4 * 1.15),
+        hotelSource: 'estimate' as const,
+        dailyPerDay: Math.round(totalForStyle * 0.6),
+        dailySource: 'estimate' as const,
+      },
+      rangeNote: `Typical ${travelStyle} costs in ${cityData.city}`,
+      confidence: 'medium' as const,
+      lastUpdatedISO: new Date().toISOString(),
+    } as CityRecommendation; // Type assertion to match the client type
+  };
+
+  const comparisonCity = getComparisonCity();
 
   // Track timeout IDs and prevent concurrency issues
   const timeoutIds = useRef<NodeJS.Timeout[]>([]);
@@ -102,11 +170,6 @@ export function ProgressiveResults({
     }
   }, [status]);
 
-  // Handle city click
-  const handleCityClick = (city: CityRecommendation) => {
-    console.log("City clicked:", city);
-  };
-
   // Sort displayed results
   const sortedResults = [...displayedResults]
     .filter((city) => city && city.city && city.country && city.region)
@@ -117,8 +180,8 @@ export function ProgressiveResults({
         case "confidence":
           const confidenceOrder = { high: 3, medium: 2, low: 1 } as const;
           return (
-            (confidenceOrder[b.confidence] || 0) -
-            (confidenceOrder[a.confidence] || 0)
+            (confidenceOrder[b.confidence || 'low'] || 0) -
+            (confidenceOrder[a.confidence || 'low'] || 0)
           );
         case "region":
           return (
@@ -144,7 +207,7 @@ export function ProgressiveResults({
       acc[budgetCategory][city.country].push({ ...city, _sortIndex: index });
       return acc;
     },
-    {} as Record<string, Record<string, (CityRecommendation & { _sortIndex: number })[]>>,
+    {} as Record<string, Record<string, (SharedCityRecommendation & { _sortIndex: number })[]>>,
   );
 
   // Legacy grouping for country filters (all destinations combined)
@@ -158,7 +221,7 @@ export function ProgressiveResults({
       acc[city.country].push({ ...city, _sortIndex: index });
       return acc;
     },
-    {} as Record<string, (CityRecommendation & { _sortIndex: number })[]>,
+    {} as Record<string, (SharedCityRecommendation & { _sortIndex: number })[]>,
   );
 
   // Keep cities within each country in their global sorted order
@@ -181,6 +244,16 @@ export function ProgressiveResults({
         ? prev.filter((c) => c !== countryName)
         : [...prev, countryName],
     );
+  };
+
+  const handleCityClick = (city: SharedCityRecommendation) => {
+    setSelectedCity(city);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedCity(null);
   };
 
   const totalDisplayed = Object.values(filteredCitiesByCountry).reduce(
@@ -431,9 +504,10 @@ export function ProgressiveResults({
                             {/* Mobile Carousel */}
                             <div className="block lg:hidden">
                               <MobileCityCarousel
-                                cities={cities}
+                                cities={cities as CityRecommendation[]}
                                 onCityClick={handleCityClick}
                                 travelStyle={travelStyle}
+                                originAirport={originAirport}
                               />
                             </div>
                             
@@ -449,9 +523,10 @@ export function ProgressiveResults({
                                     style={{ opacity: 0 }}
                                   >
                                     <CityCard
-                                      city={city}
+                                      city={city as CityRecommendation}
                                       onClick={handleCityClick}
                                       travelStyle={travelStyle}
+                                      originAirport={originAirport}
                                     />
                                   </div>
                                 );
@@ -536,9 +611,10 @@ export function ProgressiveResults({
                             {/* Mobile Carousel */}
                             <div className="block lg:hidden">
                               <MobileCityCarousel
-                                cities={cities}
+                                cities={cities as CityRecommendation[]}
                                 onCityClick={handleCityClick}
                                 travelStyle={travelStyle}
+                                originAirport={originAirport}
                               />
                             </div>
                             
@@ -554,9 +630,10 @@ export function ProgressiveResults({
                                     style={{ opacity: 0 }}
                                   >
                                     <CityCard
-                                      city={city}
+                                      city={city as CityRecommendation}
                                       onClick={handleCityClick}
                                       travelStyle={travelStyle}
+                                      originAirport={originAirport}
                                     />
                                   </div>
                                 );
@@ -588,8 +665,8 @@ export function ProgressiveResults({
                   case "confidence":
                     const order = { high: 3, medium: 2, low: 1 } as const;
                     return (
-                      (order[bestCityB.confidence] ?? 0) -
-                      (order[bestCityA.confidence] ?? 0)
+                      (order[bestCityB.confidence || 'low'] ?? 0) -
+                      (order[bestCityA.confidence || 'low'] ?? 0)
                     );
                   case "region":
                     return (
@@ -656,9 +733,10 @@ export function ProgressiveResults({
                             style={{ opacity: 0 }} // Start invisible for animation
                           >
                             <CityCard
-                              city={city}
+                              city={city as CityRecommendation}
                               onClick={handleCityClick}
                               travelStyle={travelStyle}
+                              originAirport={originAirport}
                             />
                           </div>
                         );
@@ -695,6 +773,16 @@ export function ProgressiveResults({
           </div>
         </div>
       )}
+
+      {/* City Modal */}
+      <CityModal
+        city={selectedCity}
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        travelStyle={travelStyle}
+        userBudget={userBudget}
+        originAirport={originAirport}
+      />
     </div>
   );
 }

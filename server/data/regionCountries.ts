@@ -13,11 +13,14 @@ export const RegionCountriesMap = {
     'US', 'CA', 'MX', 'BR', 'AR', 'CL', 'PE', 'CO', 'EC', 'UY', 
     'CR', 'PA', 'GT', 'JM', 'BS', 'BB'
   ],
-  'south-america': [
-    'BR', 'AR', 'CL', 'PE', 'CO', 'EC', 'UY'
-  ],
   'north-america': [
     'US', 'CA', 'MX'
+  ],
+  'central-america-caribbean': [
+    'CR', 'PA', 'GT', 'JM', 'BS', 'BB'
+  ],
+  'south-america': [
+    'BR', 'AR', 'CL', 'PE', 'CO', 'EC', 'UY'
   ],
   africa: [
     'EG', 'ZA', 'MA', 'KE', 'ET', 'TZ', 'NG', 'GH', 'SN', 'TN', 

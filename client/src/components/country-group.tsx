@@ -10,9 +10,10 @@ interface CountryGroupProps {
   country: CountrySummary;
   cities: CityRecommendation[];
   onCityClick?: (city: CityRecommendation) => void;
+  originAirport?: string;
 }
 
-export function CountryGroup({ country, cities, onCityClick }: CountryGroupProps) {
+export function CountryGroup({ country, cities, onCityClick, originAirport }: CountryGroupProps) {
   const [currentPage, setCurrentPage] = useState(0);
   const citiesPerPage = 3;
   const totalPages = Math.ceil(cities.length / citiesPerPage);
@@ -93,6 +94,7 @@ export function CountryGroup({ country, cities, onCityClick }: CountryGroupProps
             key={city.cityId} 
             city={city} 
             onClick={onCityClick}
+            originAirport={originAirport}
           />
         ))}
       </div>
