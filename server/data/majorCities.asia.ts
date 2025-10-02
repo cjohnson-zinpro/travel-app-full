@@ -19,6 +19,13 @@ export const AsiaMajorCities = {
     { name: "Shanghai", iata: "PVG", lat: 31.2304, lon: 121.4737 },
     { name: "Hong Kong", iata: "HKG", lat: 22.3193, lon: 114.1694 },
     { name: "Guangzhou", iata: "CAN", lat: 23.1291, lon: 113.2644 },
+    { name: "Shenzhen", iata: "SZX", lat: 22.5429, lon: 114.0596 },
+    { name: "Chengdu", iata: "CTU", lat: 30.5728, lon: 104.0668 },
+    { name: "Xi'an", iata: "XIY", lat: 34.3416, lon: 108.9398 },
+    { name: "Hangzhou", iata: "HGH", lat: 30.2741, lon: 120.1551 },
+    { name: "Chongqing", iata: "CKG", lat: 29.4316, lon: 106.9123 },
+    { name: "Nanjing", iata: "NKG", lat: 32.0603, lon: 118.7969 },
+    { name: "Tianjin", iata: "TSN", lat: 39.3434, lon: 117.3616 },
   ],
   
   // Thailand
