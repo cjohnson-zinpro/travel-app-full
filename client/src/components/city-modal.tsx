@@ -1373,7 +1373,12 @@ export function CityModal({
             {originAirport && (() => {
               const comparison = getCostComparison(city.city, originAirport, travelStyle === "mid" ? "midRange" : travelStyle);
               if (!comparison) return null;
-              
+
+              // Determine overall percent and apply 15% 'about the same' threshold
+              const overallPct = comparison.overallComparison.percentageDifference;
+              const absOverall = Math.abs(overallPct);
+              const isAboutSame = absOverall <= 15;
+
               return (
                 <Card>
                   <CardContent className="p-6">
@@ -1387,13 +1392,13 @@ export function CityModal({
                           Compared to {getDisplayCityName(comparison.homeCity)}
                         </p>
                         <p className="text-2xl font-bold text-blue-700">
-                          {comparison.overallComparison.percentageDifference > 0 ? '+' : ''}{Math.round(comparison.overallComparison.percentageDifference)}%
+                          {overallPct > 0 ? '+' : ''}{Math.round(overallPct)}%
                         </p>
                         <p className="text-sm font-medium text-blue-600">
-                          {comparison.overallComparison.description}
+                          {isAboutSame ? 'About the same as your departure city' : comparison.overallComparison.description}
                         </p>
                       </div>
-                      
+
                       <div className="grid grid-cols-2 gap-4">
                         <div className="text-center p-3 bg-slate-50 rounded-lg">
                           <p className="text-xs text-muted-foreground mb-1">Hotels</p>

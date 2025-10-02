@@ -1,7 +1,7 @@
 // components/city-card.tsx  (Frontend bundle: project_bundle_frontend.txt)
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Clock, Zap, Bot, Calculator, TrendingUp, TrendingDown } from "lucide-react";
+import { Clock, Zap, Bot, Calculator, TrendingUp, TrendingDown, Minus } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
@@ -242,23 +242,38 @@ export function CityCard({
   // Cost comparison logic using shared utility
   const getCostComparisonData = () => {
     if (!originAirport) return null;
-    
+
     const cityKey = city.city.toLowerCase().replace(/\s+/g, '-');
     const travelStyleKey = travelStyle === "mid" ? "midRange" : travelStyle;
-    
+
     try {
       const comparison = getCostComparison(cityKey, originAirport, travelStyleKey);
       if (!comparison) return null;
-      
+
       const percentageDiff = comparison.overallComparison.percentageDifference;
-      
-      // Only show significant differences (≥10%)
-      if (Math.abs(percentageDiff) < 10) return null;
-      
+      const absPercent = Math.abs(percentageDiff);
+
+      // New behavior:
+      // - If within 15% (inclusive) -> mark as 'about the same' and show neutral badge
+      // - If greater than 15% -> show more/less expensive badge
+      if (isNaN(absPercent)) return null;
+
+      const comparisonCityName = comparison.homeCity.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+
+      if (absPercent <= 15) {
+        return {
+          percentage: absPercent,
+          isAboutSame: true,
+          comparisonCityName,
+        } as const;
+      }
+
+      // Only show explicit more/less badges when difference is > 15%
       return {
-        percentage: Math.abs(percentageDiff),
+        percentage: absPercent,
         isMoreExpensive: percentageDiff > 0,
-        comparisonCityName: comparison.homeCity.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())
+        isAboutSame: false,
+        comparisonCityName,
       };
     } catch (error) {
       console.warn('Cost comparison failed:', error);
@@ -271,9 +286,29 @@ export function CityCard({
   // Cost Comparison Indicator Component
   const CostComparisonIndicator = () => {
     if (!costComparison) return null;
-    
-    const { percentage, isMoreExpensive, comparisonCityName } = costComparison;
-    
+
+    const { percentage, isMoreExpensive, isAboutSame, comparisonCityName } = costComparison as any;
+
+    // If about the same, show a neutral badge
+    if (isAboutSame) {
+      return (
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className={`absolute bottom-3 right-3 flex items-center gap-1 rounded-full px-2 py-1 text-xs font-medium shadow-sm z-20 bg-gray-100 text-gray-800 border border-gray-200`}>
+                <Minus className="h-3 w-3" />
+                <span className="tabular-nums">≈{percentage.toFixed(0)}%</span>
+                <span className="text-[10px] opacity-75">vs {comparisonCityName.split(' ')[0]}</span>
+              </div>
+            </TooltipTrigger>
+            <TooltipContent className="max-w-xs">
+              <p className="text-xs">About the same cost as {comparisonCityName} (within 15%)</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      );
+    }
+
     return (
       <TooltipProvider>
         <Tooltip>

@@ -391,36 +391,14 @@ Return only the JSON object, no other text.`;
     }
   }
 
-  async getFlightCosts(originCode: string, destinationCode: string, originCity: string, destinationCity: string, countryName: string, month?: number, nights: number = 7, originCoords?: [number, number], destCoords?: [number, number]): Promise<{ cost: number; confidence: string }> {
+  async getFlightCosts(originCode: string, destinationCode: string, originCity: string, destinationCity: string, countryName: string, month?: number, nights: number = 7): Promise<{ cost: number; confidence: string }> {
     try {
       // Use the new distance-based flight calculation service
       console.log(`🧮 Using distance-based flight calculation: ${originCode} → ${destinationCode}`);
       
-      // Debug coordinate availability
-      if (originCoords) {
-        console.log(`🗺️ Origin coordinates: [${originCoords[0]}, ${originCoords[1]}]`);
-      } else {
-        console.log(`⚠️ No origin coordinates provided for ${originCode}`);
-      }
+      const flightData = await flightService.getFlightCosts(originCode, destinationCode, month);
       
-      if (destCoords) {
-        console.log(`🗺️ Destination coordinates: [${destCoords[0]}, ${destCoords[1]}]`);
-      } else {
-        console.log(`⚠️ No destination coordinates provided for ${destinationCode}`);
-      }
-      
-      // Debug what we're actually passing to flight service
-      console.log(`🔍 Calling flightService.getFlightCosts with:`, {
-        originCode, 
-        destinationCode, 
-        month, 
-        originCoords: originCoords ? `[${originCoords[0]}, ${originCoords[1]}]` : 'undefined',
-        destCoords: destCoords ? `[${destCoords[0]}, ${destCoords[1]}]` : 'undefined'
-      });
-      
-      const flightData = await flightService.getFlightCosts(originCode, destinationCode, month, originCoords, destCoords);
-      
-      console.log(`✅ Distance-based flight cost calculated: $${flightData.cost} for ${destinationCity}`);
+      console.log(`✈️ Distance-based flight cost: ${originCode} → ${destinationCode} = $${flightData.cost} (${flightData.confidence} confidence)`);
       
       return flightData;
 
@@ -995,7 +973,7 @@ Return only the JSON object, no other text.`;
   }
 
   // Cached flight costs method
-  async getFlightCostsCached(originCode: string, destinationCode: string, originCity: string, destinationCity: string, countryName: string, month?: number, nights: number = 7, originCoords?: [number, number], destCoords?: [number, number]): Promise<{ cost: number; confidence: string }> {
+  async getFlightCostsCached(originCode: string, destinationCode: string, originCity: string, destinationCity: string, countryName: string, month?: number, nights: number = 7): Promise<{ cost: number; confidence: string }> {
     const monthBucket = this.generateMonthBucket(month);
     const cacheKey = cacheService.generateKey('distance_flights', `${originCode}-${destinationCode}`, nights.toString(), monthBucket);
     
@@ -1008,7 +986,7 @@ Return only the JSON object, no other text.`;
     
     // Cache miss - call distance-based calculation
     console.log(`🌐 Cache MISS for distance-based flight costs: ${originCode} → ${destinationCode} (${nights}n, ${monthBucket}) - calculating`);
-    const costs = await this.getFlightCosts(originCode, destinationCode, originCity, destinationCity, countryName, month, nights, originCoords, destCoords);
+    const costs = await this.getFlightCosts(originCode, destinationCode, originCity, destinationCity, countryName, month, nights);
     
     // Cache the result for a long time since distance calculations are deterministic
     await cacheService.set(cacheKey, costs, 'flights', this.CLAUDE_CACHE_TTL);

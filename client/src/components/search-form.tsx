@@ -16,6 +16,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Search } from "lucide-react";
 import { AirportAutocomplete } from "@/components/airport-autocomplete";
 import type { TravelSearchParams } from "@/types/travel";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 const searchFormSchema = z.object({
   budget: z
@@ -241,54 +242,83 @@ export function SearchForm({
               Travel Style
             </Label>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-              <div
-                className={`flex items-center space-x-2 rounded-lg border p-4 cursor-pointer hover:bg-muted transition-colors ${
-                  watch("travelStyle") === "budget"
-                    ? "border-primary bg-primary/5"
-                    : ""
-                }`}
-                onClick={() => setValue("travelStyle", "budget")}
-                data-testid="button-tier-budget"
-              >
-                <div className="space-y-1 flex-1">
-                  <div className="text-sm font-medium">Budget</div>
-                  <p className="text-xs text-muted-foreground">
-                    2-3★ stays, street food
-                  </p>
-                </div>
-              </div>
-              <div
-                className={`flex items-center space-x-2 rounded-lg border p-4 cursor-pointer hover:bg-muted transition-colors ${
-                  watch("travelStyle") === "mid"
-                    ? "border-primary bg-primary/5"
-                    : ""
-                }`}
-                onClick={() => setValue("travelStyle", "mid")}
-                data-testid="button-tier-mid"
-              >
-                <div className="space-y-1 flex-1">
-                  <div className="text-sm font-medium">Mid-range</div>
-                  <p className="text-xs text-muted-foreground">
-                    3★ hotels, mix dining
-                  </p>
-                </div>
-              </div>
-              <div
-                className={`flex items-center space-x-2 rounded-lg border p-4 cursor-pointer hover:bg-muted transition-colors ${
-                  watch("travelStyle") === "luxury"
-                    ? "border-primary bg-primary/5"
-                    : ""
-                }`}
-                onClick={() => setValue("travelStyle", "luxury")}
-                data-testid="button-tier-luxury"
-              >
-                <div className="space-y-1 flex-1">
-                  <div className="text-sm font-medium">Luxury</div>
-                  <p className="text-xs text-muted-foreground">
-                    4-5★ hotels, fine dining
-                  </p>
-                </div>
-              </div>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <div
+                    className={`flex items-center space-x-2 rounded-lg border p-4 cursor-pointer hover:bg-muted transition-colors ${
+                      watch("travelStyle") === "budget"
+                        ? "border-primary bg-primary/5"
+                        : ""
+                    }`}
+                    onClick={() => setValue("travelStyle", "budget")}
+                    data-testid="button-tier-budget"
+                  >
+                    <div className="space-y-1 flex-1">
+                      <div className="text-sm font-medium">Budget</div>
+                      <p className="text-xs text-muted-foreground">
+                        2-3★ stays, street food
+                      </p>
+                    </div>
+                  </div>
+                </PopoverTrigger>
+                <PopoverContent>
+                  <div className="text-sm">
+                    Budget: Comfortable for budget-conscious travelers — lower-cost hotels (2–3★), mostly local dining/street food, and economical transport. Good for visitors who want a comfortable but value-minded trip.
+                  </div>
+                </PopoverContent>
+              </Popover>
+
+              <Popover>
+                <PopoverTrigger asChild>
+                  <div
+                    className={`flex items-center space-x-2 rounded-lg border p-4 cursor-pointer hover:bg-muted transition-colors ${
+                      watch("travelStyle") === "mid"
+                        ? "border-primary bg-primary/5"
+                        : ""
+                    }`}
+                    onClick={() => setValue("travelStyle", "mid")}
+                    data-testid="button-tier-mid"
+                  >
+                    <div className="space-y-1 flex-1">
+                      <div className="text-sm font-medium">Mid-range</div>
+                      <p className="text-xs text-muted-foreground">
+                        3–4★ hotels, mix dining
+                      </p>
+                    </div>
+                  </div>
+                </PopoverTrigger>
+                <PopoverContent>
+                  <div className="text-sm">
+                    Mid-range: Comfortable 3–4★ hotels and a mix of casual and nicer dining options, with moderate transport. Some destinations in this range offer affordable 4★ properties, making it a good choice for travelers who want added comfort without premium prices.
+                  </div>
+                </PopoverContent>
+              </Popover>
+
+              <Popover>
+                <PopoverTrigger asChild>
+                  <div
+                    className={`flex items-center space-x-2 rounded-lg border p-4 cursor-pointer hover:bg-muted transition-colors ${
+                      watch("travelStyle") === "luxury"
+                        ? "border-primary bg-primary/5"
+                        : ""
+                    }`}
+                    onClick={() => setValue("travelStyle", "luxury")}
+                    data-testid="button-tier-luxury"
+                  >
+                    <div className="space-y-1 flex-1">
+                      <div className="text-sm font-medium">Luxury</div>
+                      <p className="text-xs text-muted-foreground">
+                        4-5★ hotels, fine dining
+                      </p>
+                    </div>
+                  </div>
+                </PopoverTrigger>
+                <PopoverContent>
+                  <div className="text-sm">
+                    Luxury: High-end 4–5★ hotels, fine dining, premium experiences and upgraded transport. Higher nightly rates and daily expenses for premium comfort.
+                  </div>
+                </PopoverContent>
+              </Popover>
             </div>
           </div>
 

@@ -119,6 +119,8 @@ export function ProgressiveResults({
   // Track timeout IDs and prevent concurrency issues
   const timeoutIds = useRef<NodeJS.Timeout[]>([]);
   const isProcessingRef = useRef(false);
+  const withinSectionRef = useRef<HTMLDivElement | null>(null);
+  const slightlySectionRef = useRef<HTMLDivElement | null>(null);
 
   // Progressively add new results to display with smooth timing and proper cleanup
   useEffect(() => {
@@ -269,15 +271,7 @@ export function ProgressiveResults({
       {/* Progress Header */}
       <div className="mb-6">
         <div className="mb-4 flex items-center justify-between">
-          <h2
-            className="text-2xl font-semibold"
-            data-testid="text-progressive-title"
-          >
-            {status === "loading" && "Searching destinations..."}
-            {status === "processing" &&
-              `Found ${displayedResults.length} destinations`}
-            {status === "completed" && `${totalResults} destinations found`}
-          </h2>
+          <div />
 
           {status === "processing" && (
             <div className="text-sm text-muted-foreground progress-text-smooth">
@@ -295,59 +289,36 @@ export function ProgressiveResults({
       {displayedResults.length > 0 && (
         <div className="space-y-6">
           {/* Header with Sort and Info */}
-          <div
-            className="flex items-center justify-between"
-            data-testid="progressive-results-header"
-          >
-            <div className="flex items-center space-x-4">
-              <h3
-                className="text-xl font-semibold text-foreground"
-                data-testid="text-progressive-results-title"
-              >
-                Destinations within your budget
-              </h3>
-              <div className="flex items-center space-x-2">
-                <span className="text-sm text-muted-foreground">Sort by:</span>
-                <Select
-                  value={sortOption}
-                  onValueChange={(value) => setSortOption(value as any)}
-                  data-testid="select-progressive-sort"
-                >
-                  <SelectTrigger className="h-8 w-[180px]">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem
-                      value="alphabetical"
-                      data-testid="option-alphabetical"
-                    >
-                      A-Z (Alphabetical)
-                    </SelectItem>
-                    <SelectItem
-                      value="price-low-high"
-                      data-testid="option-price-low-high"
-                    >
-                      Price: Low to High
-                    </SelectItem>
-                    <SelectItem
-                      value="confidence"
-                      data-testid="option-confidence"
-                    >
-                      Confidence Level
-                    </SelectItem>
-                    <SelectItem value="region" data-testid="option-region">
-                      Region
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
+          <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6" data-testid="progressive-results-header">
+            <div className="flex items-center justify-between mb-4">
+              <div />
+
+              {/* sort control moved into the Within Your Budget section; tooltip is placed below the total count */}
+            </div>
+
+            {/* Total destinations moved into the header box */}
+            <div className="mb-4 flex items-center justify-center">
+              <div className="inline-flex items-center gap-4 px-4 py-2">
+                <div className="flex items-center justify-center w-10 h-10 bg-primary rounded-lg">
+                  <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+                  </svg>
+                </div>
+                <h3 className="text-2xl font-bold text-gray-900" data-testid="text-progressive-title">
+                  {status === "loading" && "Searching destinations..."}
+                  {status === "processing" && `Found ${displayedResults.length} destinations`}
+                  {status === "completed" && `${totalResults} destinations found`}
+                </h3>
               </div>
             </div>
-            <div className="flex items-center space-x-4">
+
+            {/* How we estimate tooltip (moved below total destinations) */}
+            <div className="flex items-center justify-center">
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <button
-                      className="flex items-center text-sm text-muted-foreground transition-colors hover:text-foreground"
+                      className="flex items-center text-sm text-gray-600 transition-colors hover:text-gray-900 mt-2"
                       data-testid="button-progressive-how-we-estimate"
                     >
                       <HelpCircle className="mr-1 h-4 w-4" />
@@ -355,59 +326,113 @@ export function ProgressiveResults({
                     </button>
                   </TooltipTrigger>
                   <TooltipContent className="max-w-xs">
-                    <p className="text-sm">
-                      We use live flight prices from Amadeus and AI-powered
-                      hotel & daily cost estimates from Claude. Look for data
-                      source indicators on each city to see what's live vs
-                      estimated.
-                    </p>
+                    <div className="text-sm">
+                      All cost estimates are produced using Claude AI. We estimate hotel and daily costs and combine them into trip totals. These are model estimates for planning purposes; verify prices before booking.
+                    </div>
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
-              <span
-                className="text-sm font-medium text-foreground"
-                data-testid="text-progressive-count"
-              >
-                Showing {totalDisplayed} of {totalResults} destinations
-              </span>
             </div>
+
+            {/* Results count integrated with quick jump chips */}
+            {(() => {
+              const withinCount = citiesByBudgetAndCountry.within_budget ? Object.values(citiesByBudgetAndCountry.within_budget).reduce((s, arr) => s + arr.length, 0) : 0;
+              const slightlyCount = citiesByBudgetAndCountry.slightly_above_budget ? Object.values(citiesByBudgetAndCountry.slightly_above_budget).reduce((s, arr) => s + arr.length, 0) : 0;
+
+              // Respect current country filters when showing counts in the chips
+              const computeFilteredCount = (group?: Record<string, (SharedCityRecommendation & { _sortIndex: number })[]> ) => {
+                if (!group) return 0;
+                if (selectedCountries.length === 0) return Object.values(group).reduce((s, arr) => s + arr.length, 0);
+                return Object.entries(group)
+                  .filter(([countryName]) => selectedCountries.includes(countryName))
+                  .reduce((s, [, arr]) => s + arr.length, 0);
+              };
+
+              const visibleWithinCount = computeFilteredCount(citiesByBudgetAndCountry.within_budget);
+              const visibleSlightlyCount = computeFilteredCount(citiesByBudgetAndCountry.slightly_above_budget);
+
+              return (
+                <div className="flex items-center justify-center mt-4">
+                  <div className="inline-flex items-center gap-6 px-6 py-3 bg-white rounded-lg border border-gray-200 shadow-sm">
+                    <div className="text-sm font-medium text-gray-900" data-testid="text-progressive-count">Showing {totalDisplayed} of {totalResults} destinations</div>
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        className="text-xs bg-green-50 text-green-700 px-2 py-1 rounded-md hover:bg-green-100"
+                        onClick={() => withinSectionRef?.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
+                        data-testid="chip-jump-within"
+                      >
+                        Within Budget: {visibleWithinCount}
+                      </button>
+                      <button
+                        type="button"
+                        className="text-xs bg-orange-50 text-orange-700 px-2 py-1 rounded-md hover:bg-orange-100"
+                        onClick={() => slightlySectionRef?.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
+                        data-testid="chip-jump-slightly"
+                      >
+                        Slightly Above Budget: {visibleSlightlyCount}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              );
+            })()}
           </div>
 
           {/* Country Filter Buttons */}
-          <div
-            className="flex flex-wrap justify-center gap-3 border-b border-border pb-6"
-            data-testid="progressive-country-filters"
-          >
-            <Button
-              variant={selectedCountries.length === 0 ? "default" : "secondary"}
-              size="sm"
-              className="rounded-md border border-border px-5 py-2.5 text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
-              onClick={() => setSelectedCountries([])}
-              data-testid="filter-progressive-all-countries"
-            >
-              All Countries {Object.keys(citiesByCountry).length}
-            </Button>
+          <div className="mb-8">
+            <div className="text-center mb-4">
+              <h4 className="text-sm font-medium text-gray-700">Filter by destination</h4>
+            </div>
+            
+            <div className="flex flex-wrap justify-center gap-2" data-testid="progressive-country-filters">
+              <button
+                className={[
+                  "px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200",
+                  "hover:scale-105 hover:shadow-sm active:scale-95",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50",
+                  selectedCountries.length === 0
+                    ? "bg-primary text-white shadow-sm"
+                    : "bg-white text-gray-700 border border-gray-200 hover:border-primary/30",
+                ].join(" ")}
+                onClick={() => setSelectedCountries([])}
+                data-testid="filter-progressive-all-countries"
+              >
+                  <span className="flex items-center gap-2">
+                    <span>All Countries</span>
+                    <span className="inline-flex items-center justify-center w-6 h-6 text-xs font-semibold rounded-full bg-white border border-gray-200 text-gray-700">
+                      {Object.keys(citiesByCountry).length}
+                    </span>
+                  </span>
+              </button>
 
-            {Object.entries(citiesByCountry)
-              .sort(([a], [b]) => a.localeCompare(b))
-              .map(([countryName, cities]) => (
-                <Button
-                  key={countryName}
-                  variant={
-                    selectedCountries.includes(countryName)
-                      ? "default"
-                      : "secondary"
-                  }
-                  size="sm"
-                  className="rounded-md border border-border px-5 py-2.5 text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
-                  onClick={() => toggleCountryFilter(countryName)}
-                  data-testid={`filter-progressive-country-${countryName
-                    .toLowerCase()
-                    .replace(/\s+/g, "-")}`}
-                >
-                  {countryName} {cities.length}
-                </Button>
-              ))}
+              {Object.entries(citiesByCountry)
+                .sort(([a], [b]) => a.localeCompare(b))
+                .map(([countryName, cities]) => (
+                  <button
+                    key={countryName}
+                    className={[
+                      "px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200",
+                      "hover:scale-105 hover:shadow-sm active:scale-95",
+                      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50",
+                      selectedCountries.includes(countryName)
+                        ? "bg-primary text-white shadow-sm"
+                        : "bg-white text-gray-700 border border-gray-200 hover:border-primary/30",
+                    ].join(" ")}
+                    onClick={() => toggleCountryFilter(countryName)}
+                    data-testid={`filter-progressive-country-${countryName
+                      .toLowerCase()
+                      .replace(/\s+/g, "-")}`}
+                  >
+                    <span className="flex items-center gap-2">
+                      <span>{countryName}</span>
+                      <span className="inline-flex items-center justify-center w-6 h-6 text-xs font-semibold rounded-full bg-white border border-gray-200 text-gray-700">
+                        {cities.length}
+                      </span>
+                    </span>
+                  </button>
+                ))}
+            </div>
           </div>
 
           {/* Budget Category Groups */}
@@ -435,14 +460,48 @@ export function ProgressiveResults({
 
             {/* Within Budget Section */}
             {citiesByBudgetAndCountry.within_budget && Object.keys(citiesByBudgetAndCountry.within_budget).length > 0 && (
-              <div className="space-y-6">
-                <div className="border-b-2 border-green-200 dark:border-green-800 pb-3">
-                  <h3 className="text-xl font-bold text-green-700 dark:text-green-400" data-testid="header-within-budget">
-                    Within Your Budget
-                  </h3>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    These destinations fit comfortably within your budget
-                  </p>
+              <div className="space-y-6" ref={withinSectionRef}>
+                <div className="bg-white rounded-lg border border-gray-200 p-6">
+                  <div className="flex items-center gap-4 mb-2">
+                      <div className="flex-1 flex items-center justify-between">
+                      <div className="flex items-center gap-4">
+                        <div className="flex items-center justify-center w-10 h-10 bg-green-500 rounded-lg">
+                          <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+                          </svg>
+                        </div>
+                        <div>
+                          <h3 className="text-xl font-bold text-gray-900" data-testid="header-within-budget">
+                            Within Your Budget ({Object.values(citiesByBudgetAndCountry.within_budget).reduce((sum, cities) => sum + cities.length, 0)} destinations)
+                          </h3>
+                          <p className="text-sm text-gray-600">
+                            These destinations fit comfortably within your budget
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="ml-4">
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm text-gray-600">Sort by:</span>
+                          <Select
+                            value={sortOption}
+                            onValueChange={(value) => setSortOption(value as any)}
+                            data-testid="select-progressive-sort"
+                          >
+                            <SelectTrigger className="h-8 w-[180px]">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="alphabetical" data-testid="option-alphabetical">A-Z (Alphabetical)</SelectItem>
+                              <SelectItem value="price-low-high" data-testid="option-price-low-high">Price: Low to High</SelectItem>
+                              <SelectItem value="confidence" data-testid="option-confidence">Confidence Level</SelectItem>
+                              <SelectItem value="region" data-testid="option-region">Region</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
                 
                 <div className="space-y-8">
@@ -542,14 +601,23 @@ export function ProgressiveResults({
 
             {/* Slightly Above Budget Section */}
             {citiesByBudgetAndCountry.slightly_above_budget && Object.keys(citiesByBudgetAndCountry.slightly_above_budget).length > 0 && (
-              <div className="space-y-6">
-                <div className="border-b-2 border-orange-200 dark:border-orange-800 pb-3">
-                  <h3 className="text-xl font-bold text-orange-700 dark:text-orange-400" data-testid="header-slightly-above-budget">
-                    Slightly Above Budget (5-10% over)
-                  </h3>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    These destinations are close to your budget but might require a small stretch
-                  </p>
+              <div className="space-y-6" ref={slightlySectionRef}>
+                <div className="bg-white rounded-lg border border-gray-200 p-6">
+                  <div className="flex items-center gap-4 mb-2">
+                    <div className="flex items-center justify-center w-10 h-10 bg-orange-500 rounded-lg">
+                      <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                      </svg>
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-bold text-gray-900" data-testid="header-slightly-above-budget">
+                        Slightly Above Budget ({Object.values(citiesByBudgetAndCountry.slightly_above_budget).reduce((sum, cities) => sum + cities.length, 0)} destinations, 5-10% over)
+                      </h3>
+                      <p className="text-sm text-gray-600">
+                        These destinations are close to your budget but might require a small stretch
+                      </p>
+                    </div>
+                  </div>
                 </div>
                 
                 <div className="space-y-8">

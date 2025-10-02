@@ -273,116 +273,124 @@ export function ResultsGrid({
   return (
     <div className="space-y-8" data-testid="results-grid">
       {/* Results Header */}
-      <div
-        className="flex justify-between items-center"
-        data-testid="results-header"
-      >
-        <div className="flex items-center space-x-4">
-          <h3
-            className="text-2xl font-semibold text-foreground"
-            data-testid="text-results-title"
-          >
-            Destinations within your budget
-          </h3>
-          <div className="flex items-center space-x-2">
-            <span className="text-sm text-muted-foreground">Sort by:</span>
-            <Select
-              value={sortOption}
-              onValueChange={onSortChange}
-              data-testid="select-sort-results"
-            >
-              <SelectTrigger className="w-[180px] h-8">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent data-testid="select-sort-content">
-                <SelectItem
-                  value="alphabetical"
-                  data-testid="option-alphabetical"
-                >
-                  A-Z (Alphabetical)
-                </SelectItem>
-                <SelectItem
-                  value="price-low-high"
-                  data-testid="option-price-low-high"
-                >
-                  Price: Low to High
-                </SelectItem>
-                <SelectItem value="confidence" data-testid="option-confidence">
-                  Confidence Level
-                </SelectItem>
-                <SelectItem value="region" data-testid="option-region">
-                  Region
-                </SelectItem>
-              </SelectContent>
-            </Select>
+      <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6" data-testid="results-header">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-4">
+            <div className="flex items-center justify-center w-10 h-10 bg-primary rounded-lg">
+              <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+              </svg>
+            </div>
+            <div>
+              <h3 className="text-xl font-bold text-gray-900" data-testid="text-results-title">
+                Destinations within your budget
+              </h3>
+              <p className="text-sm text-gray-600">Perfect matches for your travel plans</p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-gray-600">Sort by:</span>
+              <Select value={sortOption} onValueChange={onSortChange} data-testid="select-sort-results">
+                <SelectTrigger className="w-[180px] h-8">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent data-testid="select-sort-content">
+                  <SelectItem value="alphabetical" data-testid="option-alphabetical">A-Z (Alphabetical)</SelectItem>
+                  <SelectItem value="price-low-high" data-testid="option-price-low-high">Price: Low to High</SelectItem>
+                  <SelectItem value="confidence" data-testid="option-confidence">Confidence Level</SelectItem>
+                  <SelectItem value="region" data-testid="option-region">Region</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button
+                    className="text-sm text-gray-600 flex items-center hover:text-gray-900 transition-colors"
+                    data-testid="button-how-we-estimate"
+                  >
+                    <HelpCircle className="h-4 w-4 mr-1" />
+                    How we estimate
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent className="max-w-xs">
+                  <p className="text-sm">
+                    We use live flight prices from Amadeus and AI-powered hotel &amp; daily cost estimates from Claude. Look for data source indicators on each city to see what's live vs estimated.
+                  </p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </div>
         </div>
-        <div className="flex items-center space-x-4">
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <button
-                  className="text-sm text-muted-foreground flex items-center hover:text-foreground transition-colors"
-                  data-testid="button-how-we-estimate"
-                >
-                  <HelpCircle className="h-4 w-4 mr-1" />
-                  How we estimate
-                </button>
-              </TooltipTrigger>
-              <TooltipContent className="max-w-xs">
-                <p className="text-sm">
-                  We use live flight prices from Amadeus and AI-powered hotel &
-                  daily cost estimates from Claude. Look for data source
-                  indicators on each city to see what's live vs estimated.
-                </p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-          <span
-            className="text-sm font-medium text-foreground"
-            data-testid="text-results-count"
-          >
-            {pagination.total} destinations found (page {pagination.page} of{" "}
-            {pagination.totalPages})
-          </span>
+
+        {/* Results count integrated into header */}
+        <div className="flex items-center justify-center">
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/5 rounded-lg border border-primary/20">
+            <span className="text-sm font-medium text-primary" data-testid="text-results-count">
+              {pagination.total} destinations found
+            </span>
+            <span className="text-xs text-gray-500">
+              (page {pagination.page} of {pagination.totalPages})
+            </span>
+          </div>
         </div>
       </div>
 
-      {/* Country Filter Buttons (centered, more padding, no parentheses) */}
-      <div
-        className="flex flex-wrap justify-center gap-3 border-b border-border pb-6"
-        data-testid="country-filters"
-      >
-        <button
-          className={[
-            "px-5 py-2.5 rounded-md text-sm font-medium border border-border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40",
-            selectedCountries.length === 0
-              ? "bg-primary text-primary-foreground"
-              : "bg-secondary text-secondary-foreground hover:bg-secondary/80",
-          ].join(" ")}
-          onClick={() => setSelectedCountries([])}
-          data-testid="filter-all-countries"
-        >
-          All Countries {Object.keys(citiesByCountry).length}
-        </button>
+      {/* Country Filter Buttons */}
+      <div className="mb-8">
+        <div className="text-center mb-4">
+          <h4 className="text-sm font-medium text-gray-700">Filter by destination</h4>
+        </div>
+        
+        <div className="flex flex-wrap justify-center gap-2" data-testid="country-filters">
+          <button
+            className={[
+              "px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200",
+              "hover:scale-105 hover:shadow-sm active:scale-95",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50",
+              selectedCountries.length === 0
+                ? "bg-primary text-white shadow-sm"
+                : "bg-white text-gray-700 border border-gray-200 hover:border-primary/30",
+            ].join(" ")}
+            onClick={() => setSelectedCountries([])}
+            data-testid="filter-all-countries"
+          >
+            <span className="flex items-center gap-2">
+              <span>All Countries</span>
+              <span className="inline-flex items-center justify-center w-6 h-6 text-xs font-semibold rounded-full bg-white border border-gray-200 text-gray-700">
+                {Object.keys(citiesByCountry).length}
+              </span>
+            </span>
+          </button>
 
-        {Object.entries(citiesByCountry)
-          .sort(([a], [b]) => a.localeCompare(b))
-          .map(([countryName, cities]) => (
-            <button
-              key={countryName}
-              className={[
-                "px-5 py-2.5 rounded-md text-sm font-medium border border-border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40",
-                selectedCountries.includes(countryName)
-                  ? "bg-primary text-primary-foreground"
-                  : "bg-secondary text-secondary-foreground hover:bg-secondary/80",
-              ].join(" ")}
-              onClick={() => toggleCountryFilter(countryName)}
-              data-testid={`filter-country-${countryName.toLowerCase()}`}
-            >
-              {countryName} {cities.length}
-            </button>
-          ))}
+          {Object.entries(citiesByCountry)
+            .sort(([a], [b]) => a.localeCompare(b))
+            .map(([countryName, cities]) => (
+              <button
+                key={countryName}
+                className={[
+                  "px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200",
+                  "hover:scale-105 hover:shadow-sm active:scale-95",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50",
+                  selectedCountries.includes(countryName)
+                    ? "bg-primary text-white shadow-sm"
+                    : "bg-white text-gray-700 border border-gray-200 hover:border-primary/30",
+                ].join(" ")}
+                onClick={() => toggleCountryFilter(countryName)}
+                data-testid={`filter-country-${countryName.toLowerCase()}`}
+              >
+                <span className="flex items-center gap-2">
+                  <span>{countryName}</span>
+                  <span className="inline-flex items-center justify-center w-6 h-6 text-xs font-semibold rounded-full bg-white border border-gray-200 text-gray-700">
+                    {cities.length}
+                  </span>
+                </span>
+              </button>
+            ))}
+        </div>
       </div>
 
       {/* Country Groups */}

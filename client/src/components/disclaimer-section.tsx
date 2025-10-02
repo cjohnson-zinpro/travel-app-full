@@ -30,10 +30,10 @@ export function DisclaimerSection({
           </div>
           <div>
             <p className="mb-2" data-testid="text-disclaimer-sources">
-              <strong>Data sources:</strong> Flight data from Amadeus API, hotel & daily cost estimates from Claude AI with intelligent market analysis.
+              <strong>Data sources:</strong> Hotel & daily cost estimates from Claude AI with intelligent market analysis.
             </p>
             <p data-testid="text-disclaimer-updates">
-              Updates: Flights weekly, Hotels monthly, Daily costs quarterly.
+              Updates: Hotels monthly, Daily costs quarterly.
             </p>
           </div>
         </div>
