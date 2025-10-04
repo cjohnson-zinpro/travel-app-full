@@ -607,30 +607,31 @@ export class TravelApiService {
   private buildCountrySummaries(results: any[]): CountrySummary[] {
     const countryMap = new Map<
       string,
-      { cities: string[]; totals: number[] }
+      { cities: string[]; totalsP25: number[]; totalsP50: number[] }
     >();
 
     results.forEach((rec) => {
       if (!countryMap.has(rec.country)) {
-        countryMap.set(rec.country, { cities: [], totals: [] });
+        countryMap.set(rec.country, { cities: [], totalsP25: [], totalsP50: [] });
       }
 
       const countryData = countryMap.get(rec.country)!;
       countryData.cities.push(rec.city);
-      countryData.totals.push(rec.totals.p50);
+      countryData.totalsP25.push(rec.totals.p25); // Budget-focused totals
+      countryData.totalsP50.push(rec.totals.p50); // Mid-range totals
     });
 
     return Array.from(countryMap.entries())
       .map(([country, data]) => ({
         country,
         summaryP35: Math.round(
-          data.totals.reduce((sum, total) => sum + total, 0) /
-            data.totals.length,
-        ),
+          data.totalsP25.reduce((sum, total) => sum + total, 0) /
+            data.totalsP25.length,
+        ), // Budget-focused average using p25 values
         summaryP50: Math.round(
-          data.totals.reduce((sum, total) => sum + total, 0) /
-            data.totals.length,
-        ),
+          data.totalsP50.reduce((sum, total) => sum + total, 0) /
+            data.totalsP50.length,
+        ), // Mid-range average using p50 values
         cities: data.cities.sort(),
       }))
       .sort((a, b) => a.country.localeCompare(b.country));
@@ -707,30 +708,31 @@ export class TravelApiService {
     // Group by country and calculate summaries (sort countries alphabetically)
     const countryMap = new Map<
       string,
-      { cities: string[]; totals: number[] }
+      { cities: string[]; totalsP25: number[]; totalsP50: number[] }
     >();
 
     cappedRecommendations.forEach((rec) => {
       if (!countryMap.has(rec.country)) {
-        countryMap.set(rec.country, { cities: [], totals: [] });
+        countryMap.set(rec.country, { cities: [], totalsP25: [], totalsP50: [] });
       }
 
       const countryData = countryMap.get(rec.country)!;
       countryData.cities.push(rec.city);
-      countryData.totals.push(rec.totals.p50);
+      countryData.totalsP25.push(rec.totals.p25); // Budget-focused totals
+      countryData.totalsP50.push(rec.totals.p50); // Mid-range totals
     });
 
     const countries: CountrySummary[] = Array.from(countryMap.entries())
       .map(([country, data]) => ({
         country,
         summaryP35: Math.round(
-          data.totals.reduce((sum, total) => sum + total, 0) /
-            data.totals.length,
-        ), // Budget-focused summary (using same data for compatibility)
+          data.totalsP25.reduce((sum, total) => sum + total, 0) /
+            data.totalsP25.length,
+        ), // Budget-focused summary using p25 values
         summaryP50: Math.round(
-          data.totals.reduce((sum, total) => sum + total, 0) /
-            data.totals.length,
-        ),
+          data.totalsP50.reduce((sum, total) => sum + total, 0) /
+            data.totalsP50.length,
+        ), // Mid-range summary using p50 values
         cities: data.cities.sort(),
       }))
       .sort((a, b) => {
@@ -770,14 +772,10 @@ export class TravelApiService {
   private getCitiesFromAllowlists(params: TravelSearchParams): any[] {
     let targetCities: any[] = [];
 
-    if (params.region) {
-      // Get cities for specific region
-      const countries = getCountriesForRegion(params.region as any);
-      console.log(
-        `🗺️  Region '${params.region}' mapped to ${countries.length} countries: ${countries.join(", ")}`,
-      );
-
-      for (const countryCode of countries) {
+    // PRIORITY 1: If country is specified, only return cities from that country (regardless of region)
+    if (params.country) {
+      const countryCode = this.getCountryCodeFromName(params.country);
+      if (countryCode) {
         const citiesInCountry = this.getCitiesForCountry(countryCode);
         targetCities.push(
           ...citiesInCountry.map((city) => ({
@@ -791,11 +789,18 @@ export class TravelApiService {
             subType: "city",
           })),
         );
+        console.log(
+          `🏙️  Country-specific search: Found ${citiesInCountry.length} cities in ${params.country} (${countryCode})`,
+        );
       }
-    } else if (params.country) {
-      // Get cities for specific country
-      const countryCode = this.getCountryCodeFromName(params.country);
-      if (countryCode) {
+    } else if (params.region) {
+      // PRIORITY 2: If only region specified, get cities for entire region
+      const countries = getCountriesForRegion(params.region as any);
+      console.log(
+        `🗺️  Region '${params.region}' mapped to ${countries.length} countries: ${countries.join(", ")}`,
+      );
+
+      for (const countryCode of countries) {
         const citiesInCountry = this.getCitiesForCountry(countryCode);
         targetCities.push(
           ...citiesInCountry.map((city) => ({
@@ -892,8 +897,10 @@ export class TravelApiService {
     try {
       // Step 1: Get curated cities from allowlists (no API calls needed)
       const targetCities = this.getCitiesFromAllowlists(params);
+      const searchType = params.country ? `country: ${params.country}` : 
+                        params.region ? `region: ${params.region}` : "global";
       console.log(
-        `🏙️  Allowlist selection: ${targetCities.length} major cities selected from ${params.region || params.country || "global"} destinations`,
+        `🏙️  Allowlist selection: ${targetCities.length} major cities selected from ${searchType} destinations`,
       );
 
       if (targetCities.length === 0) {
@@ -925,8 +932,10 @@ export class TravelApiService {
     const recommendations: any[] = [];
     const baseDate = this.getSearchDate(params.month);
 
-    // PERFORMANCE: Limit cities to prevent long processing times
-    const maxCities = Math.min(cities.length, 16);
+  // PERFORMANCE: Limit cities to prevent long processing times
+  // If this is an explicit country search, process all allowlisted cities for that country
+  const isCountrySearch = Boolean(params && params.country);
+  const maxCities = isCountrySearch ? cities.length : Math.min(cities.length, 32);
     const limitedCities = cities.slice(0, maxCities);
     console.log(
       `🚀 Performance optimization: Processing ${limitedCities.length} of ${cities.length} cities for faster response`,

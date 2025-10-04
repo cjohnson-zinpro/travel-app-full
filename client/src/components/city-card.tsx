@@ -1,7 +1,7 @@
 // components/city-card.tsx  (Frontend bundle: project_bundle_frontend.txt)
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Clock, Zap, Bot, Calculator, TrendingUp, TrendingDown, Minus } from "lucide-react";
+import { Clock, Zap, Bot, Calculator, TrendingUp, TrendingDown } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
@@ -242,42 +242,67 @@ export function CityCard({
   // Cost comparison logic using shared utility
   const getCostComparisonData = () => {
     if (!originAirport) return null;
-
+    
     const cityKey = city.city.toLowerCase().replace(/\s+/g, '-');
     const travelStyleKey = travelStyle === "mid" ? "midRange" : travelStyle;
-
+    
     try {
       const comparison = getCostComparison(cityKey, originAirport, travelStyleKey);
-      if (!comparison) return null;
-
+      if (!comparison) {
+        // Fall through to local fallback below
+        throw new Error('No shared comparison available');
+      }
+      
       const percentageDiff = comparison.overallComparison.percentageDifference;
-      const absPercent = Math.abs(percentageDiff);
+      const neutralThreshold = 5; // consider ~same when <5%
 
-      // New behavior:
-      // - If within 15% (inclusive) -> mark as 'about the same' and show neutral badge
-      // - If greater than 15% -> show more/less expensive badge
-      if (isNaN(absPercent)) return null;
+      return {
+        percentage: Math.abs(percentageDiff),
+        isMoreExpensive: percentageDiff > 0,
+        neutral: Math.abs(percentageDiff) < neutralThreshold,
+        comparisonCityName: comparison.homeCity.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())
+      } as const;
+    } catch (error) {
+      // Fallback: derive a comparison using a small local map of origin cities with style totals (10-night trip)
+      const airportToCityMap: Record<string, { city: string, country: string, pricing: { budget: number, mid: number, luxury: number } }> = {
+        PHX: { city: 'Phoenix', country: 'United States', pricing: { budget: 1200, mid: 1800, luxury: 3200 } },
+        LAX: { city: 'Los Angeles', country: 'United States', pricing: { budget: 1800, mid: 2800, luxury: 5000 } },
+        JFK: { city: 'New York', country: 'United States', pricing: { budget: 2200, mid: 3500, luxury: 6000 } },
+        ORD: { city: 'Chicago', country: 'United States', pricing: { budget: 1600, mid: 2400, luxury: 4200 } },
+        DFW: { city: 'Dallas', country: 'United States', pricing: { budget: 1400, mid: 2200, luxury: 3800 } },
+        SFO: { city: 'San Francisco', country: 'United States', pricing: { budget: 2000, mid: 3200, luxury: 5500 } },
+        YYZ: { city: 'Toronto', country: 'Canada', pricing: { budget: 1500, mid: 2300, luxury: 4000 } },
+        YVR: { city: 'Vancouver', country: 'Canada', pricing: { budget: 1600, mid: 2500, luxury: 4300 } },
+        LHR: { city: 'London', country: 'United Kingdom', pricing: { budget: 1800, mid: 2800, luxury: 5200 } },
+        CDG: { city: 'Paris', country: 'France', pricing: { budget: 1700, mid: 2600, luxury: 4800 } },
+        FRA: { city: 'Frankfurt', country: 'Germany', pricing: { budget: 1600, mid: 2400, luxury: 4400 } },
+        NRT: { city: 'Tokyo', country: 'Japan', pricing: { budget: 1900, mid: 3000, luxury: 5500 } },
+        SIN: { city: 'Singapore', country: 'Singapore', pricing: { budget: 1400, mid: 2200, luxury: 4000 } },
+        SYD: { city: 'Sydney', country: 'Australia', pricing: { budget: 1800, mid: 2800, luxury: 5000 } }
+      };
 
-      const comparisonCityName = comparison.homeCity.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-
-      if (absPercent <= 15) {
-        return {
-          percentage: absPercent,
-          isAboutSame: true,
-          comparisonCityName,
-        } as const;
+      const home = airportToCityMap[originAirport];
+      if (!home) {
+        console.warn('No fallback mapping for origin airport', originAirport);
+        return null;
       }
 
-      // Only show explicit more/less badges when difference is > 15%
+      // City cost excluding flights (align with UI default)
+      const cityCostNoFlight = (tierPricing.hotelPerNight + tierPricing.adjustedDaily) * (city.nights || 10);
+      const styleKey = travelStyle === 'mid' ? 'mid' : travelStyle;
+      const homeCostNoFlight = home.pricing[styleKey as 'budget' | 'mid' | 'luxury'];
+      if (!homeCostNoFlight || homeCostNoFlight <= 0) return null;
+
+      const diff = cityCostNoFlight - homeCostNoFlight;
+      const percentage = (diff / homeCostNoFlight) * 100;
+      const neutralThreshold = 5;
+
       return {
-        percentage: absPercent,
-        isMoreExpensive: percentageDiff > 0,
-        isAboutSame: false,
-        comparisonCityName,
-      };
-    } catch (error) {
-      console.warn('Cost comparison failed:', error);
-      return null;
+        percentage: Math.abs(percentage),
+        isMoreExpensive: percentage > 0,
+        neutral: Math.abs(percentage) < neutralThreshold,
+        comparisonCityName: home.city,
+      } as const;
     }
   };
 
@@ -287,44 +312,31 @@ export function CityCard({
   const CostComparisonIndicator = () => {
     if (!costComparison) return null;
 
-    const { percentage, isMoreExpensive, isAboutSame, comparisonCityName } = costComparison as any;
+    const { percentage, isMoreExpensive, comparisonCityName, neutral } = costComparison as {
+      percentage: number; isMoreExpensive: boolean; comparisonCityName: string; neutral?: boolean;
+    };
 
-    // If about the same, show a neutral badge
-    if (isAboutSame) {
-      return (
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <div className={`absolute bottom-3 right-3 flex items-center gap-1 rounded-full px-2 py-1 text-xs font-medium shadow-sm z-20 bg-gray-100 text-gray-800 border border-gray-200`}>
-                <Minus className="h-3 w-3" />
-                <span className="tabular-nums">≈{percentage.toFixed(0)}%</span>
-                <span className="text-[10px] opacity-75">vs {comparisonCityName.split(' ')[0]}</span>
-              </div>
-            </TooltipTrigger>
-            <TooltipContent className="max-w-xs">
-              <p className="text-xs">About the same cost as {comparisonCityName} (within 15%)</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      );
-    }
+    const baseClasses = "absolute bottom-3 right-3 flex items-center gap-1 rounded-full px-2 py-1 text-xs font-medium shadow-sm z-20 border";
+    const colorClasses = neutral
+      ? "bg-gray-100 text-gray-700 border-gray-200"
+      : isMoreExpensive
+        ? "bg-red-100 text-red-700 border-red-200"
+        : "bg-green-100 text-green-700 border-green-200";
 
     return (
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger asChild>
-            <div className={`absolute bottom-3 right-3 flex items-center gap-1 rounded-full px-2 py-1 text-xs font-medium shadow-sm z-20 ${
-              isMoreExpensive 
-                ? 'bg-red-100 text-red-700 border border-red-200' 
-                : 'bg-green-100 text-green-700 border border-green-200'
-            }`}>
-              {isMoreExpensive ? (
+            <div className={`${baseClasses} ${colorClasses}`}>
+              {neutral ? (
+                <span className="h-3 w-3 leading-none">≈</span>
+              ) : isMoreExpensive ? (
                 <TrendingUp className="h-3 w-3" />
               ) : (
                 <TrendingDown className="h-3 w-3" />
               )}
               <span className="tabular-nums">
-                {isMoreExpensive ? '+' : '-'}{percentage.toFixed(0)}%
+                {neutral ? '≈' : isMoreExpensive ? '+' : '-'}{percentage.toFixed(0)}%
               </span>
               <span className="text-[10px] opacity-75">
                 vs {comparisonCityName.split(' ')[0]}
@@ -333,7 +345,9 @@ export function CityCard({
           </TooltipTrigger>
           <TooltipContent className="max-w-xs">
             <p className="text-xs">
-              {isMoreExpensive ? 'More expensive' : 'Less expensive'} than {comparisonCityName}
+              {neutral
+                ? `About the same cost as ${comparisonCityName}`
+                : `${isMoreExpensive ? 'More expensive' : 'Less expensive'} than ${comparisonCityName}`}
             </p>
           </TooltipContent>
         </Tooltip>

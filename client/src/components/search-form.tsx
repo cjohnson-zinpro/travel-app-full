@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -16,7 +16,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Search } from "lucide-react";
 import { AirportAutocomplete } from "@/components/airport-autocomplete";
 import type { TravelSearchParams } from "@/types/travel";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 const searchFormSchema = z.object({
   budget: z
@@ -64,6 +64,7 @@ export function SearchForm({
   });
 
   const watchedRegion = watch("region");
+  const [availableCountries, setAvailableCountries] = useState<{ code: string; name: string }[]>([]);
 
   const months = [
     { value: "1", label: "January" },
@@ -98,6 +99,22 @@ export function SearchForm({
     { value: "21", label: "21 nights" },
     { value: "30", label: "30 nights" },
   ];
+
+  useEffect(() => {
+    // Populate available countries when region changes
+    const region = watchedRegion;
+    if (!region) {
+      setAvailableCountries([]);
+      return;
+    }
+
+    fetch(`/api/countries?region=${encodeURIComponent(region)}`)
+      .then((r) => (r.ok ? r.json() : Promise.resolve([])))
+      .then((data: { code: string; name: string }[]) => {
+        setAvailableCountries(Array.isArray(data) ? data : []);
+      })
+      .catch(() => setAvailableCountries([]));
+  }, [watchedRegion]);
 
   const onSubmit = (data: SearchFormData) => {
     const params: TravelSearchParams = {
@@ -241,85 +258,99 @@ export function SearchForm({
             <Label className="block text-sm font-medium text-foreground mb-3">
               Travel Style
             </Label>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-              <Popover>
-                <PopoverTrigger asChild>
-                  <div
-                    className={`flex items-center space-x-2 rounded-lg border p-4 cursor-pointer hover:bg-muted transition-colors ${
-                      watch("travelStyle") === "budget"
-                        ? "border-primary bg-primary/5"
-                        : ""
-                    }`}
-                    onClick={() => setValue("travelStyle", "budget")}
-                    data-testid="button-tier-budget"
-                  >
-                    <div className="space-y-1 flex-1">
-                      <div className="text-sm font-medium">Budget</div>
-                      <p className="text-xs text-muted-foreground">
-                        2-3★ stays, street food
-                      </p>
+            <TooltipProvider>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                {/* Budget */}
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <div
+                      role="button"
+                      tabIndex={0}
+                      onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && setValue('travelStyle', 'budget')}
+                      className={`flex items-center space-x-2 rounded-lg border p-4 cursor-pointer hover:bg-muted transition-colors ${
+                        watch("travelStyle") === "budget"
+                          ? "border-primary bg-primary/5"
+                          : ""
+                      }`}
+                      onClick={() => setValue("travelStyle", "budget")}
+                      data-testid="button-tier-budget"
+                    >
+                      <div className="space-y-1 flex-1">
+                        <div className="text-sm font-medium">Budget</div>
+                        <p className="text-xs text-muted-foreground">
+                          2-3★ stays, street food
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                </PopoverTrigger>
-                <PopoverContent>
-                  <div className="text-sm">
-                    Budget: Comfortable for budget-conscious travelers — lower-cost hotels (2–3★), mostly local dining/street food, and economical transport. Good for visitors who want a comfortable but value-minded trip.
-                  </div>
-                </PopoverContent>
-              </Popover>
+                  </TooltipTrigger>
+                  <TooltipContent className="max-w-xs">
+                    <p className="text-xs">
+                      Budget Travel: Hostels or basic hotels, local transport, street food, and free/low-cost activities.
+                    </p>
+                  </TooltipContent>
+                </Tooltip>
 
-              <Popover>
-                <PopoverTrigger asChild>
-                  <div
-                    className={`flex items-center space-x-2 rounded-lg border p-4 cursor-pointer hover:bg-muted transition-colors ${
-                      watch("travelStyle") === "mid"
-                        ? "border-primary bg-primary/5"
-                        : ""
-                    }`}
-                    onClick={() => setValue("travelStyle", "mid")}
-                    data-testid="button-tier-mid"
-                  >
-                    <div className="space-y-1 flex-1">
-                      <div className="text-sm font-medium">Mid-range</div>
-                      <p className="text-xs text-muted-foreground">
-                        3–4★ hotels, mix dining
-                      </p>
+                {/* Mid-range */}
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <div
+                      role="button"
+                      tabIndex={0}
+                      onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && setValue('travelStyle', 'mid')}
+                      className={`flex items-center space-x-2 rounded-lg border p-4 cursor-pointer hover:bg-muted transition-colors ${
+                        watch("travelStyle") === "mid"
+                          ? "border-primary bg-primary/5"
+                          : ""
+                      }`}
+                      onClick={() => setValue("travelStyle", "mid")}
+                      data-testid="button-tier-mid"
+                    >
+                      <div className="space-y-1 flex-1">
+                        <div className="text-sm font-medium">Mid-range</div>
+                        <p className="text-xs text-muted-foreground">
+                          3★ hotels, mix dining
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                </PopoverTrigger>
-                <PopoverContent>
-                  <div className="text-sm">
-                    Mid-range: Comfortable 3–4★ hotels and a mix of casual and nicer dining options, with moderate transport. Some destinations in this range offer affordable 4★ properties, making it a good choice for travelers who want added comfort without premium prices.
-                  </div>
-                </PopoverContent>
-              </Popover>
+                  </TooltipTrigger>
+                  <TooltipContent className="max-w-xs">
+                    <p className="text-xs">
+                      Mid-Range Travel: 3-star hotels, mix of local and tourist transport, standard restaurants, typical attractions.
+                    </p>
+                  </TooltipContent>
+                </Tooltip>
 
-              <Popover>
-                <PopoverTrigger asChild>
-                  <div
-                    className={`flex items-center space-x-2 rounded-lg border p-4 cursor-pointer hover:bg-muted transition-colors ${
-                      watch("travelStyle") === "luxury"
-                        ? "border-primary bg-primary/5"
-                        : ""
-                    }`}
-                    onClick={() => setValue("travelStyle", "luxury")}
-                    data-testid="button-tier-luxury"
-                  >
-                    <div className="space-y-1 flex-1">
-                      <div className="text-sm font-medium">Luxury</div>
-                      <p className="text-xs text-muted-foreground">
-                        4-5★ hotels, fine dining
-                      </p>
+                {/* Luxury */}
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <div
+                      role="button"
+                      tabIndex={0}
+                      onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && setValue('travelStyle', 'luxury')}
+                      className={`flex items-center space-x-2 rounded-lg border p-4 cursor-pointer hover:bg-muted transition-colors ${
+                        watch("travelStyle") === "luxury"
+                          ? "border-primary bg-primary/5"
+                          : ""
+                      }`}
+                      onClick={() => setValue("travelStyle", "luxury")}
+                      data-testid="button-tier-luxury"
+                    >
+                      <div className="space-y-1 flex-1">
+                        <div className="text-sm font-medium">Luxury</div>
+                        <p className="text-xs text-muted-foreground">
+                          4-5★ hotels, fine dining
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                </PopoverTrigger>
-                <PopoverContent>
-                  <div className="text-sm">
-                    Luxury: High-end 4–5★ hotels, fine dining, premium experiences and upgraded transport. Higher nightly rates and daily expenses for premium comfort.
-                  </div>
-                </PopoverContent>
-              </Popover>
-            </div>
+                  </TooltipTrigger>
+                  <TooltipContent className="max-w-xs">
+                    <p className="text-xs">
+                      Luxury Travel: 4-5 star hotels, premium transport, fine dining, and curated experiences.
+                    </p>
+                  </TooltipContent>
+                </Tooltip>
+              </div>
+            </TooltipProvider>
           </div>
 
           {/* Third Row: Region and Search Button */}
@@ -358,8 +389,56 @@ export function SearchForm({
               </Select>
             </div>
 
-            {/* Empty space for alignment */}
-            <div></div>
+            {/* Country combo: datalist with free-input */}
+            <div>
+              <Label htmlFor="country-combo" className="block text-sm font-medium text-foreground mb-2">
+                Country
+                <span className="text-muted-foreground text-xs ml-1">(optional)</span>
+              </Label>
+              <div className="relative">
+                <input
+                  id="country-combo"
+                  list="country-options"
+                  className="w-full rounded-md border px-3 py-2 pr-10"
+                  placeholder={availableCountries.length ? "All countries in region (or select specific)" : "Type a country (or select a region first)"}
+                  value={watch("country") || ""}
+                  onChange={(e) => setValue("country", e.target.value || undefined)}
+                  onBlur={(e) => setValue("country", e.target.value || undefined)}
+                  data-testid="input-country-combo"
+                />
+                {watch("country") && (
+                  <button
+                    type="button"
+                    onClick={() => setValue("country", undefined)}
+                    className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 p-1"
+                    data-testid="button-clear-country"
+                    title="Clear country selection"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                )}
+              </div>
+              <datalist id="country-options">
+                <option value="">🌍 All countries in this region</option>
+                {availableCountries.map((c) => (
+                  <option key={c.code} value={c.name} />
+                ))}
+              </datalist>
+              {watch("country") && (
+                <p className="text-xs text-muted-foreground mt-1">
+                  Searching in: {watch("country")} only • <button 
+                    type="button" 
+                    onClick={() => setValue("country", undefined)}
+                    className="text-primary hover:underline"
+                    data-testid="link-show-all-countries"
+                  >
+                    Show all countries in region
+                  </button>
+                </p>
+              )}
+            </div>
 
             {/* Search Button */}
             <div>

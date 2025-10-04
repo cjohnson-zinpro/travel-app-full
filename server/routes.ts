@@ -10,6 +10,7 @@ import { travelSearchSchema } from "@shared/schema";
 import { ZodError } from "zod";
 import { claudeService } from "./services/claude-service";
 import { getCountriesForRegion } from "./data/regionCountries";
+import { RegionCountriesMap, CountryNames } from "./data/regionCountries";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Initialize cache service
@@ -536,6 +537,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
       countries: regionCountries,
       timestamp: new Date().toISOString(),
     });
+  });
+
+  // List countries for a region (used by client to populate country selector)
+  app.get("/api/countries", (req, res) => {
+    try {
+      const region = String(req.query.region || "").toLowerCase();
+
+      if (!region) {
+        // Return all countries (unique across regions)
+        const allCodes = Object.values(RegionCountriesMap).flat();
+        const unique = Array.from(new Set(allCodes));
+        const list = unique.map((code) => ({ code, name: CountryNames[code as keyof typeof CountryNames] || code }));
+        return res.json(list);
+      }
+
+      const codes = RegionCountriesMap[region as keyof typeof RegionCountriesMap] || [];
+      const list = codes.map((code) => ({ code, name: CountryNames[code as keyof typeof CountryNames] || code }));
+      return res.json(list);
+    } catch (error) {
+      console.error("Failed to get countries for region:", error);
+      return res.status(500).json({ message: "Failed to fetch countries" });
+    }
   });
 
   // Step 4: Claude AI Health Check (Protected)

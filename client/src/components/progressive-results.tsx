@@ -45,7 +45,9 @@ export function ProgressiveResults({
   travelStyle = "budget",
   userBudget = 0,
   originAirport,
-}: ProgressiveResultsProps & { travelStyle?: "budget" | "mid" | "luxury" }) {
+  autoScrollOnLoad = true,
+  scrollTarget = "filters",
+}: ProgressiveResultsProps & { travelStyle?: "budget" | "mid" | "luxury"; autoScrollOnLoad?: boolean; scrollTarget?: "filters" | "within" | "header" }) {
   const [displayedResults, setDisplayedResults] = useState<
     SharedCityRecommendation[]
   >([]);
@@ -121,6 +123,8 @@ export function ProgressiveResults({
   const isProcessingRef = useRef(false);
   const withinSectionRef = useRef<HTMLDivElement | null>(null);
   const slightlySectionRef = useRef<HTMLDivElement | null>(null);
+  const countryFiltersRef = useRef<HTMLDivElement | null>(null);
+  const hasAutoScrolledRef = useRef(false);
 
   // Progressively add new results to display with smooth timing and proper cleanup
   useEffect(() => {
@@ -169,8 +173,36 @@ export function ProgressiveResults({
       
       setDisplayedResults([]);
       setSelectedCountries([]);
+      // Allow auto-scroll again for the next search
+      hasAutoScrolledRef.current = false;
     }
   }, [status]);
+
+  // Auto-scroll when results render, using a robust in-component trigger
+  useEffect(() => {
+    if (!autoScrollOnLoad || hasAutoScrolledRef.current) return;
+    const active = status === "processing" || status === "completed";
+    if (!active) return;
+    if (displayedResults.length === 0) return;
+
+    // Choose target
+    let targetEl: HTMLElement | null = null;
+    if (scrollTarget === "filters") {
+      targetEl = countryFiltersRef.current || document.getElementById("progressive-country-filters-anchor");
+    } else if (scrollTarget === "within") {
+      targetEl = withinSectionRef.current;
+    } else if (scrollTarget === "header") {
+      targetEl = document.querySelector('[data-testid="progressive-results-header"]') as HTMLElement | null;
+    }
+
+    if (targetEl) {
+      // Use rAF to ensure layout is painted before scrolling
+      requestAnimationFrame(() => {
+        targetEl!.scrollIntoView({ behavior: "smooth", block: "start" });
+        hasAutoScrolledRef.current = true;
+      });
+    }
+  }, [autoScrollOnLoad, scrollTarget, status, displayedResults.length]);
 
   // Sort displayed results
   const sortedResults = [...displayedResults]
@@ -271,7 +303,14 @@ export function ProgressiveResults({
       {/* Progress Header */}
       <div className="mb-6">
         <div className="mb-4 flex items-center justify-between">
-          <div />
+          <h2
+            className="text-2xl font-semibold"
+            data-testid="text-progressive-title"
+          >
+            {status === "loading" && "Searching destinations..."}
+            {status === "processing" &&
+              `Found ${displayedResults.length} destinations`}
+          </h2>
 
           {status === "processing" && (
             <div className="text-sm text-muted-foreground progress-text-smooth">
@@ -304,7 +343,7 @@ export function ProgressiveResults({
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
                   </svg>
                 </div>
-                <h3 className="text-2xl font-bold text-gray-900" data-testid="text-progressive-title">
+                <h3 id="progressive-results-title" className="text-2xl font-bold text-gray-900" data-testid="text-progressive-title">
                   {status === "loading" && "Searching destinations..."}
                   {status === "processing" && `Found ${displayedResults.length} destinations`}
                   {status === "completed" && `${totalResults} destinations found`}
@@ -380,7 +419,7 @@ export function ProgressiveResults({
           </div>
 
           {/* Country Filter Buttons */}
-          <div className="mb-8">
+          <div id="progressive-country-filters-anchor" className="mb-8" ref={countryFiltersRef}>
             <div className="text-center mb-4">
               <h4 className="text-sm font-medium text-gray-700">Filter by destination</h4>
             </div>

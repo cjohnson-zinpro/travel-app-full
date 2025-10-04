@@ -1,5 +1,5 @@
 // client/src/pages/home.tsx
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { SearchForm } from "@/components/search-form";
 import { ResultsGrid } from "@/components/results-grid";
 import { useTravelSearch } from "@/hooks/use-travel-search";
@@ -22,6 +22,9 @@ export default function Home() {
     "alphabetical" | "price-low-high" | "confidence" | "region"
   >("price-low-high");
 
+  // Ref for scrolling to results section
+  const resultsRef = useRef<HTMLDivElement>(null);
+
   // Disable legacy search - using progressive search only
   const { data, isLoading, error } = useTravelSearch(null);
   const progressiveResults = useProgressiveSearch(searchParams);
@@ -31,6 +34,7 @@ export default function Home() {
     if (params.travelStyle) {
       setTravelStyle(params.travelStyle);
     }
+    // Scrolling is handled inside ProgressiveResults when it renders.
   };
 
   const handleCityClick = (city: CityRecommendation) => {
@@ -130,7 +134,7 @@ export default function Home() {
 
         {/* Progressive (streamed) */}
         {progressiveResults.status !== "idle" && (
-          <div className="mb-10">
+          <div className="mb-10" ref={resultsRef}>
             <ProgressiveResults
               results={progressiveResults.results}
               countries={progressiveResults.countries}
@@ -140,6 +144,8 @@ export default function Home() {
               travelStyle={travelStyle}
               userBudget={searchParams?.budget}
               originAirport={searchParams?.origin}
+              autoScrollOnLoad
+              scrollTarget="header"
             />
           </div>
         )}
