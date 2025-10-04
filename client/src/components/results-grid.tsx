@@ -30,6 +30,7 @@ import {
   Building,
   Coffee,
 } from "lucide-react";
+import { getFlagImageComponent } from "@/lib/flag-utils";
 
 interface ResultsGridProps {
   data: TravelRecommendationsResponse | null;
@@ -421,12 +422,42 @@ export function ResultsGrid({
               className="space-y-4"
               data-testid={`country-group-${countryName.toLowerCase()}`}
             >
-              <h4
-                className="text-lg font-semibold text-foreground border-b border-border pb-2"
-                data-testid={`text-country-${countryName.toLowerCase()}`}
-              >
-                {countryName} · {cities.length} cities
-              </h4>
+              <div
+                  className="w-full flex items-center justify-between gap-4 bg-primary/5 border border-primary/10 rounded-md px-4 py-2"
+                  data-testid={`text-country-${countryName.toLowerCase()}`}
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="flex-shrink-0">
+                      {getFlagImageComponent(countryName) ?? (
+                        <div className="w-6 h-4 bg-gray-200 rounded-sm" />
+                      )}
+                    </div>
+                    <div>
+                      <div className="text-sm font-semibold text-primary">
+                        {countryName}
+                      </div>
+                      <div className="text-xs text-muted-foreground -mt-0.5">
+                        {cities.length} cities
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    <div className="inline-flex items-center justify-center w-8 h-6 text-xs font-semibold rounded-full bg-white border border-primary/20 text-primary">
+                      {cities.length}
+                    </div>
+                    <button
+                      className={
+                        "text-sm text-primary/90 hover:text-primary transition px-2 py-1 rounded-md bg-white/0 border border-transparent hover:bg-white/50"
+                      }
+                      aria-label={`Toggle filter ${countryName}`}
+                      onClick={() => toggleCountryFilter(countryName)}
+                      data-testid={`button-filter-toggle-${countryName.toLowerCase()}`}
+                    >
+                      {selectedCountries.includes(countryName) ? "Show all" : "View"}
+                    </button>
+                  </div>
+                </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {cities.map((city) => (
