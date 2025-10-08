@@ -4,6 +4,7 @@ import { claudeService } from "./claude-service";
 import { flightService } from "./flight-service";
 import { claudeRateLimiter } from "./rate-limiter";
 import { ClaudeDailyCosts } from "@shared/data/claude-daily-costs";
+import { computeSafetyScore } from "../utils/safety-score";
 import {
   type TravelSearchParams,
   type TravelRecommendationsResponse,
@@ -477,6 +478,10 @@ export class TravelApiService {
             ? "within_budget"
             : "slightly_above_budget";
 
+        // Calculate safety score
+        const regionKey = this.getRegionFromCountry(city.address.countryName);
+        const safetyResult = computeSafetyScore(city.name, regionKey);
+
         const recommendation = {
           cityId: city.iataCode,
           city: city.name,
@@ -484,6 +489,9 @@ export class TravelApiService {
           region: this.getRegionFromCountry(city.address.countryName),
           nights: params.nights,
           budgetCategory,
+          safetyScore: safetyResult.safetyScore,
+          safetyLabel: safetyResult.safetyLabel,
+          safetyLastUpdated: safetyResult.lastUpdated.toISOString(),
           totals: {
             p25: Math.round(totalP25),
             p35: Math.round(totalP35),
@@ -1226,12 +1234,19 @@ export class TravelApiService {
           return;
         }
 
+        // Calculate safety score
+        const regionKey = this.getRegionFromCountry(city.address.countryName);
+        const safetyResult = computeSafetyScore(city.name, regionKey);
+
         const recommendation = {
           cityId: city.iataCode,
           city: city.name,
           country: city.address.countryName,
           region: this.getRegionFromCountry(city.address.countryName),
           nights: params.nights,
+          safetyScore: safetyResult.safetyScore,
+          safetyLabel: safetyResult.safetyLabel,
+          safetyLastUpdated: safetyResult.lastUpdated.toISOString(),
           totals: {
             p25: Math.round(totalP25),
             p35: Math.round(totalP35), // Budget-focused total

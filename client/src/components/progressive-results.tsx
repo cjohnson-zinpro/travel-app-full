@@ -20,7 +20,9 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { HelpCircle } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
+import { HelpCircle, ChevronDown, ChevronUp } from "lucide-react";
 
 interface ProgressiveResultsProps {
   results: SharedCityRecommendation[];
@@ -55,6 +57,7 @@ export function ProgressiveResults({
   const [sortOption, setSortOption] = useState<
     "alphabetical" | "price-low-high" | "confidence" | "region"
   >("price-low-high");
+  const [expandedCountries, setExpandedCountries] = useState<Set<string>>(new Set());
   
   // Modal state
   const [selectedCity, setSelectedCity] = useState<SharedCityRecommendation | null>(null);
@@ -117,6 +120,237 @@ export function ProgressiveResults({
   };
 
   const comparisonCity = getComparisonCity();
+
+  // Helper functions for enhanced country headers
+  const getCountryImage = (countryName: string) => {
+    const imageMap: Record<string, string> = {
+      // North America
+      "United States": "https://images.unsplash.com/photo-1485738422979-f5c462d49f74?w=400&h=200&fit=crop",
+      "Mexico": "https://images.unsplash.com/photo-1512813195386-6cf811ad3542?w=400&h=200&fit=crop",
+      "Canada": "https://images.unsplash.com/photo-1503614472-8c93d56cd040?w=400&h=200&fit=crop",
+      
+      // Europe - Western
+      "United Kingdom": "https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=400&h=200&fit=crop",
+      "France": "https://images.unsplash.com/photo-1502602898536-47ad22581b52?w=400&h=200&fit=crop",
+      "Germany": "https://images.unsplash.com/photo-1467269204594-9661b134dd2b?w=400&h=200&fit=crop",
+      "Italy": "https://images.unsplash.com/photo-1515542622106-78bda8ba0e5b?w=400&h=200&fit=crop",
+      "Spain": "https://images.unsplash.com/photo-1539037116277-4db20889f2d4?w=400&h=200&fit=crop",
+      "Netherlands": "https://images.unsplash.com/photo-1534351590666-13e3e96b5017?w=400&h=200&fit=crop",
+      "Switzerland": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=200&fit=crop",
+      "Austria": "https://images.unsplash.com/photo-1476209446441-5ad72f223207?w=400&h=200&fit=crop",
+      "Belgium": "https://images.unsplash.com/photo-1559564484-0b8a4aa3c6b5?w=400&h=200&fit=crop",
+      "Portugal": "https://images.unsplash.com/photo-1555881400-74d7acaacd8b?w=400&h=200&fit=crop",
+      "Ireland": "https://images.unsplash.com/photo-1590736969955-71cc94901144?w=400&h=200&fit=crop",
+      
+      // Europe - Nordic
+      "Norway": "https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=400&h=200&fit=crop",
+      "Sweden": "https://images.unsplash.com/photo-1509356843151-3e7d96241e11?w=400&h=200&fit=crop",
+      "Denmark": "https://images.unsplash.com/photo-1513622470522-26c3c8a854bc?w=400&h=200&fit=crop",
+      "Finland": "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=200&fit=crop",
+      "Iceland": "https://images.unsplash.com/photo-1539650116574-75c0c6d0f864?w=400&h=200&fit=crop",
+      
+      // Europe - Eastern
+      "Czech Republic": "https://images.unsplash.com/photo-1541849546-216549ae216d?w=400&h=200&fit=crop",
+      "Poland": "https://images.unsplash.com/photo-1578895101408-1a36b834405b?w=400&h=200&fit=crop",
+      "Hungary": "https://images.unsplash.com/photo-1541432901042-2d8bd64b4a9b?w=400&h=200&fit=crop",
+      "Croatia": "https://images.unsplash.com/photo-1555993539-1732b0258a95?w=400&h=200&fit=crop",
+      "Greece": "https://images.unsplash.com/photo-1613395877344-13d4a8e0d49e?w=400&h=200&fit=crop",
+      "Romania": "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=200&fit=crop",
+      "Bulgaria": "https://images.unsplash.com/photo-1578906536077-72bc8b8b79fb?w=400&h=200&fit=crop",
+      
+      // Asia - East
+      "Japan": "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=400&h=200&fit=crop",
+      "South Korea": "https://images.unsplash.com/photo-1517154421773-0529f29ea451?w=400&h=200&fit=crop",
+      "China": "https://images.unsplash.com/photo-1508804185872-d7badad00f7d?w=400&h=200&fit=crop",
+      "Taiwan": "https://images.unsplash.com/photo-1561731216-c3a4d99437d5?w=400&h=200&fit=crop",
+      "Hong Kong": "https://images.unsplash.com/photo-1536599018102-9f803c140fc1?w=400&h=200&fit=crop",
+      
+      // Asia - Southeast
+      "Thailand": "https://images.unsplash.com/photo-1552465011-b4e21bf6e79a?w=400&h=200&fit=crop",
+      "Singapore": "https://images.unsplash.com/photo-1525625293386-3f8f99389edd?w=400&h=200&fit=crop",
+      "Malaysia": "https://images.unsplash.com/photo-1596422846543-75c6fc197f07?w=400&h=200&fit=crop",
+      "Indonesia": "https://images.unsplash.com/photo-1537953773345-d172ccf13cf1?w=400&h=200&fit=crop",
+      "Philippines": "https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=400&h=200&fit=crop",
+      "Vietnam": "https://images.unsplash.com/photo-1559592413-7cec4d0d8fab?w=400&h=200&fit=crop",
+      "Cambodia": "https://images.unsplash.com/photo-1584274860174-10c01b8dd4d7?w=400&h=200&fit=crop",
+      "Laos": "https://images.unsplash.com/photo-1540611025311-01df3caf54f5?w=400&h=200&fit=crop",
+      "Myanmar": "https://images.unsplash.com/photo-1570366583862-f91883984fde?w=400&h=200&fit=crop",
+      
+      // Asia - South
+      "India": "https://images.unsplash.com/photo-1524492412937-b28074a5d7da?w=400&h=200&fit=crop",
+      "Nepal": "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=400&h=200&fit=crop",
+      "Sri Lanka": "https://images.unsplash.com/photo-1566552881560-0be862a7c445?w=400&h=200&fit=crop",
+      "Bangladesh": "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=200&fit=crop",
+      "Pakistan": "https://images.unsplash.com/photo-1571596206116-19e682d3fb85?w=400&h=200&fit=crop",
+      
+      // Middle East
+      "United Arab Emirates": "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=400&h=200&fit=crop",
+      "Turkey": "https://images.unsplash.com/photo-1524231757912-21f4fe3a7200?w=400&h=200&fit=crop",
+      "Israel": "https://images.unsplash.com/photo-1544966503-7cc5ac882d5f?w=400&h=200&fit=crop",
+      "Jordan": "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=200&fit=crop",
+      "Qatar": "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=200&fit=crop",
+      "Saudi Arabia": "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=200&fit=crop",
+      "Oman": "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=200&fit=crop",
+      
+      // Africa
+      "Egypt": "https://images.unsplash.com/photo-1539650116574-75c0c6d0f864?w=400&h=200&fit=crop",
+      "South Africa": "https://images.unsplash.com/photo-1484318571209-661cf29a69ea?w=400&h=200&fit=crop",
+      "Morocco": "https://images.unsplash.com/photo-1489749798305-4fea3ae436d3?w=400&h=200&fit=crop",
+      "Kenya": "https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?w=400&h=200&fit=crop",
+      "Tanzania": "https://images.unsplash.com/photo-1516652473400-1875bc1c148f?w=400&h=200&fit=crop",
+      "Ethiopia": "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=200&fit=crop",
+      "Ghana": "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=200&fit=crop",
+      "Nigeria": "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=200&fit=crop",
+      "Tunisia": "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=200&fit=crop",
+      
+      // Oceania
+      "Australia": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=200&fit=crop",
+      "New Zealand": "https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=400&h=200&fit=crop",
+      "Fiji": "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=200&fit=crop",
+      
+      // South America
+      "Brazil": "https://images.unsplash.com/photo-1483729558449-99ef09a8c325?w=400&h=200&fit=crop",
+      "Argentina": "https://images.unsplash.com/photo-1589909202802-8f4aadce1849?w=400&h=200&fit=crop",
+      "Chile": "https://images.unsplash.com/photo-1544966503-7cc5ac882d5f?w=400&h=200&fit=crop",
+      "Peru": "https://images.unsplash.com/photo-1587595431973-160d0d94add1?w=400&h=200&fit=crop",
+      "Colombia": "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=200&fit=crop",
+      "Ecuador": "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=200&fit=crop",
+      "Bolivia": "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=200&fit=crop",
+      "Uruguay": "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=200&fit=crop",
+      "Venezuela": "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=200&fit=crop",
+      
+      // Central America & Caribbean
+      "Costa Rica": "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=200&fit=crop",
+      "Panama": "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=200&fit=crop",
+      "Guatemala": "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=200&fit=crop",
+      "Jamaica": "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=200&fit=crop",
+      "Cuba": "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=200&fit=crop",
+      "Dominican Republic": "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=200&fit=crop",
+      "Barbados": "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=200&fit=crop",
+      
+      // Additional destinations
+      "Russia": "https://images.unsplash.com/photo-1547036967-23d11aacaee0?w=400&h=200&fit=crop",
+      "Kazakhstan": "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=200&fit=crop",
+      "Mongolia": "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=200&fit=crop",
+      "Uzbekistan": "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=200&fit=crop"
+    };
+    return imageMap[countryName] || null;
+  };
+
+  const getCountryDetails = (countryName: string) => {
+    const detailsMap: Record<string, { region: string; highlights: string }> = {
+      // North America
+      "United States": { region: "North America", highlights: "National Parks • Tech Hubs • Entertainment" },
+      "Mexico": { region: "North America", highlights: "Ancient Ruins • Beach Resorts • Vibrant Culture" },
+      "Canada": { region: "North America", highlights: "Natural Beauty • Multicultural Cities • Winter Sports" },
+      
+      // Europe - Western
+      "United Kingdom": { region: "Europe", highlights: "Historic Castles • Museums • Countryside" },
+      "France": { region: "Europe", highlights: "Art & Culture • Cuisine • Wine Regions" },
+      "Germany": { region: "Europe", highlights: "History • Beer Culture • Christmas Markets" },
+      "Italy": { region: "Europe", highlights: "Ancient Rome • Renaissance Art • Culinary Excellence" },
+      "Spain": { region: "Europe", highlights: "Architecture • Beaches • Flamenco Culture" },
+      "Netherlands": { region: "Europe", highlights: "Canals • Tulip Fields • Liberal Culture" },
+      "Switzerland": { region: "Europe", highlights: "Alpine Scenery • Luxury • Outdoor Adventures" },
+      "Austria": { region: "Europe", highlights: "Classical Music • Imperial Architecture • Skiing" },
+      "Belgium": { region: "Europe", highlights: "Medieval Cities • Chocolate • Beer Culture" },
+      "Portugal": { region: "Europe", highlights: "Coastal Beauty • Historic Tiles • Port Wine" },
+      "Ireland": { region: "Europe", highlights: "Green Landscapes • Celtic Culture • Friendly Locals" },
+      
+      // Europe - Nordic
+      "Norway": { region: "Northern Europe", highlights: "Fjords • Northern Lights • Viking Heritage" },
+      "Sweden": { region: "Northern Europe", highlights: "Design Culture • Archipelago • Midnight Sun" },
+      "Denmark": { region: "Northern Europe", highlights: "Hygge Culture • Design • Historic Castles" },
+      "Finland": { region: "Northern Europe", highlights: "Saunas • Lapland • Northern Lights" },
+      "Iceland": { region: "Northern Europe", highlights: "Geysers • Blue Lagoon • Dramatic Landscapes" },
+      
+      // Europe - Eastern
+      "Czech Republic": { region: "Central Europe", highlights: "Prague Architecture • Beer • Historic Towns" },
+      "Poland": { region: "Central Europe", highlights: "Medieval Cities • Pierogi • Rich History" },
+      "Hungary": { region: "Central Europe", highlights: "Thermal Baths • Architecture • Wine Regions" },
+      "Croatia": { region: "Southern Europe", highlights: "Adriatic Coast • National Parks • Game of Thrones" },
+      "Greece": { region: "Southern Europe", highlights: "Ancient History • Islands • Mediterranean Cuisine" },
+      "Romania": { region: "Eastern Europe", highlights: "Dracula's Castle • Painted Monasteries • Carpathian Mountains" },
+      "Bulgaria": { region: "Eastern Europe", highlights: "Rose Valley • Black Sea • Orthodox Monasteries" },
+      
+      // Asia - East
+      "Japan": { region: "East Asia", highlights: "Temples • Technology • Culinary Art" },
+      "South Korea": { region: "East Asia", highlights: "K-Culture • Technology • Historic Palaces" },
+      "China": { region: "East Asia", highlights: "Great Wall • Ancient Culture • Modern Cities" },
+      "Taiwan": { region: "East Asia", highlights: "Night Markets • Mountains • Technology" },
+      "Hong Kong": { region: "East Asia", highlights: "Skyline • Dim Sum • Shopping" },
+      
+      // Asia - Southeast
+      "Thailand": { region: "Southeast Asia", highlights: "Temples • Street Food • Tropical Beaches" },
+      "Singapore": { region: "Southeast Asia", highlights: "Garden City • Hawker Culture • Modern Architecture" },
+      "Malaysia": { region: "Southeast Asia", highlights: "Diverse Culture • Street Food • Twin Towers" },
+      "Indonesia": { region: "Southeast Asia", highlights: "Thousands of Islands • Temples • Volcanoes" },
+      "Philippines": { region: "Southeast Asia", highlights: "Tropical Islands • Rice Terraces • Friendly Culture" },
+      "Vietnam": { region: "Southeast Asia", highlights: "Pho • Motorbikes • Ha Long Bay" },
+      "Cambodia": { region: "Southeast Asia", highlights: "Angkor Wat • Khmer Culture • Mekong River" },
+      "Laos": { region: "Southeast Asia", highlights: "Buddhist Temples • Mekong River • Peaceful Culture" },
+      "Myanmar": { region: "Southeast Asia", highlights: "Golden Pagodas • Ancient Kingdoms • Traditional Culture" },
+      
+      // Asia - South
+      "India": { region: "South Asia", highlights: "Diverse Culture • Spices • Spiritual Heritage" },
+      "Nepal": { region: "South Asia", highlights: "Himalayas • Mount Everest • Buddhist Culture" },
+      "Sri Lanka": { region: "South Asia", highlights: "Tea Plantations • Beaches • Ancient Ruins" },
+      "Bangladesh": { region: "South Asia", highlights: "River Delta • Textiles • Rich Culture" },
+      "Pakistan": { region: "South Asia", highlights: "Mountain Ranges • Historic Cities • Hospitality" },
+      
+      // Middle East
+      "United Arab Emirates": { region: "Middle East", highlights: "Luxury • Desert • Modern Marvels" },
+      "Turkey": { region: "Europe/Asia", highlights: "Byzantine History • Bazaars • Hot Air Balloons" },
+      "Israel": { region: "Middle East", highlights: "Holy Sites • Ancient History • Mediterranean Coast" },
+      "Jordan": { region: "Middle East", highlights: "Petra • Desert Landscapes • Hospitality" },
+      "Qatar": { region: "Middle East", highlights: "Modern Architecture • Desert • Cultural Heritage" },
+      "Saudi Arabia": { region: "Middle East", highlights: "Islamic Heritage • Desert • Modern Development" },
+      "Oman": { region: "Middle East", highlights: "Dramatic Landscapes • Forts • Traditional Culture" },
+      
+      // Africa
+      "Egypt": { region: "Africa", highlights: "Ancient Pyramids • Nile River • Archaeological Wonders" },
+      "South Africa": { region: "Africa", highlights: "Safari • Wine • Rainbow Nation" },
+      "Morocco": { region: "Africa", highlights: "Souks • Sahara Desert • Islamic Architecture" },
+      "Kenya": { region: "Africa", highlights: "Safari • Maasai Culture • Great Migration" },
+      "Tanzania": { region: "Africa", highlights: "Serengeti • Mount Kilimanjaro • Wildlife" },
+      "Ethiopia": { region: "Africa", highlights: "Ancient Churches • Coffee Origin • Unique Calendar" },
+      "Ghana": { region: "Africa", highlights: "Gold Coast • Slave Forts • Vibrant Culture" },
+      "Nigeria": { region: "Africa", highlights: "Nollywood • Diverse Culture • Economic Hub" },
+      "Tunisia": { region: "Africa", highlights: "Roman Ruins • Sahara • Mediterranean Coast" },
+      
+      // Oceania
+      "Australia": { region: "Oceania", highlights: "Outback • Great Barrier Reef • Wildlife" },
+      "New Zealand": { region: "Oceania", highlights: "Lord of the Rings • Adventure Sports • Natural Beauty" },
+      "Fiji": { region: "Oceania", highlights: "Tropical Paradise • Coral Reefs • Island Culture" },
+      
+      // South America
+      "Brazil": { region: "South America", highlights: "Carnival • Amazon • Beach Culture" },
+      "Argentina": { region: "South America", highlights: "Tango • Wine • Patagonia" },
+      "Chile": { region: "South America", highlights: "Wine Country • Atacama Desert • Patagonia" },
+      "Peru": { region: "South America", highlights: "Machu Picchu • Inca Heritage • Cuisine" },
+      "Colombia": { region: "South America", highlights: "Coffee • Cartagena • Diverse Landscapes" },
+      "Ecuador": { region: "South America", highlights: "Galápagos • Andes • Amazon" },
+      "Bolivia": { region: "South America", highlights: "Salt Flats • Indigenous Culture • High Altitude" },
+      "Uruguay": { region: "South America", highlights: "Relaxed Culture • Beaches • Wine" },
+      "Venezuela": { region: "South America", highlights: "Angel Falls • Beaches • Diverse Landscapes" },
+      
+      // Central America & Caribbean
+      "Costa Rica": { region: "Central America", highlights: "Biodiversity • Eco-Tourism • Pura Vida" },
+      "Panama": { region: "Central America", highlights: "Canal • Rainforests • Caribbean & Pacific" },
+      "Guatemala": { region: "Central America", highlights: "Mayan Ruins • Volcanoes • Colonial Cities" },
+      "Jamaica": { region: "Caribbean", highlights: "Reggae • Beaches • Blue Mountains" },
+      "Cuba": { region: "Caribbean", highlights: "Classic Cars • Cigars • Colonial Architecture" },
+      "Dominican Republic": { region: "Caribbean", highlights: "Beaches • Merengue • Baseball" },
+      "Barbados": { region: "Caribbean", highlights: "Rum • Beaches • Cricket" },
+      
+      // Additional destinations
+      "Russia": { region: "Europe/Asia", highlights: "Trans-Siberian Railway • Red Square • Vast Landscapes" },
+      "Kazakhstan": { region: "Central Asia", highlights: "Steppes • Space Program • Nomadic Heritage" },
+      "Mongolia": { region: "East Asia", highlights: "Nomadic Culture • Gobi Desert • Horseback Adventures" },
+      "Uzbekistan": { region: "Central Asia", highlights: "Silk Road • Islamic Architecture • Ancient Cities" }
+    };
+    return detailsMap[countryName] || { region: "Global", highlights: "Unique Experiences • Local Culture" };
+  };
 
   // Track timeout IDs and prevent concurrency issues
   const timeoutIds = useRef<NodeJS.Timeout[]>([]);
@@ -278,6 +512,18 @@ export function ProgressiveResults({
         ? prev.filter((c) => c !== countryName)
         : [...prev, countryName],
     );
+  };
+
+  const toggleCountryAccordion = (countryName: string) => {
+    setExpandedCountries(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(countryName)) {
+        newSet.delete(countryName);
+      } else {
+        newSet.add(countryName);
+      }
+      return newSet;
+    });
   };
 
   const handleCityClick = (city: SharedCityRecommendation) => {
@@ -570,6 +816,7 @@ export function ProgressiveResults({
                     .map(([countryName, cities]) => {
                       const countrySummary = countries.find(c => c.country === countryName);
                       const avgPrice = countrySummary?.summaryP35 || 0;
+                      const isExpanded = expandedCountries.has(countryName);
 
                       return (
                         <div
@@ -577,60 +824,145 @@ export function ProgressiveResults({
                           className="space-y-4 country-group-enter"
                           data-testid={`group-within-budget-${countryName.toLowerCase().replace(/\s+/g, "-")}`}
                         >
-                          {/* Country Header */}
-                          <div className="bg-gradient-to-r from-secondary/50 to-secondary/20 rounded-lg p-4 border border-border/60 shadow-sm">
-                            <div className="flex items-center justify-between">
-                              <div className="flex items-center space-x-3">
-                                <div className="flex items-center justify-center w-7 h-7 bg-background rounded-full border-2 border-primary/20">
-                                  {getFlagImageComponent(countryName)}
-                                </div>
-                                <div>
-                                  <h4 className="text-lg font-bold text-foreground tracking-tight">
-                                    {countryName}
-                                  </h4>
-                                  <div className="text-sm text-muted-foreground font-medium">
-                                    {cities.length} destination{cities.length !== 1 ? "s" : ""}
-                                    {avgPrice > 0 && <span className="ml-2 text-primary font-semibold">Avg: ${avgPrice.toLocaleString()}</span>}
+                          {/* Country Header - Clickable Accordion */}
+                          <Card className="overflow-hidden">
+                            <div 
+                              className="cursor-pointer hover:bg-gray-50 transition-colors duration-200"
+                              onClick={() => toggleCountryAccordion(countryName)}
+                            >
+                              <CardContent className="p-0">
+                                <div className="flex items-stretch min-h-[140px]">
+                                  {/* Country Image with Flag Overlay */}
+                                  <div className="relative w-48 flex-shrink-0">
+                                    {getCountryImage(countryName) ? (
+                                      <>
+                                        <img
+                                          src={getCountryImage(countryName)!}
+                                          alt={`${countryName} landscape`}
+                                          className="w-full h-full object-cover rounded-l-lg"
+                                          onError={(e) => {
+                                            const target = e.target as HTMLImageElement;
+                                            target.style.display = 'none';
+                                            const fallback = target.nextElementSibling as HTMLElement;
+                                            if (fallback) fallback.classList.remove('hidden');
+                                          }}
+                                        />
+                                        {/* Flag overlay on image */}
+                                        <div className="absolute top-3 left-3 bg-white/90 backdrop-blur-sm rounded-full p-2 shadow-sm">
+                                          {getFlagImageComponent(countryName)}
+                                        </div>
+                                      </>
+                                    ) : null}
+                                    {/* Fallback gradient with flag */}
+                                    <div 
+                                      className={`absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-600 rounded-l-lg flex items-center justify-center ${getCountryImage(countryName) ? 'hidden' : ''}`}
+                                    >
+                                      <div className="text-4xl">
+                                        {getFlagImageComponent(countryName)}
+                                      </div>
+                                    </div>
+                                    {/* Overlay gradient for better text contrast */}
+                                    <div className="absolute inset-0 bg-gradient-to-r from-black/20 to-transparent rounded-l-lg"></div>
+                                  </div>
+
+                                  {/* Country Information */}
+                                  <div className="flex-1 p-6">
+                                    <div className="flex items-center justify-between">
+                                      <div className="flex-1">
+                                        <div className="flex items-center space-x-3 mb-2">
+                                          <h4 className="text-xl font-semibold text-foreground">
+                                            {countryName}
+                                          </h4>
+                                          <Badge variant="outline" className="text-xs">
+                                            {getCountryDetails(countryName).region}
+                                          </Badge>
+                                        </div>
+                                        
+                                        <div className="space-y-1 mb-3">
+                                          <p className="text-sm text-muted-foreground">
+                                            {cities.length} destination{cities.length !== 1 ? 's' : ''} • 
+                                            Avg: ${avgPrice.toLocaleString()}
+                                          </p>
+                                          <p className="text-sm text-blue-600 font-medium">
+                                            {getCountryDetails(countryName).highlights}
+                                          </p>
+                                        </div>
+
+                                        {/* Quick city preview */}
+                                        <div className="flex flex-wrap gap-1">
+                                          {cities.slice(0, 3).map((city) => (
+                                            <Badge key={city.city} variant="secondary" className="text-xs">
+                                              {city.city}
+                                            </Badge>
+                                          ))}
+                                          {cities.length > 3 && (
+                                            <Badge variant="secondary" className="text-xs">
+                                              +{cities.length - 3} more
+                                            </Badge>
+                                          )}
+                                        </div>
+                                      </div>
+                                      
+                                      <div className="flex items-center space-x-3 ml-4">
+                                        {/* Price range indicator */}
+                                        <div className="text-right">
+                                          <p className="text-xs text-muted-foreground">Price range</p>
+                                          <p className="text-sm font-semibold">
+                                            ${Math.min(...cities.map(c => c.totals?.p35 || 0)).toLocaleString()} - 
+                                            ${Math.max(...cities.map(c => c.totals?.p35 || 0)).toLocaleString()}
+                                          </p>
+                                        </div>
+                                        
+                                        {/* Expand/collapse icon */}
+                                        {isExpanded ? (
+                                          <ChevronUp className="h-5 w-5 text-muted-foreground" />
+                                        ) : (
+                                          <ChevronDown className="h-5 w-5 text-muted-foreground" />
+                                        )}
+                                      </div>
+                                    </div>
                                   </div>
                                 </div>
+                              </CardContent>
+                            </div>
+                          </Card>
+
+                          {/* Cities - Collapsible */}
+                          {isExpanded && (
+                            <div className="space-y-4">
+                              {/* Mobile Carousel */}
+                              <div className="block lg:hidden">
+                                <MobileCityCarousel
+                                  cities={cities as CityRecommendation[]}
+                                  onCityClick={handleCityClick}
+                                  travelStyle={travelStyle}
+                                  originAirport={originAirport}
+                                />
+                              </div>
+                              
+                              {/* Desktop Grid */}
+                              <div className="hidden lg:grid lg:grid-cols-3 gap-6 xl:gap-8 [grid-auto-rows:1fr]">
+                                {cities.map((city, index) => {
+                                  const uniqueKey = `within-${city.cityId || "unknown"}-${city.city || "unnamed"}-${index}`;
+                                  const delayClass = `city-card-delay-${Math.min(index + 1, 6)}`;
+                                  return (
+                                    <div
+                                      key={uniqueKey}
+                                      className={`city-card-enter ${delayClass}`}
+                                      style={{ opacity: 0 }}
+                                    >
+                                      <CityCard
+                                        city={city as CityRecommendation}
+                                        onClick={handleCityClick}
+                                        travelStyle={travelStyle}
+                                        originAirport={originAirport}
+                                      />
+                                    </div>
+                                  );
+                                })}
                               </div>
                             </div>
-                          </div>
-
-                          {/* Cities - Responsive Layout */}
-                          <div className="space-y-4">
-                            {/* Mobile Carousel */}
-                            <div className="block lg:hidden">
-                              <MobileCityCarousel
-                                cities={cities as CityRecommendation[]}
-                                onCityClick={handleCityClick}
-                                travelStyle={travelStyle}
-                                originAirport={originAirport}
-                              />
-                            </div>
-                            
-                            {/* Desktop Grid */}
-                            <div className="hidden lg:grid lg:grid-cols-3 gap-6 xl:gap-8 [grid-auto-rows:1fr]">
-                              {cities.map((city, index) => {
-                                const uniqueKey = `within-${city.cityId || "unknown"}-${city.city || "unnamed"}-${index}`;
-                                const delayClass = `city-card-delay-${Math.min(index + 1, 6)}`;
-                                return (
-                                  <div
-                                    key={uniqueKey}
-                                    className={`city-card-enter ${delayClass}`}
-                                    style={{ opacity: 0 }}
-                                  >
-                                    <CityCard
-                                      city={city as CityRecommendation}
-                                      onClick={handleCityClick}
-                                      travelStyle={travelStyle}
-                                      originAirport={originAirport}
-                                    />
-                                  </div>
-                                );
-                              })}
-                            </div>
-                          </div>
+                          )}
                         </div>
                       );
                     })}
@@ -686,6 +1018,7 @@ export function ProgressiveResults({
                     .map(([countryName, cities]) => {
                       const countrySummary = countries.find(c => c.country === countryName);
                       const avgPrice = countrySummary?.summaryP35 || 0;
+                      const isExpanded = expandedCountries.has(countryName);
 
                       return (
                         <div
@@ -693,60 +1026,145 @@ export function ProgressiveResults({
                           className="space-y-4 country-group-enter"
                           data-testid={`group-slightly-above-budget-${countryName.toLowerCase().replace(/\s+/g, "-")}`}
                         >
-                          {/* Country Header */}
-                          <div className="bg-gradient-to-r from-yellow-50/50 to-orange-50/30 rounded-lg p-4 border border-orange-200/60 shadow-sm">
-                            <div className="flex items-center justify-between">
-                              <div className="flex items-center space-x-3">
-                                <div className="flex items-center justify-center w-7 h-7 bg-background rounded-full border-2 border-orange-300/40">
-                                  {getFlagImageComponent(countryName)}
-                                </div>
-                                <div>
-                                  <h4 className="text-lg font-bold text-foreground tracking-tight">
-                                    {countryName}
-                                  </h4>
-                                  <div className="text-sm text-muted-foreground font-medium">
-                                    {cities.length} destination{cities.length !== 1 ? "s" : ""}
-                                    {avgPrice > 0 && <span className="ml-2 text-orange-600 font-semibold">Avg: ${avgPrice.toLocaleString()}</span>}
+                          {/* Country Header - Clickable Accordion */}
+                          <Card className="overflow-hidden">
+                            <div 
+                              className="cursor-pointer hover:bg-gray-50 transition-colors duration-200"
+                              onClick={() => toggleCountryAccordion(countryName)}
+                            >
+                              <CardContent className="p-0">
+                                <div className="flex items-stretch min-h-[140px]">
+                                  {/* Country Image with Flag Overlay */}
+                                  <div className="relative w-48 flex-shrink-0">
+                                    {getCountryImage(countryName) ? (
+                                      <>
+                                        <img
+                                          src={getCountryImage(countryName)!}
+                                          alt={`${countryName} landscape`}
+                                          className="w-full h-full object-cover rounded-l-lg"
+                                          onError={(e) => {
+                                            const target = e.target as HTMLImageElement;
+                                            target.style.display = 'none';
+                                            const fallback = target.nextElementSibling as HTMLElement;
+                                            if (fallback) fallback.classList.remove('hidden');
+                                          }}
+                                        />
+                                        {/* Flag overlay on image */}
+                                        <div className="absolute top-3 left-3 bg-white/90 backdrop-blur-sm rounded-full p-2 shadow-sm">
+                                          {getFlagImageComponent(countryName)}
+                                        </div>
+                                      </>
+                                    ) : null}
+                                    {/* Fallback gradient with flag */}
+                                    <div 
+                                      className={`absolute inset-0 bg-gradient-to-r from-orange-500 to-red-600 rounded-l-lg flex items-center justify-center ${getCountryImage(countryName) ? 'hidden' : ''}`}
+                                    >
+                                      <div className="text-3xl">
+                                        {getFlagImageComponent(countryName)}
+                                      </div>
+                                    </div>
+                                    {/* Overlay gradient for better text contrast */}
+                                    <div className="absolute inset-0 bg-gradient-to-r from-black/20 to-transparent rounded-l-lg"></div>
+                                  </div>
+
+                                  {/* Country Information */}
+                                  <div className="flex-1 p-6">
+                                    <div className="flex items-center justify-between">
+                                      <div className="flex-1">
+                                        <div className="flex items-center space-x-3 mb-2">
+                                          <h4 className="text-xl font-semibold text-foreground">
+                                            {countryName}
+                                          </h4>
+                                          <Badge variant="outline" className="text-xs">
+                                            {getCountryDetails(countryName).region}
+                                          </Badge>
+                                        </div>
+                                        
+                                        <div className="space-y-1 mb-3">
+                                          <p className="text-sm text-muted-foreground">
+                                            {cities.length} destination{cities.length !== 1 ? 's' : ''} • 
+                                            Avg: ${avgPrice.toLocaleString()}
+                                          </p>
+                                          <p className="text-sm text-orange-600 font-medium">
+                                            {getCountryDetails(countryName).highlights}
+                                          </p>
+                                        </div>
+
+                                        {/* Quick city preview */}
+                                        <div className="flex flex-wrap gap-1">
+                                          {cities.slice(0, 3).map((city) => (
+                                            <Badge key={city.city} variant="secondary" className="text-xs">
+                                              {city.city}
+                                            </Badge>
+                                          ))}
+                                          {cities.length > 3 && (
+                                            <Badge variant="secondary" className="text-xs">
+                                              +{cities.length - 3} more
+                                            </Badge>
+                                          )}
+                                        </div>
+                                      </div>
+                                      
+                                      <div className="flex items-center space-x-3 ml-4">
+                                        {/* Price range indicator */}
+                                        <div className="text-right">
+                                          <p className="text-xs text-muted-foreground">Price range</p>
+                                          <p className="text-sm font-semibold">
+                                            ${Math.min(...cities.map(c => c.totals?.p35 || 0)).toLocaleString()} - 
+                                            ${Math.max(...cities.map(c => c.totals?.p35 || 0)).toLocaleString()}
+                                          </p>
+                                        </div>
+                                        
+                                        {/* Expand/collapse icon */}
+                                        {isExpanded ? (
+                                          <ChevronUp className="h-5 w-5 text-muted-foreground" />
+                                        ) : (
+                                          <ChevronDown className="h-5 w-5 text-muted-foreground" />
+                                        )}
+                                      </div>
+                                    </div>
                                   </div>
                                 </div>
+                              </CardContent>
+                            </div>
+                          </Card>
+
+                          {/* Cities - Collapsible */}
+                          {isExpanded && (
+                            <div className="space-y-4">
+                              {/* Mobile Carousel */}
+                              <div className="block lg:hidden">
+                                <MobileCityCarousel
+                                  cities={cities as CityRecommendation[]}
+                                  onCityClick={handleCityClick}
+                                  travelStyle={travelStyle}
+                                  originAirport={originAirport}
+                                />
+                              </div>
+                              
+                              {/* Desktop Grid */}
+                              <div className="hidden lg:grid lg:grid-cols-3 gap-6 xl:gap-8 [grid-auto-rows:1fr]">
+                                {cities.map((city, index) => {
+                                  const uniqueKey = `above-${city.cityId || "unknown"}-${city.city || "unnamed"}-${index}`;
+                                  const delayClass = `city-card-delay-${Math.min(index + 1, 6)}`;
+                                  return (
+                                    <div
+                                      key={uniqueKey}
+                                      className={`city-card-enter ${delayClass}`}
+                                      style={{ opacity: 0 }}
+                                    >
+                                      <CityCard
+                                        city={city as CityRecommendation}
+                                        onClick={handleCityClick}
+                                        travelStyle={travelStyle}
+                                        originAirport={originAirport}
+                                      />
+                                    </div>
+                                  );
+                                })}
                               </div>
                             </div>
-                          </div>
-
-                          {/* Cities - Responsive Layout */}
-                          <div className="space-y-4">
-                            {/* Mobile Carousel */}
-                            <div className="block lg:hidden">
-                              <MobileCityCarousel
-                                cities={cities as CityRecommendation[]}
-                                onCityClick={handleCityClick}
-                                travelStyle={travelStyle}
-                                originAirport={originAirport}
-                              />
-                            </div>
-                            
-                            {/* Desktop Grid */}
-                            <div className="hidden lg:grid lg:grid-cols-3 gap-6 xl:gap-8 [grid-auto-rows:1fr]">
-                              {cities.map((city, index) => {
-                                const uniqueKey = `above-${city.cityId || "unknown"}-${city.city || "unnamed"}-${index}`;
-                                const delayClass = `city-card-delay-${Math.min(index + 1, 6)}`;
-                                return (
-                                  <div
-                                    key={uniqueKey}
-                                    className={`city-card-enter ${delayClass}`}
-                                    style={{ opacity: 0 }}
-                                  >
-                                    <CityCard
-                                      city={city as CityRecommendation}
-                                      onClick={handleCityClick}
-                                      travelStyle={travelStyle}
-                                      originAirport={originAirport}
-                                    />
-                                  </div>
-                                );
-                              })}
-                            </div>
-                          </div>
+                          )}
                         </div>
                       );
                     })}

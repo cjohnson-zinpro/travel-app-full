@@ -209,6 +209,9 @@ export type CityRecommendation = {
   region: string;
   nights?: number;
   budgetCategory?: "within_budget" | "slightly_above_budget";
+  safetyScore?: number; // 0-100 (higher = safer)
+  safetyLabel?: string; // "Low risk" | "Moderate" | "Take care"
+  safetyLastUpdated?: string; // ISO date string
   totals?: {
     p25: number;
     p35: number;

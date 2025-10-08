@@ -1,7 +1,7 @@
 // components/city-card.tsx  (Frontend bundle: project_bundle_frontend.txt)
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Clock, Zap, Bot, Calculator, TrendingUp, TrendingDown } from "lucide-react";
+import { Clock, Zap, Bot, Calculator, TrendingUp, TrendingDown, MapPin, Heart, Star } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
@@ -29,6 +29,23 @@ export function CityCard({
   // Feature flag to show/hide flight costs
   // In Vite, environment variables are accessed via import.meta.env
   const showFlightCosts = import.meta.env.VITE_SHOW_FLIGHT_COSTS === 'true';
+  
+  // Hero image mapping for cities (starting with New York for testing)
+  const getCityHeroImage = (cityName: string): string => {
+    const cityImages: Record<string, string> = {
+      "New York": "https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?w=800&h=400&fit=crop&crop=center&auto=format&q=80", // Manhattan skyline
+      "Los Angeles": "https://images.unsplash.com/photo-1544928147-79a2dbc1f389?w=800&h=400&fit=crop&crop=center&auto=format&q=80", // LA skyline
+      "Chicago": "https://images.unsplash.com/photo-1477414348463-c0eb7f1359b6?w=800&h=400&fit=crop&crop=center&auto=format&q=80", // Chicago skyline
+      "San Francisco": "https://images.unsplash.com/photo-1501594907352-04cda38ebc29?w=800&h=400&fit=crop&crop=center&auto=format&q=80", // Golden Gate Bridge
+      "Las Vegas": "https://images.unsplash.com/photo-1605833618194-68d17ca59405?w=800&h=400&fit=crop&crop=center&auto=format&q=80", // Vegas strip
+      "Miami": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=400&fit=crop&crop=center&auto=format&q=80", // Miami beach
+      // Add more cities as needed
+    };
+    
+    return cityImages[cityName] || "https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=800&h=400&fit=crop&crop=center&auto=format&q=80"; // Generic city fallback
+  };
+
+  // Removed budget status badges - will add comprehensive badges once other filtering criteria (activity level, etc.) are defined
   
   const accuracyClasses = {
     verified: "bg-green-100 text-green-800 border-green-200 hover:bg-green-200",
@@ -214,8 +231,6 @@ export function CityCard({
     };
   };
 
-  // Use backend-provided totals instead of recalculating
-  // Backend already handles travel style adjustments and Claude data integration
   const getDisplayTotal = (city: CityRecommendation, style: "budget" | "mid" | "luxury") => {
     // Use backend's calculated totals based on travel style
     if (city.totals) {
@@ -232,12 +247,6 @@ export function CityCard({
     const claudeCalculation = getClaudeDailyCosts(city, style);
     return claudeCalculation.total;
   };
-
-  const displayTotal = getDisplayTotal(city, travelStyle);
-  
-  // For breakdown display, use Claude calculation for hotel/daily breakdown
-  // since backend totals don't provide per-night breakdown in the right format
-  const tierPricing = getClaudeDailyCosts(city, travelStyle);
 
   // Cost comparison logic using shared utility
   const getCostComparisonData = () => {
@@ -288,7 +297,7 @@ export function CityCard({
       }
 
       // City cost excluding flights (align with UI default)
-      const cityCostNoFlight = (tierPricing.hotelPerNight + tierPricing.adjustedDaily) * (city.nights || 10);
+      const cityCostNoFlight = (getClaudeDailyCosts(city, travelStyle).hotelPerNight + getClaudeDailyCosts(city, travelStyle).adjustedDaily) * (city.nights || 10);
       const styleKey = travelStyle === 'mid' ? 'mid' : travelStyle;
       const homeCostNoFlight = home.pricing[styleKey as 'budget' | 'mid' | 'luxury'];
       if (!homeCostNoFlight || homeCostNoFlight <= 0) return null;
@@ -307,6 +316,9 @@ export function CityCard({
   };
 
   const costComparison = getCostComparisonData();
+  const displayTotal = getDisplayTotal(city, travelStyle);
+  const tierPricing = getClaudeDailyCosts(city, travelStyle);
+  const heroImage = getCityHeroImage(city.city);
 
   // Cost Comparison Indicator Component
   const CostComparisonIndicator = () => {
@@ -355,8 +367,7 @@ export function CityCard({
     );
   };
 
-  // Small internal component for the three mini boxes
-  // replace StatBox in components/city-card.tsx
+  // Enhanced StatBox component with better visual design
   const StatBox = ({
     label,
     tooltip,
@@ -373,10 +384,10 @@ export function CityCard({
         <TooltipTrigger asChild>
           <div
             role="button"
-            className={`min-h-[78px] rounded-lg border transition-colors hover:border-primary/40 flex flex-col items-center justify-center text-center p-3.5 ${
+            className={`min-h-[85px] rounded-lg border transition-all duration-200 hover:border-primary/40 hover:shadow-sm flex flex-col items-center justify-center text-center p-3.5 ${
               emphasized 
-                ? 'border-primary/30 bg-primary/5 hover:bg-primary/10' 
-                : 'border-border/60 bg-background'
+                ? 'border-primary/30 bg-gradient-to-br from-primary/5 to-primary/10 hover:from-primary/10 hover:to-primary/15 shadow-sm' 
+                : 'border-border/60 bg-background hover:bg-muted/30'
             }`}
           >
             <div className="flex items-center justify-center">
@@ -384,7 +395,7 @@ export function CityCard({
                 {label}
               </span>
             </div>
-            <div className="mt-1.5 text-base font-semibold leading-none tabular-nums">
+            <div className={`mt-2 text-lg font-bold leading-none tabular-nums ${emphasized ? 'text-primary' : 'text-foreground'}`}>
               {value}
             </div>
           </div>
@@ -398,102 +409,134 @@ export function CityCard({
 
   return (
     <Card
-      className="cursor-pointer rounded-xl border border-border bg-background shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md relative"
+      className="group cursor-pointer rounded-xl border border-border bg-background shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-lg relative overflow-hidden"
       onClick={() => onClick?.(city)}
       data-testid={`card-city-${city.cityId}`}
     >
-      <CostComparisonIndicator />
-      <CardContent className="p-5">
-        {/* TOP ROW — name + confidence; range pill wraps below on narrow widths */}
-        <div className="flex flex-wrap items-start justify-between gap-2">
-          <div className="min-w-0">
-            <h5
-              className="truncate text-base font-semibold text-foreground"
-              data-testid={`text-city-name-${city.cityId}`}
-              title={city.city}
-            >
-              {city.city}
-            </h5>
-            <p
-              className="truncate text-sm text-muted-foreground"
-              data-testid={`text-city-info-${city.cityId}`}
-              title={`${city.country} • ${city.region}`}
-            >
-              <span 
-                className="inline-block mr-1" 
-                data-country={city.country}
-                title={`Flag for ${city.country}`}
-              >
-                {getFlagImageComponent(city.country)}
-              </span>
-              {city.country} • {city.region}
-            </p>
-          </div>
-
-          <div className="flex w-full items-center justify-between gap-3 sm:w-auto">
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Badge
-                    variant="outline"
-                    className={`whitespace-nowrap border px-2 py-0.5 text-xs font-medium ${accuracyClasses[getAccuracyLevel(city)]}`}
-                    data-testid={`badge-accuracy-${city.cityId}`}
-                  >
-                    {(() => {
-                      const level = getAccuracyLevel(city);
-                      return level.charAt(0).toUpperCase() + level.slice(1);
-                    })()}
-                  </Badge>
-                </TooltipTrigger>
-                <TooltipContent className="max-w-xs">
-                  <p className="text-sm">
-                    {getAccuracyTooltip(getAccuracyLevel(city))}
-                  </p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Badge
-                    variant="secondary"
-                    className="whitespace-nowrap bg-muted text-muted-foreground cursor-help"
-                    data-testid={`text-total-range-${city.cityId}`}
-                  >
-                    {travelStyle.charAt(0).toUpperCase() + travelStyle.slice(1)}
-                  </Badge>
-                </TooltipTrigger>
-                <TooltipContent className="max-w-xs">
-                  <p className="text-xs">
-                    {travelStyle === "budget" 
-                      ? "Budget Travel: Hostels, local transport, street food, free activities - cost-conscious choices"
-                      : travelStyle === "mid"
-                      ? "Mid-Range Travel: 3-star hotels, mix of local/tourist transport, restaurants, standard attractions"
-                      : "Luxury Travel: 4-5 star hotels, premium transport, fine dining, exclusive experiences"
-                    }
-                  </p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
+      {/* Hero Image Section */}
+      <div className="relative h-48 overflow-hidden">
+        <img
+          src={heroImage}
+          alt={`${city.city} hero image`}
+          className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+          onError={(e) => {
+            // Fallback gradient if image fails to load
+            const target = e.target as HTMLImageElement;
+            target.style.display = 'none';
+            target.nextElementSibling?.classList.remove('hidden');
+          }}
+        />
+        <div className="hidden absolute inset-0 bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 opacity-80">
+          <div className="absolute inset-0 flex items-center justify-center">
+            <MapPin className="h-12 w-12 text-white" />
           </div>
         </div>
+        
+        {/* Overlay gradient for better text readability */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
+        
+        {/* Cost Comparison Indicator - positioned on image */}
+        <CostComparisonIndicator />
+        
+        {/* City Name Overlay */}
+        <div className="absolute bottom-0 left-0 right-0 p-4">
+          <h5
+            className="text-2xl font-bold text-white drop-shadow-lg"
+            data-testid={`text-city-name-${city.cityId}`}
+            title={city.city}
+          >
+            {city.city}
+          </h5>
+          <p
+            className="text-white/90 text-sm drop-shadow-md flex items-center"
+            data-testid={`text-city-info-${city.cityId}`}
+            title={`${city.country} • ${city.region}`}
+          >
+            <span 
+              className="inline-block mr-2" 
+              data-country={city.country}
+              title={`Flag for ${city.country}`}
+            >
+              {getFlagImageComponent(city.country)}
+            </span>
+            {city.country} • {city.region}
+          </p>
+        </div>
+      </div>
 
-        {/* PRICE CLUSTER */}
-        <div className="mt-3 flex items-baseline justify-between">
-          <span className="text-sm text-muted-foreground">
-            {showFlightCosts ? 'Trip Total' : 'Trip Total (no flights)'}
-          </span>
+      <CardContent className="p-5">
+        {/* TOP ROW — Accuracy and Travel Style Badges */}
+        <div className="flex items-center justify-between gap-3 mb-4">
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <span
-                  className="text-[26px] font-semibold leading-none text-foreground cursor-help flex items-baseline gap-1"
-                  data-testid={`text-total-${travelStyle}-${city.cityId}`}
+                <Badge
+                  variant="outline"
+                  className={`whitespace-nowrap border px-2 py-0.5 text-xs font-medium ${accuracyClasses[getAccuracyLevel(city)]}`}
+                  data-testid={`badge-accuracy-${city.cityId}`}
                 >
-                  <span className="text-lg text-muted-foreground">~</span>
-                  {formatCurrency(showFlightCosts ? displayTotal : (displayTotal - city.breakdown.flight))}
-                </span>
+                  {(() => {
+                    const level = getAccuracyLevel(city);
+                    return level.charAt(0).toUpperCase() + level.slice(1);
+                  })()}
+                </Badge>
+              </TooltipTrigger>
+              <TooltipContent className="max-w-xs">
+                <p className="text-sm">
+                  {getAccuracyTooltip(getAccuracyLevel(city))}
+                </p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Badge
+                  variant="secondary"
+                  className="whitespace-nowrap bg-muted text-muted-foreground cursor-help"
+                  data-testid={`text-total-range-${city.cityId}`}
+                >
+                  {travelStyle.charAt(0).toUpperCase() + travelStyle.slice(1)}
+                </Badge>
+              </TooltipTrigger>
+              <TooltipContent className="max-w-xs">
+                <p className="text-xs">
+                  {travelStyle === "budget" 
+                    ? "Budget Travel: Hostels, local transport, street food, free activities - cost-conscious choices"
+                    : travelStyle === "mid"
+                    ? "Mid-Range Travel: 3-star hotels, mix of local/tourist transport, restaurants, standard attractions"
+                    : "Luxury Travel: 4-5 star hotels, premium transport, fine dining, exclusive experiences"
+                  }
+                </p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </div>
+
+        {/* ENHANCED PRICE SECTION */}
+        <div className="bg-gradient-to-r from-primary/5 to-primary/10 rounded-lg p-4 mb-5">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-sm font-medium text-muted-foreground">
+              {showFlightCosts ? 'Trip Total' : 'Trip Total (no flights)'}
+            </span>
+            <div className="flex items-center gap-1">
+              <Heart className="h-4 w-4 text-primary/60" />
+              <span className="text-xs text-primary/80 font-medium">{city.nights} nights</span>
+            </div>
+          </div>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div className="cursor-help">
+                  <span className="text-3xl font-bold text-primary flex items-baseline gap-1">
+                    <span className="text-xl text-muted-foreground">~</span>
+                    {formatCurrency(showFlightCosts ? displayTotal : (displayTotal - city.breakdown.flight))}
+                  </span>
+                  <div className="text-xs text-muted-foreground mt-1">
+                    Estimated for {travelStyle === 'mid' ? 'mid-range' : travelStyle} travel
+                  </div>
+                </div>
               </TooltipTrigger>
               <TooltipContent className="max-w-xs">
                 <p className="text-xs">
@@ -504,9 +547,9 @@ export function CityCard({
           </TooltipProvider>
         </div>
 
-        {/* BREAKDOWN — cleaned up */}
+        {/* ENHANCED BREAKDOWN */}
         <div
-          className={`mt-5 gap-4 border-t border-border pt-5 ${showFlightCosts ? 'grid grid-cols-3' : 'grid grid-cols-2'}`}
+          className={`gap-3 ${showFlightCosts ? 'grid grid-cols-3' : 'grid grid-cols-2'}`}
           data-testid={`breakdown-${city.cityId}`}
         >
           {showFlightCosts && (
@@ -534,20 +577,24 @@ export function CityCard({
           />
         </div>
 
-        {/* Daily cost summary when flights are hidden */}
+        {/* Enhanced daily cost summary when flights are hidden */}
         {!showFlightCosts && (
-          <div className="mt-4 rounded-lg bg-primary/5 p-3 text-center">
-            <div className="text-lg font-semibold text-primary">
-              ${tierPricing.hotelPerNight + tierPricing.adjustedDaily}/day
+          <div className="mt-4 rounded-lg bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100 p-4 text-center">
+            <div className="flex items-center justify-center gap-2 mb-2">
+              <Star className="h-4 w-4 text-blue-600" />
+              <div className="text-xl font-bold text-blue-700">
+                ${tierPricing.hotelPerNight + tierPricing.adjustedDaily}/day
+              </div>
+              <Star className="h-4 w-4 text-blue-600" />
             </div>
-            <div className="text-xs text-muted-foreground">
+            <div className="text-xs text-blue-600 font-medium">
               Daily cost to stay here
             </div>
           </div>
         )}
 
         {/* FOOTER */}
-        <div className="mt-4 border-t border-border pt-4">
+        <div className="mt-5 border-t border-border pt-4">
           <p
             className="flex items-center text-xs text-muted-foreground"
             data-testid={`text-last-updated-${city.cityId}`}
