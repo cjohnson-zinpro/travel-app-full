@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect } from 'react';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -27,8 +27,6 @@ const InteractiveMap: React.FC<InteractiveMapProps> = ({
   className = "",
   height = "h-64"
 }) => {
-  const mapRef = useRef<L.Map | null>(null);
-
   // Default coordinates for major cities if not provided
   const defaultCoordinates: Record<string, { lat: number; lng: number }> = {
     tokyo: { lat: 35.6762, lng: 139.6503 },
@@ -79,7 +77,6 @@ const InteractiveMap: React.FC<InteractiveMapProps> = ({
         center={[coords.lat, coords.lng]}
         zoom={12}
         style={{ height: '100%', width: '100%' }}
-        ref={mapRef}
         zoomControl={true}
         scrollWheelZoom={false}
       >
