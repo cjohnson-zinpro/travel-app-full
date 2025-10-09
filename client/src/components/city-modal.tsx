@@ -2562,16 +2562,27 @@ export function CityModal({
           </p>
 
           {/* Trip Total and Budget Alignment */}
-          <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-primary/10 via-primary/5 to-secondary/10 border border-primary/20">
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent" />
-            <div className="relative p-6">
+          <div className="relative overflow-hidden rounded-xl h-48 border border-primary/20">
+            {/* Background Image */}
+            <div 
+              className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+              style={{
+                backgroundImage: `url(${cityData?.imageUrl || createCityPlaceholder(city.city)})`
+              }}
+            />
+            {/* Dark overlay for better text contrast */}
+            <div className="absolute inset-0 bg-black/50" />
+            {/* Gradient overlay for enhanced text readability */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
+            
+            <div className="relative h-full flex flex-col justify-center p-8">
               <div className="text-center mb-4">
-                <div className="flex items-center justify-center gap-2 mb-2">
-                  <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-                  <p className="text-sm font-medium text-primary">Estimated Trip Total</p>
-                  <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+                <div className="flex items-center justify-center gap-2 mb-3">
+                  <div className="w-2 h-2 rounded-full bg-white animate-pulse" />
+                  <p className="text-sm font-medium text-white/90 drop-shadow-lg">Estimated Trip Total</p>
+                  <div className="w-2 h-2 rounded-full bg-white animate-pulse" />
                 </div>
-                <p className="text-4xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent mb-2">
+                <p className="text-4xl font-bold text-white drop-shadow-lg mb-3">
                   {(() => {
                     const baseTotal = displayTotal;
                     const lowerBound = Math.round(baseTotal * 0.85); // 15% lower
@@ -2579,26 +2590,26 @@ export function CityModal({
                     return `${formatCurrency(lowerBound)} - ${formatCurrency(upperBound)}`;
                   })()} 
                 </p>
-                <div className="flex items-center justify-center gap-4 text-xs text-muted-foreground mb-3">
+                <div className="flex items-center justify-center gap-4 text-xs text-white/80 mb-4 drop-shadow">
                   <div className="flex items-center gap-1">
                     <Clock className="h-3 w-3" />
                     <span>{city.nights} nights</span>
                   </div>
-                  <div className="w-1 h-1 rounded-full bg-muted-foreground/50" />
+                  <div className="w-1 h-1 rounded-full bg-white/50" />
                   <div className="flex items-center gap-1">
                     <span className={`w-2 h-2 rounded-full ${
-                      travelStyle === "budget" ? "bg-green-500" :
-                      travelStyle === "mid" ? "bg-blue-500" : "bg-purple-500"
+                      travelStyle === "budget" ? "bg-green-400" :
+                      travelStyle === "mid" ? "bg-blue-400" : "bg-purple-400"
                     }`} />
                     <span className="capitalize">{travelStyle === "mid" ? "Mid-Range" : travelStyle} style</span>
                   </div>
-                  <div className="w-1 h-1 rounded-full bg-muted-foreground/50" />
+                  <div className="w-1 h-1 rounded-full bg-white/50" />
                   <span>Excludes flights</span>
                 </div>
               </div>
               <div className="flex justify-center">
-                <Badge className={`${budgetAlignment.color} border-0 shadow-md`}>
-                  <div className="flex items-center gap-1">
+                <Badge className={`${budgetAlignment.color} border-0 shadow-lg backdrop-blur-sm bg-white/10`}>
+                  <div className="flex items-center gap-1 text-white drop-shadow">
                     {budgetAlignment.icon && <budgetAlignment.icon className="h-3 w-3" />}
                     {getBudgetText(budgetAlignment.status)}
                   </div>
@@ -2622,27 +2633,11 @@ export function CityModal({
             {/* City Image and Quick Info */}
             <Card>
               <CardContent className="p-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {/* City Image */}
-                  <div className="relative">
-                    <img
-                      src={cityData?.imageUrl || createCityPlaceholder(city.city)}
-                      alt={`${getDisplayCityName(city.city)} cityscape`}
-                      className="w-full h-48 object-cover rounded-lg shadow-lg"
-                      onError={(e) => {
-                        const target = e.target as HTMLImageElement;
-                        target.src = createCityPlaceholder(city.city);
-                      }}
-                    />
-                    <div className="absolute bottom-2 left-2 bg-black/70 text-white px-3 py-1 rounded-lg text-sm font-medium">
-                      📍 {getDisplayCityName(city.city)}
-                    </div>
-                  </div>
-
-                  {/* Quick Summary Card */}
+                <div className="grid grid-cols-1 gap-6">
+                  {/* Quick Summary Card - Full Width */}
                   <div className="space-y-4">
                     <h3 className="text-lg font-semibold">Trip Summary</h3>
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                       <div className="text-center p-3 bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg">
                         <Clock className="h-5 w-5 mx-auto mb-1 text-blue-600" />
                         <p className="text-xs text-muted-foreground">Duration</p>
@@ -2917,18 +2912,18 @@ export function CityModal({
             {/* Enhanced Cost Breakdown Display with Examples */}
             {claudeData?.breakdown && (
               <div className="mb-6">
-                <h4 className="text-sm font-medium text-muted-foreground mb-3 text-center w-full">Daily Cost Categories</h4>
+                <h4 className="text-lg font-semibold text-foreground mb-3 text-center w-full">Daily Cost Categories</h4>
                 <div className="flex justify-center">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full max-w-2xl">
                   {/* Meals Category */}
-                  <div 
+                  <div
                     className="p-3 rounded-lg bg-green-50 border border-green-200 hover:bg-green-100 transition-colors cursor-help group relative w-full text-center"
                     title={claudeData.detailedBreakdown && claudeData.detailedBreakdown[travelStyle === "mid" ? "midRange" : travelStyle]?.meals?.examples ? 
                       `Examples: ${claudeData.detailedBreakdown[travelStyle === "mid" ? "midRange" : travelStyle].meals.examples.slice(0,2).join(', ')}...` : 
                       'Hover for local meal examples and tips'}
                   >
-                    <div className="flex items-center justify-center gap-2 mb-1">
-                      <svg className="w-5 h-5 text-green-700" fill="currentColor" viewBox="0 0 20 20">
+                    <div className="flex flex-col items-center justify-center mb-1 mx-auto">
+                      <svg className="w-5 h-5 text-green-700 mb-1" fill="currentColor" viewBox="0 0 20 20">
                         <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"/>
                       </svg>
                       <span className="font-medium text-green-800">Meals</span>
@@ -2968,8 +2963,8 @@ export function CityModal({
                       `Examples: ${claudeData.detailedBreakdown[travelStyle === "mid" ? "midRange" : travelStyle].transport.examples.slice(0,2).join(', ')}...` : 
                       'Hover for local transport options and tips'}
                   >
-                    <div className="flex items-center justify-center gap-2 mb-1">
-                      <svg className="w-5 h-5 text-blue-700" fill="currentColor" viewBox="0 0 20 20">
+                      <div className="flex flex-col items-center justify-center mb-1 mx-auto">
+                      <svg className="w-5 h-5 text-blue-700 mb-1" fill="currentColor" viewBox="0 0 20 20">
                         <path fillRule="evenodd" d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd"/>
                       </svg>
                       <span className="font-medium text-blue-800">Transport</span>
@@ -3009,8 +3004,8 @@ export function CityModal({
                       `Examples: ${claudeData.detailedBreakdown[travelStyle === "mid" ? "midRange" : travelStyle].activities.examples.slice(0,2).join(', ')}...` : 
                       'Hover for activity suggestions and tips'}
                   >
-                    <div className="flex items-center justify-center gap-2 mb-1">
-                      <svg className="w-5 h-5 text-purple-700" fill="currentColor" viewBox="0 0 20 20">
+                      <div className="flex flex-col items-center justify-center mb-1 mx-auto">
+                      <svg className="w-5 h-5 text-purple-700 mb-1" fill="currentColor" viewBox="0 0 20 20">
                         <path fillRule="evenodd" d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03zM12.12 15.12A3 3 0 017 13s.879.5 2.5.5c0-1 .5-4 1.25-4.5.5 1 .786 1.293 1.371 1.879A2.99 2.99 0 0113 13a2.99 2.99 0 01-.879 2.121z" clipRule="evenodd"/>
                       </svg>
                       <span className="font-medium text-purple-800">Activities</span>
@@ -3050,8 +3045,8 @@ export function CityModal({
                       `Examples: ${claudeData.detailedBreakdown[travelStyle === "mid" ? "midRange" : travelStyle].drinks.examples.slice(0,2).join(', ')}...` : 
                       'Hover for drink prices and nightlife tips'}
                   >
-                    <div className="flex items-center justify-center gap-2 mb-1">
-                      <svg className="w-5 h-5 text-orange-700" fill="currentColor" viewBox="0 0 20 20">
+                      <div className="flex flex-col items-center justify-center mb-1 mx-auto">
+                      <svg className="w-5 h-5 text-orange-700 mb-1" fill="currentColor" viewBox="0 0 20 20">
                         <path fillRule="evenodd" d="M6.672 1.911a1 1 0 10-1.932.518l.259.966a1 1 0 001.932-.518l-.26-.966zM2.429 4.74a1 1 0 10-.517 1.932l.966.259a1 1 0 00.517-1.932l-.966-.26zm8.814-.569a1 1 0 00-1.415-1.414l-.707.707a1 1 0 101.415 1.415l.707-.708zm-7.071 7.072l.707-.707A1 1 0 003.465 9.12l-.708.707a1 1 0 001.415 1.415zm3.2-5.171a4 4 0 00-4.136 6.081 1 1 0 001.481 1.341l5.927-5.927a1 1 0 00-1.341-1.481z" clipRule="evenodd"/>
                         <path d="M12.12 15.12A3 3 0 017 13s.879.5 2.5.5c0-1 .5-4 1.25-4.5.5 1 .786 1.293 1.371 1.879A2.99 2.99 0 0113 13a2.99 2.99 0 01-.879 2.121z"/>
                       </svg>
