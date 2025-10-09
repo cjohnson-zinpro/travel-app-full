@@ -11,6 +11,7 @@ import { getFlagImageComponent } from "@/lib/flag-utils";
 import { ClaudeDailyCosts } from "@shared/data/claude-daily-costs";
 import { CityModalSmartInsights } from "./city-modal-smart-insights";
 import { getCostComparison, getDisplayCityName, canCompareCosts, CostComparison } from "@shared/utils/cost-comparison";
+import InteractiveMap from "./interactive-map";
 
 // Utility function for formatting currency
 const formatCurrency = (amount: number) => `$${amount}`;
@@ -2771,22 +2772,32 @@ export function CityModal({
                   <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
                     🗺️ Explore the Area
                   </h3>
-                  <div className="relative">
-                    <div 
-                      className="w-full h-32 bg-gradient-to-br from-blue-100 to-green-100 rounded-lg flex items-center justify-center cursor-pointer hover:from-blue-200 hover:to-green-200 transition-all duration-200 group"
-                      onClick={() => openGoogleMaps(city.city)}
-                    >
-                      <div className="text-center">
-                        <MapPin className="h-8 w-8 mx-auto mb-2 text-blue-600 group-hover:scale-110 transition-transform" />
-                        <p className="text-sm font-medium text-gray-700">Click to open in Google Maps</p>
-                        <p className="text-xs text-gray-500 mt-1">Explore {getDisplayCityName(city.city)} interactively</p>
-                      </div>
+                  
+                  {/* Interactive Leaflet Map */}
+                  <div className="mb-4">
+                    <InteractiveMap 
+                      city={getDisplayCityName(city.city)}
+                      coordinates={city.coordinates}
+                      height="h-48"
+                      className="w-full"
+                    />
+                  </div>
+                  
+                  {/* Fallback to Google Maps */}
+                  <div 
+                    className="w-full h-12 bg-gradient-to-r from-blue-600 to-green-600 rounded-lg flex items-center justify-center cursor-pointer hover:from-blue-700 hover:to-green-700 transition-all duration-200 group"
+                    onClick={() => openGoogleMaps(city.city)}
+                  >
+                    <div className="text-center">
+                      <MapPin className="h-4 w-4 inline mr-2 text-white group-hover:scale-110 transition-transform" />
+                      <span className="text-sm font-medium text-white">Open in Google Maps</span>
                     </div>
                   </div>
+                  
                   <div className="mt-4 p-3 bg-blue-50 rounded-lg">
                     <p className="text-xs text-blue-700 font-medium mb-1">💡 Pro Tip</p>
                     <p className="text-xs text-blue-600">
-                      Save this location to your Google Maps for offline access during your trip
+                      Use the interactive map above to explore the area, or click "Open in Google Maps" for turn-by-turn navigation
                     </p>
                   </div>
                 </CardContent>
