@@ -30,7 +30,9 @@ export default function Home() {
   const progressiveResults = useProgressiveSearch(searchParams);
 
   const handleSearch = (params: TravelSearchParams) => {
-    setSearchParams(params);
+    // Override the budget with the slider value
+    const updatedParams = { ...params, budget: budget };
+    setSearchParams(updatedParams);
     if (params.travelStyle) {
       setTravelStyle(params.travelStyle);
     }
@@ -51,8 +53,47 @@ export default function Home() {
     sort: "alphabetical" | "price-low-high" | "confidence" | "region",
   ) => setSortOption(sort);
 
+  // Insert budget slider as the primary input for trip planning
+  const [budget, setBudget] = useState<number>(2000);
+  const handleBudgetChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setBudget(Number(e.target.value));
+  };
+
   return (
     <div className="min-h-screen bg-background" data-testid="home-page">
+      <style jsx>{`
+        .slider-thumb::-webkit-slider-thumb {
+          appearance: none;
+          height: 32px;
+          width: 32px;
+          border-radius: 50%;
+          background: #1d4ed8;
+          cursor: pointer;
+          box-shadow: 0 4px 12px rgba(29, 78, 216, 0.4), 0 2px 4px rgba(0, 0, 0, 0.1);
+          border: 3px solid white;
+          transition: all 0.2s ease;
+        }
+        .slider-thumb::-webkit-slider-thumb:hover {
+          transform: scale(1.15);
+          background: #1e40af;
+          box-shadow: 0 8px 24px rgba(29, 78, 216, 0.5), 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+        .slider-thumb::-moz-range-thumb {
+          height: 32px;
+          width: 32px;
+          border-radius: 50%;
+          background: #1d4ed8;
+          cursor: pointer;
+          box-shadow: 0 4px 12px rgba(29, 78, 216, 0.4), 0 2px 4px rgba(0, 0, 0, 0.1);
+          border: 3px solid white;
+          transition: all 0.2s ease;
+        }
+        .slider-thumb::-moz-range-thumb:hover {
+          transform: scale(1.15);
+          background: #1e40af;
+          box-shadow: 0 8px 24px rgba(29, 78, 216, 0.5), 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+      `}</style>
       {/* Header */}
       <header className="bg-card border-b border-border" data-testid="header">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -119,18 +160,51 @@ export default function Home() {
           </p>
         </div>
 
-        {/* Search Form */}
-        <div className="mb-8">
-          <SearchForm
-            onSearch={handleSearch}
-            isLoading={isLoading}
-            initialValues={{
-              budget: 3000,
-              origin: "PHX",
-              nights: 10,
-            }}
-          />
-        </div>
+        {/* Search Form with Prominent Budget Slider */}
+        <Card className="mb-8">
+          <CardContent className="p-6">
+            {/* Prominent budget slider section */}
+            <div className="mb-8">
+              <label
+                htmlFor="budget-slider"
+                className="block text-3xl font-bold mb-6 text-center bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent"
+              >
+                Budget: ${budget.toLocaleString()}
+              </label>
+              <div className="relative px-4">
+                <input
+                  id="budget-slider"
+                  type="range"
+                  min="250"
+                  max="8000"
+                  step="50"
+                  value={budget}
+                  onChange={handleBudgetChange}
+                  className="w-full h-6 bg-gray-400 rounded-full appearance-none cursor-pointer slider-thumb shadow-md"
+                  style={{
+                    background: `linear-gradient(to right, #3b82f6 0%, #3b82f6 ${((budget - 250) / (8000 - 250)) * 100}%, #9ca3af ${((budget - 250) / (8000 - 250)) * 100}%, #9ca3af 100%)`
+                  }}
+                />
+                <div className="flex justify-between text-sm font-medium text-muted-foreground mt-3 px-2">
+                  <span className="bg-muted px-3 py-1 rounded-full">$250</span>
+                  <span className="bg-muted px-3 py-1 rounded-full">$8,000+</span>
+                </div>
+              </div>
+            </div>
+            
+            {/* Other form fields */}
+            <SearchForm
+              onSearch={handleSearch}
+              isLoading={isLoading}
+              initialValues={{
+                budget: budget,
+                origin: "PHX",
+                nights: 10,
+              }}
+              key={budget} // Force re-render when budget changes
+            />
+          </CardContent>
+        </Card>
 
         {/* Progressive (streamed) */}
         {progressiveResults.status !== "idle" && (

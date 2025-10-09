@@ -1807,6 +1807,19 @@ function ResponsiveBreakdownDisplay({
     luxury: 'luxury'
   };
   
+  // Debug: Check if we have detailedBreakdown for this city
+  const hasDetailedBreakdown = !!claudeData?.detailedBreakdown;
+  const targetTier = styleMapping[travelStyle];
+  const tierExists = !!claudeData?.detailedBreakdown?.[targetTier];
+  
+  console.log(`[DEBUG] ResponsiveBreakdownDisplay for ${cityKey}:`, {
+    hasDetailedBreakdown,
+    targetTier,
+    tierExists,
+    categoryRequested: category,
+    travelStyle
+  });
+  
   const detailedBreakdown = claudeData?.detailedBreakdown?.[styleMapping[travelStyle]];
   const categoryData = detailedBreakdown?.[category];
   
@@ -1891,7 +1904,21 @@ function ResponsiveBreakdownDisplay({
   // Use real data if available, otherwise use fallback
   const displayData = categoryData || generateFallbackContent(category);
 
-  if (!categoryData || !categoryData.examples) {
+  // Debug logging to see if data is being accessed (remove after testing)
+  const shouldShowDetailed = categoryData && categoryData.examples;
+  
+  if (!shouldShowDetailed) {
+    console.log(`[DEBUG] ${cityKey} ${travelStyle} ${category}: Using fallback display`, {
+      categoryData: !!categoryData,
+      examples: !!categoryData?.examples,
+      detailedBreakdown: !!claudeData?.detailedBreakdown,
+      mappedStyle: styleMapping[travelStyle]
+    });
+  } else {
+    console.log(`[DEBUG] ${cityKey} ${travelStyle} ${category}: Using detailed display!`);
+  }
+
+  if (!shouldShowDetailed) {
     // Enhanced fallback for cities without detailed breakdown - simplified display
     if (isMobile) {
       return (
@@ -1899,8 +1926,8 @@ function ResponsiveBreakdownDisplay({
           <CollapsibleTrigger className="flex justify-between items-center w-full p-3 rounded-lg bg-muted/20 hover:bg-muted/30 transition-colors border border-muted/40">
             <div className="flex items-center gap-3">
               <span className="text-xl">{getCategoryIcon(category)}</span>
-              <div className="flex flex-col text-left">
-                <span className={`${colorClass.replace('text-', 'text-').replace('-800', '-700')} font-medium capitalize`}>
+              <div>
+                <span className="text-sm font-medium capitalize text-gray-700">
                   {category}
                 </span>
                 <span className="text-xs text-gray-500">{percentage}% of daily costs</span>
@@ -1926,7 +1953,7 @@ function ResponsiveBreakdownDisplay({
               </div>
               
               {displayData.tips && displayData.tips.length > 0 && (
-                <div className="pt-3 border-t border-gray-200">
+                <div>
                   <div className="font-medium text-sm text-blue-700 mb-2">💡 Money-Saving Tips:</div>
                   <div className="space-y-2 pl-4">
                     {displayData.tips.slice(0, 3).map((tip: string, index: number) => (
@@ -1951,7 +1978,6 @@ function ResponsiveBreakdownDisplay({
               <span className={`${colorClass.replace('text-', 'text-').replace('-800', '-700')} font-medium capitalize`}>
                 {category}
               </span>
-              <span className="text-xs text-gray-500">{percentage}% of daily costs</span>
             </div>
             <Tooltip>
               <TooltipTrigger asChild>
@@ -2001,6 +2027,7 @@ function ResponsiveBreakdownDisplay({
         </div>
       );
     }
+  }
   
   // For cities WITH detailed breakdown data - enhanced mobile and desktop
   if (isMobile) {
@@ -2113,7 +2140,6 @@ function ResponsiveBreakdownDisplay({
       </div>
     );
   }
-}
 }
 
 // Mobile-friendly expandable breakdown component
@@ -2442,7 +2468,7 @@ export function CityModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-md md:max-w-4xl lg:max-w-5xl xl:max-w-6xl max-h-[90vh] overflow-y-auto w-[95vw] md:w-auto">
+      <DialogContent className="w-[95vw] max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <button
             onClick={onClose}
@@ -2592,7 +2618,7 @@ export function CityModal({
           </TabsList>
 
           {/* Overview Tab */}
-          <TabsContent value="overview" className="space-y-4 mt-6">
+          <TabsContent value="overview" className="space-y-4 mt-6 min-h-[600px] w-full max-w-none">
             {/* City Image and Quick Info */}
             <Card>
               <CardContent className="p-6">
@@ -2820,7 +2846,7 @@ export function CityModal({
           </TabsContent>
 
           {/* Cost Breakdown Tab */}
-          <TabsContent value="costs" className="space-y-4 mt-6">
+          <TabsContent value="costs" className="space-y-4 mt-6 min-h-[600px] w-full max-w-none">
             <Card>
               <CardContent className="p-6">
             <h3 className="text-lg font-semibold mb-4">Cost Breakdown</h3>
@@ -2888,167 +2914,219 @@ export function CityModal({
               </div>
             )}
 
-            {/* Daily Living Costs */}
+            {/* Enhanced Cost Breakdown Display with Examples */}
             {claudeData?.breakdown && (
               <div className="mb-6">
-                <div className="flex items-center justify-between mb-4">
-                  <h4 className="text-sm font-medium text-muted-foreground">Daily Living Costs</h4>
-                  <div className={`px-3 py-1 rounded-full text-xs font-bold border-2 ${
-                    travelStyle === "budget" ? "bg-green-100 border-green-500 text-green-700" :
-                    travelStyle === "mid" ? "bg-blue-100 border-blue-500 text-blue-700" :
-                    "bg-purple-100 border-purple-500 text-purple-700"
-                  }`}>
-                    ✓ {travelStyle === "mid" ? "Mid-Range" : travelStyle.charAt(0).toUpperCase() + travelStyle.slice(1)} Style
+                <h4 className="text-sm font-medium text-muted-foreground mb-3 text-center w-full">Daily Cost Categories</h4>
+                <div className="flex justify-center">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full max-w-2xl">
+                  {/* Meals Category */}
+                  <div 
+                    className="p-3 rounded-lg bg-green-50 border border-green-200 hover:bg-green-100 transition-colors cursor-help group relative w-full text-center"
+                    title={claudeData.detailedBreakdown && claudeData.detailedBreakdown[travelStyle === "mid" ? "midRange" : travelStyle]?.meals?.examples ? 
+                      `Examples: ${claudeData.detailedBreakdown[travelStyle === "mid" ? "midRange" : travelStyle].meals.examples.slice(0,2).join(', ')}...` : 
+                      'Hover for local meal examples and tips'}
+                  >
+                    <div className="flex items-center justify-center gap-2 mb-1">
+                      <svg className="w-5 h-5 text-green-700" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"/>
+                      </svg>
+                      <span className="font-medium text-green-800">Meals</span>
+                    </div>
+                    <div className="text-lg font-bold text-green-900">
+                      {travelStyle === "budget" && claudeData.breakdown.budget ? formatCurrency(claudeData.breakdown.budget.meals) :
+                       travelStyle === "mid" && claudeData.breakdown.midRange ? formatCurrency(claudeData.breakdown.midRange.meals) :
+                       travelStyle === "luxury" && claudeData.breakdown.luxury ? formatCurrency(claudeData.breakdown.luxury.meals) : "$0"}
+                    </div>
+                    <div className="text-xs text-green-600">per day</div>
+                    
+                    {/* Hover tooltip for meals */}
+                    {claudeData.detailedBreakdown && claudeData.detailedBreakdown[travelStyle === "mid" ? "midRange" : travelStyle]?.meals && (
+                      <div className="absolute left-0 top-full mt-2 w-72 p-3 bg-white border border-gray-200 rounded-lg shadow-lg z-50 opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity">
+                        <h5 className="font-semibold text-green-800 mb-2">Meal Examples:</h5>
+                        <ul className="text-xs text-gray-700 mb-2 space-y-1">
+                          {claudeData.detailedBreakdown[travelStyle === "mid" ? "midRange" : travelStyle].meals.examples?.slice(0,3).map((example, i) => (
+                            <li key={i} className="flex items-start gap-1">
+                              <span className="text-green-600">•</span>
+                              <span>{example}</span>
+                            </li>
+                          ))}
+                        </ul>
+                        {claudeData.detailedBreakdown[travelStyle === "mid" ? "midRange" : travelStyle].meals.tips && (
+                          <p className="text-xs text-green-700 font-medium">
+                            💡 {claudeData.detailedBreakdown[travelStyle === "mid" ? "midRange" : travelStyle].meals.tips[0]}
+                          </p>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                  
+                  {/* Transport Category */}
+                  <div 
+                    className="p-3 rounded-lg bg-blue-50 border border-blue-200 hover:bg-blue-100 transition-colors cursor-help group relative w-full text-center"
+                    title={claudeData.detailedBreakdown && claudeData.detailedBreakdown[travelStyle === "mid" ? "midRange" : travelStyle]?.transport?.examples ? 
+                      `Examples: ${claudeData.detailedBreakdown[travelStyle === "mid" ? "midRange" : travelStyle].transport.examples.slice(0,2).join(', ')}...` : 
+                      'Hover for local transport options and tips'}
+                  >
+                    <div className="flex items-center justify-center gap-2 mb-1">
+                      <svg className="w-5 h-5 text-blue-700" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd"/>
+                      </svg>
+                      <span className="font-medium text-blue-800">Transport</span>
+                    </div>
+                    <div className="text-lg font-bold text-blue-900">
+                      {travelStyle === "budget" && claudeData.breakdown.budget ? formatCurrency(claudeData.breakdown.budget.transport) :
+                       travelStyle === "mid" && claudeData.breakdown.midRange ? formatCurrency(claudeData.breakdown.midRange.transport) :
+                       travelStyle === "luxury" && claudeData.breakdown.luxury ? formatCurrency(claudeData.breakdown.luxury.transport) : "$0"}
+                    </div>
+                    <div className="text-xs text-blue-600">per day</div>
+                    
+                    {/* Hover tooltip for transport */}
+                    {claudeData.detailedBreakdown && claudeData.detailedBreakdown[travelStyle === "mid" ? "midRange" : travelStyle]?.transport && (
+                      <div className="absolute left-0 top-full mt-2 w-72 p-3 bg-white border border-gray-200 rounded-lg shadow-lg z-50 opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity">
+                        <h5 className="font-semibold text-blue-800 mb-2">Transport Options:</h5>
+                        <ul className="text-xs text-gray-700 mb-2 space-y-1">
+                          {claudeData.detailedBreakdown[travelStyle === "mid" ? "midRange" : travelStyle].transport.examples?.slice(0,3).map((example, i) => (
+                            <li key={i} className="flex items-start gap-1">
+                              <span className="text-blue-600">•</span>
+                              <span>{example}</span>
+                            </li>
+                          ))}
+                        </ul>
+                        {claudeData.detailedBreakdown[travelStyle === "mid" ? "midRange" : travelStyle].transport.tips && (
+                          <p className="text-xs text-blue-700 font-medium">
+                            💡 {claudeData.detailedBreakdown[travelStyle === "mid" ? "midRange" : travelStyle].transport.tips[0]}
+                          </p>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                  
+                  {/* Activities Category */}
+                  <div 
+                    className="p-3 rounded-lg bg-purple-50 border border-purple-200 hover:bg-purple-100 transition-colors cursor-help group relative w-full text-center"
+                    title={claudeData.detailedBreakdown && claudeData.detailedBreakdown[travelStyle === "mid" ? "midRange" : travelStyle]?.activities?.examples ? 
+                      `Examples: ${claudeData.detailedBreakdown[travelStyle === "mid" ? "midRange" : travelStyle].activities.examples.slice(0,2).join(', ')}...` : 
+                      'Hover for activity suggestions and tips'}
+                  >
+                    <div className="flex items-center justify-center gap-2 mb-1">
+                      <svg className="w-5 h-5 text-purple-700" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03zM12.12 15.12A3 3 0 017 13s.879.5 2.5.5c0-1 .5-4 1.25-4.5.5 1 .786 1.293 1.371 1.879A2.99 2.99 0 0113 13a2.99 2.99 0 01-.879 2.121z" clipRule="evenodd"/>
+                      </svg>
+                      <span className="font-medium text-purple-800">Activities</span>
+                    </div>
+                    <div className="text-lg font-bold text-purple-900">
+                      {travelStyle === "budget" && claudeData.breakdown.budget ? formatCurrency(claudeData.breakdown.budget.activities) :
+                       travelStyle === "mid" && claudeData.breakdown.midRange ? formatCurrency(claudeData.breakdown.midRange.activities) :
+                       travelStyle === "luxury" && claudeData.breakdown.luxury ? formatCurrency(claudeData.breakdown.luxury.activities) : "$0"}
+                    </div>
+                    <div className="text-xs text-purple-600">per day</div>
+                    
+                    {/* Hover tooltip for activities */}
+                    {claudeData.detailedBreakdown && claudeData.detailedBreakdown[travelStyle === "mid" ? "midRange" : travelStyle]?.activities && (
+                      <div className="absolute left-0 top-full mt-2 w-72 p-3 bg-white border border-gray-200 rounded-lg shadow-lg z-50 opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity">
+                        <h5 className="font-semibold text-purple-800 mb-2">Activity Ideas:</h5>
+                        <ul className="text-xs text-gray-700 mb-2 space-y-1">
+                          {claudeData.detailedBreakdown[travelStyle === "mid" ? "midRange" : travelStyle].activities.examples?.slice(0,3).map((example, i) => (
+                            <li key={i} className="flex items-start gap-1">
+                              <span className="text-purple-600">•</span>
+                              <span>{example}</span>
+                            </li>
+                          ))}
+                        </ul>
+                        {claudeData.detailedBreakdown[travelStyle === "mid" ? "midRange" : travelStyle].activities.tips && (
+                          <p className="text-xs text-purple-700 font-medium">
+                            💡 {claudeData.detailedBreakdown[travelStyle === "mid" ? "midRange" : travelStyle].activities.tips[0]}
+                          </p>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                  
+                  {/* Drinks Category */}
+                  <div 
+                    className="p-3 rounded-lg bg-orange-50 border border-orange-200 hover:bg-orange-100 transition-colors cursor-help group relative w-full text-center"
+                    title={claudeData.detailedBreakdown && claudeData.detailedBreakdown[travelStyle === "mid" ? "midRange" : travelStyle]?.drinks?.examples ? 
+                      `Examples: ${claudeData.detailedBreakdown[travelStyle === "mid" ? "midRange" : travelStyle].drinks.examples.slice(0,2).join(', ')}...` : 
+                      'Hover for drink prices and nightlife tips'}
+                  >
+                    <div className="flex items-center justify-center gap-2 mb-1">
+                      <svg className="w-5 h-5 text-orange-700" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M6.672 1.911a1 1 0 10-1.932.518l.259.966a1 1 0 001.932-.518l-.26-.966zM2.429 4.74a1 1 0 10-.517 1.932l.966.259a1 1 0 00.517-1.932l-.966-.26zm8.814-.569a1 1 0 00-1.415-1.414l-.707.707a1 1 0 101.415 1.415l.707-.708zm-7.071 7.072l.707-.707A1 1 0 003.465 9.12l-.708.707a1 1 0 001.415 1.415zm3.2-5.171a4 4 0 00-4.136 6.081 1 1 0 001.481 1.341l5.927-5.927a1 1 0 00-1.341-1.481z" clipRule="evenodd"/>
+                        <path d="M12.12 15.12A3 3 0 017 13s.879.5 2.5.5c0-1 .5-4 1.25-4.5.5 1 .786 1.293 1.371 1.879A2.99 2.99 0 0113 13a2.99 2.99 0 01-.879 2.121z"/>
+                      </svg>
+                      <span className="font-medium text-orange-800">Drinks</span>
+                    </div>
+                    <div className="text-lg font-bold text-orange-900">
+                      {travelStyle === "budget" && claudeData.breakdown.budget ? formatCurrency(claudeData.breakdown.budget.drinks) :
+                       travelStyle === "mid" && claudeData.breakdown.midRange ? formatCurrency(claudeData.breakdown.midRange.drinks) :
+                       travelStyle === "luxury" && claudeData.breakdown.luxury ? formatCurrency(claudeData.breakdown.luxury.drinks) : "$0"}
+                    </div>
+                    <div className="text-xs text-orange-600">per day</div>
+                    
+                    {/* Hover tooltip for drinks */}
+                    {claudeData.detailedBreakdown && claudeData.detailedBreakdown[travelStyle === "mid" ? "midRange" : travelStyle]?.drinks && (
+                      <div className="absolute left-0 top-full mt-2 w-72 p-3 bg-white border border-gray-200 rounded-lg shadow-lg z-50 opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity">
+                        <h5 className="font-semibold text-orange-800 mb-2">Drink Options:</h5>
+                        <ul className="text-xs text-gray-700 mb-2 space-y-1">
+                          {claudeData.detailedBreakdown[travelStyle === "mid" ? "midRange" : travelStyle].drinks.examples?.slice(0,3).map((example, i) => (
+                            <li key={i} className="flex items-start gap-1">
+                              <span className="text-orange-600">•</span>
+                              <span>{example}</span>
+                            </li>
+                          ))}
+                        </ul>
+                        {claudeData.detailedBreakdown[travelStyle === "mid" ? "midRange" : travelStyle].drinks.tips && (
+                          <p className="text-xs text-orange-700 font-medium">
+                            💡 {claudeData.detailedBreakdown[travelStyle === "mid" ? "midRange" : travelStyle].drinks.tips[0]}
+                          </p>
+                        )}
+                      </div>
+                    )}
+                  </div>
                   </div>
                 </div>
-                
-                <div className={`p-4 rounded-lg border-2 shadow-lg ${
-                  travelStyle === "budget" ? "bg-green-50 border-green-300 ring-2 ring-green-100" :
-                  travelStyle === "mid" ? "bg-blue-50 border-blue-300 ring-2 ring-blue-100" :
-                  "bg-purple-50 border-purple-300 ring-2 ring-purple-100"
+              </div>
+            )}
+
+            {/* Daily Total Summary */}
+            {claudeData?.breakdown && (
+              <div className="mb-6">
+                <div className={`p-4 rounded-lg border-2 ${
+                  travelStyle === "budget" ? "bg-green-50 border-green-200" :
+                  travelStyle === "mid" ? "bg-blue-50 border-blue-200" :
+                  "bg-purple-50 border-purple-200"
                 }`}>
-                  <TooltipProvider>
-                    {travelStyle === "luxury" && claudeData.breakdown.luxury && (
-                    <div className="space-y-2">
-                      <ResponsiveBreakdownDisplay 
-                        category="meals" 
-                        amount={claudeData.breakdown.luxury.meals}
-                        claudeData={claudeData} 
-                        travelStyle="luxury" 
-                        cityKey={city.city}
-                        colorClass="text-purple-800"
-                      />
-                      <ResponsiveBreakdownDisplay 
-                        category="transport" 
-                        amount={claudeData.breakdown.luxury.transport}
-                        claudeData={claudeData} 
-                        travelStyle="luxury" 
-                        cityKey={city.city}
-                        colorClass="text-purple-800"
-                      />
-                      <ResponsiveBreakdownDisplay 
-                        category="activities" 
-                        amount={claudeData.breakdown.luxury.activities}
-                        claudeData={claudeData} 
-                        travelStyle="luxury" 
-                        cityKey={city.city}
-                        colorClass="text-purple-800"
-                      />
-                      <ResponsiveBreakdownDisplay 
-                        category="drinks" 
-                        amount={claudeData.breakdown.luxury.drinks}
-                        claudeData={claudeData} 
-                        travelStyle="luxury" 
-                        cityKey={city.city}
-                        colorClass="text-purple-800"
-                      />
-                    </div>
-                  )}
-                  {travelStyle === "mid" && claudeData.breakdown.midRange && (
-                    <div className="space-y-2">
-                      <ResponsiveBreakdownDisplay 
-                        category="meals" 
-                        amount={claudeData.breakdown.midRange.meals}
-                        claudeData={claudeData} 
-                        travelStyle="mid" 
-                        cityKey={city.city}
-                        colorClass="text-blue-800"
-                      />
-                      <ResponsiveBreakdownDisplay 
-                        category="transport" 
-                        amount={claudeData.breakdown.midRange.transport}
-                        claudeData={claudeData} 
-                        travelStyle="mid" 
-                        cityKey={city.city}
-                        colorClass="text-blue-800"
-                      />
-                      <ResponsiveBreakdownDisplay 
-                        category="activities" 
-                        amount={claudeData.breakdown.midRange.activities}
-                        claudeData={claudeData} 
-                        travelStyle="mid" 
-                        cityKey={city.city}
-                        colorClass="text-blue-800"
-                      />
-                      <ResponsiveBreakdownDisplay 
-                        category="drinks" 
-                        amount={claudeData.breakdown.midRange.drinks}
-                        claudeData={claudeData} 
-                        travelStyle="mid" 
-                        cityKey={city.city}
-                        colorClass="text-blue-800"
-                      />
-                    </div>
-                  )}
-                  {travelStyle === "budget" && claudeData.breakdown.budget && (
-                    <div className="space-y-2">
-                      <ResponsiveBreakdownDisplay 
-                        category="meals" 
-                        amount={claudeData.breakdown.budget.meals}
-                        claudeData={claudeData} 
-                        travelStyle="budget" 
-                        cityKey={city.city}
-                        colorClass="text-green-800"
-                      />
-                      <ResponsiveBreakdownDisplay 
-                        category="transport" 
-                        amount={claudeData.breakdown.budget.transport}
-                        claudeData={claudeData} 
-                        travelStyle="budget" 
-                        cityKey={city.city}
-                        colorClass="text-green-800"
-                      />
-                      <ResponsiveBreakdownDisplay 
-                        category="activities" 
-                        amount={claudeData.breakdown.budget.activities}
-                        claudeData={claudeData} 
-                        travelStyle="budget" 
-                        cityKey={city.city}
-                        colorClass="text-green-800"
-                      />
-                      <ResponsiveBreakdownDisplay 
-                        category="drinks" 
-                        amount={claudeData.breakdown.budget.drinks}
-                        claudeData={claudeData} 
-                        travelStyle="budget" 
-                        cityKey={city.city}
-                        colorClass="text-green-800"
-                      />
-                    </div>
-                  )}
-                  
-                  {/* Daily Total */}
-                  <div className={`mt-4 pt-3 border-t ${
-                    travelStyle === "budget" ? "border-green-300" :
-                    travelStyle === "mid" ? "border-blue-300" :
-                    "border-purple-300"
-                  }`}>
-                    <div className="flex justify-between font-bold text-base">
-                      <span className={
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className={`px-3 py-1 rounded-full text-xs font-bold ${
+                        travelStyle === "budget" ? "bg-green-100 text-green-700" :
+                        travelStyle === "mid" ? "bg-blue-100 text-blue-700" :
+                        "bg-purple-100 text-purple-700"
+                      }`}>
+                        ✓ {travelStyle === "mid" ? "Mid-Range" : travelStyle.charAt(0).toUpperCase() + travelStyle.slice(1)} Style
+                      </div>
+                      <span className={`text-sm font-medium ${
                         travelStyle === "budget" ? "text-green-700" :
                         travelStyle === "mid" ? "text-blue-700" :
                         "text-purple-700"
-                      }>Daily Total:</span>
-                      <span className={
-                        travelStyle === "budget" ? "text-green-800" :
-                        travelStyle === "mid" ? "text-blue-800" :
-                        "text-purple-800"
-                      }>
-                        {formatCurrency((() => {
-                          if (!claudeData?.breakdown) return city.breakdown?.dailyPerDay || 0;
-                          
-                          const breakdown = travelStyle === "luxury" ? claudeData.breakdown.luxury :
-                                          travelStyle === "mid" ? claudeData.breakdown.midRange :
-                                          claudeData.breakdown.budget;
-                          
-                          if (!breakdown) return city.breakdown?.dailyPerDay || 0;
-                          
-                          return breakdown.meals + breakdown.transport + breakdown.activities + breakdown.drinks;
-                        })())}
-                      </span>
+                      }`}>Daily Total:</span>
+                    </div>
+                    <div className={`text-xl font-bold ${
+                      travelStyle === "budget" ? "text-green-800" :
+                      travelStyle === "mid" ? "text-blue-800" :
+                      "text-purple-800"
+                    }`}>
+                      {formatCurrency((() => {
+                        const breakdown = travelStyle === "luxury" ? claudeData.breakdown.luxury :
+                                        travelStyle === "mid" ? claudeData.breakdown.midRange :
+                                        claudeData.breakdown.budget;
+                        
+                        if (!breakdown) return 0;
+                        return breakdown.meals + breakdown.transport + breakdown.activities + breakdown.drinks;
+                      })())}
                     </div>
                   </div>
-                  </TooltipProvider>
                 </div>
               </div>
             )}
@@ -3106,10 +3184,11 @@ export function CityModal({
                 </Card>
               );
             })()}
+
           </TabsContent>
 
           {/* Smart Insights Tab */}
-          <TabsContent value="insights" className="space-y-4 mt-6">
+          <TabsContent value="insights" className="space-y-4 mt-6 min-h-[600px] w-full max-w-none">
             <CityModalSmartInsights 
               city={city}
               travelStyle={travelStyle}
@@ -3119,7 +3198,7 @@ export function CityModal({
           </TabsContent>
 
           {/* Cultural Guide Tab */}
-          <TabsContent value="culture" className="space-y-4 mt-6">
+          <TabsContent value="culture" className="space-y-4 mt-6 min-h-[600px] w-full max-w-none">
             {(() => {
               const cultural = getCulturalInsights(city.city);
               

@@ -147,36 +147,7 @@ export function SearchForm({
           className="space-y-6"
         >
           {/* First Row: Basic Inputs */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
-            {/* Budget Input */}
-            <div>
-              <Label
-                htmlFor="budget"
-                className="block text-sm font-medium text-foreground mb-2"
-              >
-                Budget (USD)
-                <span className="text-destructive ml-1">*</span>
-              </Label>
-              <div className="relative">
-                <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground">
-                  $
-                </span>
-                <Input
-                  id="budget"
-                  type="number"
-                  placeholder="2000"
-                  className="pl-8"
-                  data-testid="input-budget"
-                  {...register("budget", { valueAsNumber: true })}
-                />
-              </div>
-              {errors.budget && (
-                <p className="text-destructive text-sm mt-1">
-                  {errors.budget.message}
-                </p>
-              )}
-            </div>
-
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
             {/* Origin */}
             <div>
               <Label

@@ -121,6 +121,30 @@ export function ProgressiveResults({
 
   const comparisonCity = getComparisonCity();
 
+  // Helper function to get the correct total based on travel style (same as CityCard)
+  const getCityTotal = (city: any, travelStyle: "budget" | "mid" | "luxury") => {
+    if (!city.totals) return 0;
+    let result = 0;
+    if (travelStyle === "luxury") result = city.totals.p75;
+    else if (travelStyle === "mid") result = city.totals.p50;
+    else result = city.totals.p25;
+    
+    // Debug logging for Panama
+    if (city.city === "Panama City") {
+      console.log(`🔍 Panama City data:`, {
+        city: city.city,
+        travelStyle,
+        totals: city.totals,
+        selectedValue: result,
+        p25: city.totals?.p25,
+        p50: city.totals?.p50,
+        p75: city.totals?.p75
+      });
+    }
+    
+    return result;
+  };
+
   // Helper functions for enhanced country headers
   const getCountryImage = (countryName: string) => {
     const imageMap: Record<string, string> = {
@@ -444,7 +468,7 @@ export function ProgressiveResults({
     .sort((a, b) => {
       switch (sortOption) {
         case "price-low-high":
-          return (a.totals?.p35 || 0) - (b.totals?.p35 || 0);
+          return getCityTotal(a, travelStyle) - getCityTotal(b, travelStyle);
         case "confidence":
           const confidenceOrder = { high: 3, medium: 2, low: 1 } as const;
           return (
@@ -569,6 +593,30 @@ export function ProgressiveResults({
           <Progress value={progress.percentage} className="w-full progress-smooth" />
         )}
       </div>
+
+      {/* Empty State Message */}
+      {status === "completed" && displayedResults.length === 0 && (
+        <div className="text-center py-12">
+          <div className="bg-gray-50 rounded-lg border border-gray-200 p-8 max-w-md mx-auto">
+            <div className="text-6xl mb-4">🌍</div>
+            <h3 className="text-xl font-semibold text-gray-900 mb-4">
+              No destinations found within your budget
+            </h3>
+            <p className="text-gray-600 mb-6">
+              Try increasing your budget, selecting a different region, or adjusting your travel style to see more options.
+            </p>
+            <div className="space-y-3">
+              <p className="text-sm font-medium text-gray-700">Suggestions:</p>
+              <ul className="text-sm text-gray-600 space-y-1">
+                <li>• Increase your budget by $500-1000</li>
+                <li>• Consider budget travel style instead of luxury</li>
+                <li>• Try a different region or remove country filters</li>
+                <li>• Reduce the number of nights for your trip</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Results Controls */}
       {displayedResults.length > 0 && (
@@ -801,7 +849,7 @@ export function ProgressiveResults({
 
                       switch (sortOption) {
                         case "price-low-high":
-                          return (bestCityA.totals?.p35 ?? Infinity) - (bestCityB.totals?.p35 ?? Infinity);
+                          return getCityTotal(bestCityA, travelStyle) - getCityTotal(bestCityB, travelStyle);
                         case "confidence":
                           const order = { high: 3, medium: 2, low: 1 } as const;
                           return (order[bestCityB.confidence] ?? 0) - (order[bestCityA.confidence] ?? 0);
@@ -815,7 +863,12 @@ export function ProgressiveResults({
                     })
                     .map(([countryName, cities]) => {
                       const countrySummary = countries.find(c => c.country === countryName);
-                      const avgPrice = countrySummary?.summaryP35 || 0;
+                      
+                      // Calculate average using same logic as CityCard
+                      const avgPrice = cities.length > 0 
+                        ? Math.round(cities.reduce((sum, city) => sum + getCityTotal(city, travelStyle), 0) / cities.length)
+                        : 0;
+                      
                       const isExpanded = expandedCountries.has(countryName);
 
                       return (
@@ -880,8 +933,7 @@ export function ProgressiveResults({
                                         
                                         <div className="space-y-1 mb-3">
                                           <p className="text-sm text-muted-foreground">
-                                            {cities.length} destination{cities.length !== 1 ? 's' : ''} • 
-                                            Avg: ${avgPrice.toLocaleString()}
+                                            {cities.length} destination{cities.length !== 1 ? 's' : ''}
                                           </p>
                                           <p className="text-sm text-blue-600 font-medium">
                                             {getCountryDetails(countryName).highlights}
@@ -904,15 +956,6 @@ export function ProgressiveResults({
                                       </div>
                                       
                                       <div className="flex items-center space-x-3 ml-4">
-                                        {/* Price range indicator */}
-                                        <div className="text-right">
-                                          <p className="text-xs text-muted-foreground">Price range</p>
-                                          <p className="text-sm font-semibold">
-                                            ${Math.min(...cities.map(c => c.totals?.p35 || 0)).toLocaleString()} - 
-                                            ${Math.max(...cities.map(c => c.totals?.p35 || 0)).toLocaleString()}
-                                          </p>
-                                        </div>
-                                        
                                         {/* Expand/collapse icon */}
                                         {isExpanded ? (
                                           <ChevronUp className="h-5 w-5 text-muted-foreground" />
@@ -1003,7 +1046,7 @@ export function ProgressiveResults({
 
                       switch (sortOption) {
                         case "price-low-high":
-                          return (bestCityA.totals?.p35 ?? Infinity) - (bestCityB.totals?.p35 ?? Infinity);
+                          return getCityTotal(bestCityA, travelStyle) - getCityTotal(bestCityB, travelStyle);
                         case "confidence":
                           const order = { high: 3, medium: 2, low: 1 } as const;
                           return (order[bestCityB.confidence] ?? 0) - (order[bestCityA.confidence] ?? 0);
@@ -1017,7 +1060,12 @@ export function ProgressiveResults({
                     })
                     .map(([countryName, cities]) => {
                       const countrySummary = countries.find(c => c.country === countryName);
-                      const avgPrice = countrySummary?.summaryP35 || 0;
+                      
+                      // Calculate average using same logic as CityCard
+                      const avgPrice = cities.length > 0 
+                        ? Math.round(cities.reduce((sum, city) => sum + getCityTotal(city, travelStyle), 0) / cities.length)
+                        : 0;
+                      
                       const isExpanded = expandedCountries.has(countryName);
 
                       return (
@@ -1082,8 +1130,7 @@ export function ProgressiveResults({
                                         
                                         <div className="space-y-1 mb-3">
                                           <p className="text-sm text-muted-foreground">
-                                            {cities.length} destination{cities.length !== 1 ? 's' : ''} • 
-                                            Avg: ${avgPrice.toLocaleString()}
+                                            {cities.length} destination{cities.length !== 1 ? 's' : ''}
                                           </p>
                                           <p className="text-sm text-orange-600 font-medium">
                                             {getCountryDetails(countryName).highlights}
@@ -1106,15 +1153,6 @@ export function ProgressiveResults({
                                       </div>
                                       
                                       <div className="flex items-center space-x-3 ml-4">
-                                        {/* Price range indicator */}
-                                        <div className="text-right">
-                                          <p className="text-xs text-muted-foreground">Price range</p>
-                                          <p className="text-sm font-semibold">
-                                            ${Math.min(...cities.map(c => c.totals?.p35 || 0)).toLocaleString()} - 
-                                            ${Math.max(...cities.map(c => c.totals?.p35 || 0)).toLocaleString()}
-                                          </p>
-                                        </div>
-                                        
                                         {/* Expand/collapse icon */}
                                         {isExpanded ? (
                                           <ChevronUp className="h-5 w-5 text-muted-foreground" />
@@ -1183,10 +1221,7 @@ export function ProgressiveResults({
 
                 switch (sortOption) {
                   case "price-low-high":
-                    return (
-                      (bestCityA.totals?.p35 ?? Infinity) -
-                      (bestCityB.totals?.p35 ?? Infinity)
-                    );
+                    return getCityTotal(bestCityA, travelStyle) - getCityTotal(bestCityB, travelStyle);
                   case "confidence":
                     const order = { high: 3, medium: 2, low: 1 } as const;
                     return (
@@ -1211,7 +1246,11 @@ export function ProgressiveResults({
                 const countrySummary = countries.find(
                   (c) => c.country === countryName,
                 );
-                const avgPrice = countrySummary?.summaryP35 || 0;
+                
+                // Calculate average using same logic as CityCard
+                const avgPrice = cities.length > 0 
+                  ? Math.round(cities.reduce((sum, city) => sum + getCityTotal(city, travelStyle), 0) / cities.length)
+                  : 0;
 
                 return (
                   <div
@@ -1239,7 +1278,6 @@ export function ProgressiveResults({
                             </h4>
                             <div className="text-sm text-muted-foreground font-medium">
                               {cities.length} destination{cities.length !== 1 ? "s" : ""}
-                              {avgPrice > 0 && <span className="ml-2 text-blue-600 font-semibold">Avg: ${avgPrice.toLocaleString()}</span>}
                             </div>
                           </div>
                         </div>

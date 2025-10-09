@@ -146,9 +146,11 @@ export function CityCard({
     style: "budget" | "mid" | "luxury",
   ) => {
     // Try to get costs from Claude database first
+    console.log(`🔍 Looking up Claude data for: "${city.city}" (${style})`);
     const claudeCosts = ClaudeDailyCosts.getDailyCosts(city.city);
     
     if (claudeCosts) {
+      console.log(`✅ Found Claude data for ${city.city}:`, claudeCosts);
       // Use accommodation costs if available (realistic hotel + Airbnb blended pricing)
       if (claudeCosts.accommodation) {
         const styleKey = style === "mid" ? "midRange" : style;
@@ -161,6 +163,17 @@ export function CityCard({
         // Calculate total (flights unchanged if available, or 0 if no flight data)
         const flightCost = city.breakdown?.flight || 0;
         const total = flightCost + city.nights * (hotelPerNight + adjustedDaily);
+        
+        // Debug logging
+        console.log(`🔍 ${city.city} Claude accommodation data (${style}):`, {
+          city: city.city,
+          style,
+          styleKey,
+          hotelPerNight,
+          adjustedDaily,
+          total,
+          source: 'claude-accommodation'
+        });
         
         return {
           hotelPerNight,
@@ -191,12 +204,26 @@ export function CityCard({
       const flightCost = city.breakdown?.flight || 0;
       const total = flightCost + city.nights * (hotelPerNight + adjustedDaily);
       
+      // Debug logging
+      console.log(`🔍 ${city.city} Claude daily costs data (${style}):`, {
+        city: city.city,
+        style,
+        styleKey,
+        hotelPerNight,
+        adjustedDaily,
+        total,
+        claudeCosts: claudeCosts.dailyCost,
+        source: 'claude'
+      });
+      
       return {
         hotelPerNight,
         adjustedDaily,
         total,
         source: 'claude' as const
       };
+    } else {
+      console.log(`❌ No Claude data found for: "${city.city}"`);
     }
 
     // Fallback to original logic if city not in Claude database
@@ -223,6 +250,18 @@ export function CityCard({
     const flightCost = city.breakdown?.flight || 0;
     const total = flightCost + city.nights * (hotelPerNight + adjustedDaily);
 
+    // Debug logging
+    console.log(`🔍 ${city.city} fallback data (${style}):`, {
+      city: city.city,
+      style,
+      baseDaily,
+      multiplier,
+      adjustedDaily,
+      hotelPerNight,
+      total,
+      source: 'fallback'
+    });
+
     return {
       hotelPerNight,
       adjustedDaily, 
@@ -232,19 +271,39 @@ export function CityCard({
   };
 
   const getDisplayTotal = (city: CityRecommendation, style: "budget" | "mid" | "luxury") => {
-    // Use backend's calculated totals based on travel style
-    if (city.totals) {
-      if (style === "luxury") {
-        return city.totals.p75;
-      } else if (style === "mid") {
-        return city.totals.p50;
-      } else {
-        return city.totals.p25;
-      }
+    // First try Claude calculation for more accurate and differentiated pricing
+    const claudeCalculation = getClaudeDailyCosts(city, style);
+    if (claudeCalculation.source === 'claude-accommodation' || claudeCalculation.source === 'claude') {
+      console.log(`🔍 ${city.city} using Claude data (${style}):`, claudeCalculation);
+      return claudeCalculation.total;
     }
     
-    // Fallback to Claude calculation if backend totals not available
-    const claudeCalculation = getClaudeDailyCosts(city, style);
+    // Use backend's calculated totals based on travel style as fallback
+    if (city.totals) {
+      let result = 0;
+      if (style === "luxury") {
+        result = city.totals.p75;
+      } else if (style === "mid") {
+        result = city.totals.p50;
+      } else {
+        result = city.totals.p25;
+      }
+      
+      console.log(`🔍 ${city.city} using backend totals (${style}):`, {
+        city: city.city,
+        style,
+        totals: city.totals,
+        selectedValue: result,
+        p25: city.totals?.p25,
+        p50: city.totals?.p50,
+        p75: city.totals?.p75
+      });
+      
+      return result;
+    }
+    
+    // Final fallback
+    console.log(`🔍 ${city.city} using fallback calculation (${style}):`, claudeCalculation);
     return claudeCalculation.total;
   };
 
@@ -531,7 +590,7 @@ export function CityCard({
                 <div className="cursor-help">
                   <span className="text-3xl font-bold text-primary flex items-baseline gap-1">
                     <span className="text-xl text-muted-foreground">~</span>
-                    {formatCurrency(showFlightCosts ? displayTotal : (displayTotal - city.breakdown.flight))}
+                    {formatCurrency(showFlightCosts ? displayTotal : (displayTotal - (city.breakdown?.flight || 0)))}
                   </span>
                   <div className="text-xs text-muted-foreground mt-1">
                     Estimated for {travelStyle === 'mid' ? 'mid-range' : travelStyle} travel

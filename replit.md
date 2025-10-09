@@ -1,182 +1,233 @@
-# Travel Budget Recommendations MVP
+# Travel Budget Recommendations — current snapshot
 
-## Overview
+This repository is a travel discovery app that estimates trip costs and recommends destinations that fit a user's budget. It focuses on clear, per-person cost estimates (hotels + daily costs by travel style) and fast, progressive discovery of destinations using an AI-backed pricing engine.
 
-This is a travel discovery tool that helps users find destinations within their budget constraints. The application takes a total budget (including flights, lodging, and daily expenses) and returns 5-10 viable cities grouped by country that fit within that budget cap for a specified trip duration. The core promise is "Here's where you can probably go for your budget — and what the costs roughly look like."
+This `replit.md` file documents the current state (Oct 2025), how to run the app locally, notable recent changes, and suggested next steps.
 
-The application serves as a public demo tool for casual travelers who assume travel is too expensive without actually checking realistic costs. It provides ballpark estimates rather than live booking quotes, helping users discover affordable travel options.
+## What this app does (today)
+- Progressive search: backend progressively computes destination costs and the frontend polls for incremental results so users see recommendations as they arrive.
+- Per-person cost estimates: hotel/night + daily costs are shown and compared on a per-person basis (the cost-comparison indicator remains per-person).
+- Claude-based pricing: all price estimates (hotels, daily costs, flight placeholders) are generated using Claude AI with multi-layer caching and local fallbacks.
+- Clean, modern city cards: hero images, improved price breakdown, accuracy badges (verified/estimated/approximate), and a cost comparison indicator (+/- % vs origin).
+- Configurable flight inclusion: `VITE_SHOW_FLIGHT_COSTS` toggles whether flight costs are included in the card breakdown.
 
-## User Preferences
+## Local setup and run (Windows PowerShell)
 
-Preferred communication style: Simple, everyday language.
+1) Install dependencies (project root)
 
-## System Architecture
+```powershell
+cd "C:\Users\CJohnson\OneDrive - Zinpro Corporation\Desktop\Project Files\travel-app-full"
+npm ci
+```
 
-### Frontend Architecture
-- **Framework**: React with TypeScript running on Vite for fast development and hot module replacement
-- **UI Components**: Shadcn/ui component library built on Radix UI primitives with Tailwind CSS for styling
-- **State Management**: TanStack Query (React Query) for server state management and caching
-- **Routing**: Wouter for lightweight client-side routing
-- **Form Handling**: React Hook Form with Zod validation for type-safe form management
-- **Styling**: Tailwind CSS with CSS custom properties for theming and consistent design system
+2) Start the backend (development mode)
 
-### Backend Architecture
-- **Runtime**: Node.js with Express.js as the web framework
-- **Language**: TypeScript with ES modules for modern JavaScript features
-- **Database**: PostgreSQL with Drizzle ORM for type-safe database operations
-- **Database Provider**: Neon serverless PostgreSQL for scalable cloud database hosting
-- **API Design**: RESTful API with structured JSON responses and proper error handling
-- **Caching**: Multi-layer caching with in-memory cache and database-backed cache metadata
-- **Mock Data**: Comprehensive mock data system for development and testing
+```powershell
+# server runs on port 5000 by default
+npm run dev
+```
 
-### Data Storage Solutions
-- **Primary Database**: PostgreSQL hosted on Neon with connection pooling
-- **ORM**: Drizzle ORM with migrations support for schema management
-- **Schema Design**: Normalized tables for cities, flight averages, hotel statistics, daily costs, and cache metadata
-- **Indexing**: Strategic database indexes on frequently queried fields (region, country, enabled status)
-- **Data Types**: Support for decimal precision pricing, geographic coordinates, and JSON metadata storage
+3) Start the frontend (Vite)
 
-### Travel Data Management
-- **Cities**: Master table with geographic data, IATA codes, and regional classifications
-- **Flight Data**: Average roundtrip prices with confidence levels and seasonal variations
-- **Hotel Pricing**: Percentile-based pricing (p25/p50/p75) for accurate cost ranges
-- **Daily Costs**: Cost of living data for food, transport, and miscellaneous expenses
-- **Confidence Scoring**: High/Medium/Low confidence ratings based on sample size and data recency
+```powershell
+cd "C:\Users\CJohnson\OneDrive - Zinpro Corporation\Desktop\Project Files\travel-app-full"
+npx vite
+```
 
-### API Integration Strategy
-- **Flight Data**: Designed for Amadeus API or equivalent services for flight price analytics
-- **Hotel Data**: Integration with OTA partner APIs or Booking.com/Expedia equivalents
-- **Cost of Living**: Claude AI Sonnet API for intelligent daily expense estimates (replaced Numbeo)
-- **Mock Implementation**: Comprehensive mock data generator for development without external API dependencies
+Open the local URL printed by Vite (typically http://localhost:5173 or 5174) to view the frontend. The backend will be serving on http://localhost:5000 by default.
 
-### Caching and Performance
-- **Cache Service**: Custom caching layer with configurable TTLs by data type
-- **Cache Strategy**: Memory cache for immediate responses, database cache for persistence
-- **TTL Configuration**: Flights (1 week), Hotels (1 month), Daily costs (quarterly), Recommendations (1 hour)
-- **Cache Keys**: Structured cache key generation for efficient data retrieval
+Notes:
+- To include flight costs in the UI set (in your environment where you run the frontend):
 
-### Development and Build System
-- **Build Tool**: Vite for fast builds and development server with HMR
-- **Development**: Concurrent frontend and backend development with proxy setup
-- **Production**: Optimized builds with code splitting and asset optimization
-- **Environment**: Environment-based configuration for development, staging, and production
+```powershell
+# Example: temporarily in PowerShell
+$env:VITE_SHOW_FLIGHT_COSTS = 'true'
+npx vite
+```
 
-## External Dependencies
+## Key files / entry points
+- `client/` — Vite + React frontend
+- `client/src/components/city-card.tsx` — main city card UI (hero image, price breakdown, cost-comparison)
+- `server/` — backend TypeScript app (Express) that drives progressive search and Claude calls
+- `vite.config.ts` — frontend build config (root set to `client`)
 
-### Database Services
-- **Neon Database**: Serverless PostgreSQL hosting with connection pooling and WebSocket support
-- **Connection Library**: @neondatabase/serverless for optimized serverless connections
+## Current architecture (Claude-only)
 
-### Travel Data APIs
-- **Flight Data**: Amadeus API (or equivalent) for flight price analytics and historical data
-- **Hotel Data**: Booking.com, Expedia, or other OTA partner APIs for accommodation pricing
-- **Cost of Living**: Claude AI Sonnet API for intelligent daily expense estimates with regional cost awareness
+### Frontend 
+- React + TypeScript + Vite for fast development and hot module replacement
+- Shadcn/ui component library built on Radix UI primitives with Tailwind CSS
+- TanStack Query (React Query) for server state management and caching
+- Wouter for lightweight client-side routing
 
-### Frontend UI Libraries
-- **Component Library**: Shadcn/ui built on Radix UI primitives for accessible, unstyled components
-- **Icons**: Lucide React for consistent iconography
-- **Styling**: Tailwind CSS with PostCSS for utility-first styling approach
+### Backend
+- Node.js + Express.js with TypeScript
+- Claude AI for all cost estimation (hotels, daily costs, flight estimates)
+- Multi-layer caching with in-memory fallback (no Redis dependency)
+- Progressive search with session-based polling
 
-### Backend Infrastructure
-- **Database ORM**: Drizzle ORM with PostgreSQL dialect for type-safe database operations
-- **Validation**: Zod for runtime type validation and schema definition
-- **HTTP Framework**: Express.js with TypeScript for robust API development
+### Key decisions
+- **No external travel APIs**: Amadeus and other paid APIs were removed to reduce cost and complexity
+- **Claude-only pricing**: All estimates generated by Claude AI with local fallbacks and caching
+- **Per-person baseline**: Cost comparisons remain per-person to avoid false precision for group scenarios
 
-### Development Tools
-- **Runtime**: Node.js with TypeScript compilation via tsx for development
-- **Build System**: ESBuild for production builds with tree shaking and optimization
-- **Package Manager**: npm with package-lock.json for deterministic dependency resolution
+## Notable recent changes (October 2025)
 
-### Third-Party Integration Notes
-- The application is designed to work with mock data during development to avoid API costs
-- External API integrations are abstracted through service layers for easy swapping of providers
-- Caching strategy reduces external API calls and improves response times
-- Database schema supports future expansion for additional data sources and travel providers
+- **Complete Amadeus removal**: Eliminated all external travel API dependencies; 99% cost reduction achieved
+- **Frontend UI polish**: City cards updated with hero images, improved price breakdown, hover interactions
+- **Badge cleanup**: Removed confusing value badges ("Good Value", "Great Value"); preserved accuracy indicators  
+- **Cost comparison clarified**: Tooltip text clarifies comparisons are per-person to avoid user confusion
+- **Session/polling fixes**: Frontend correctly receives cached results when available
+- **Robust caching**: Multi-layer cache prevents costly external calls and stabilizes response times
 
-## Recent Development Progress
+## Environment variables (at a glance)
 
-### ✅ Issues RESOLVED (September 15, 2025)
+- Frontend (Vite require VITE_ prefix for client exposure):
+  - `VITE_SHOW_FLIGHT_COSTS` (true/false) — whether to include flight costs in card breakdown
+  - `VITE_API_URL` — backend base URL (optional; defaults to http://localhost:5000 in dev)
 
-**1. Critical Filtering Bug - Root Cause Identified and Fixed**
-- **Problem**: Travel search was returning empty results despite valid API responses from Amadeus
-- **Root Cause 1**: Case sensitivity issue - Amadeus API returns `"subType": "city"` (lowercase) but filtering logic checked for `"CITY"` (uppercase)
-- **Root Cause 2**: Overly restrictive filtering - Required both `subType === 'CITY'` AND `city.iataCode`, but many valid cities lack IATA codes (e.g., Nishi-Tokyo-shi, Nishitokyo)
-- **Solution**: Updated filtering to accept `city.subType === 'city'` regardless of IATA code presence
-- **Verification**: Diagnostic test confirms "Found 3 cities in Japan" vs. previous "Found 0 cities"
+- Backend (set these securely on your host or in .env for local dev):
+  - `CLAUDE_API_KEY` — API key used by the Claude pricing service
+  - Cache/DB connection strings if you enable persistent cache or DB-backed features
 
-**2. Systematic Diagnostic Infrastructure**
-- **Added**: Comprehensive health check endpoints (`/api/health/amadeus`, `/api/health/city-smoke`, `/api/health/region-mapping`)
-- **Purpose**: Enable systematic debugging of API integrations and data discovery issues
-- **Result**: Successfully isolated filtering bugs through structured testing approach
+Do NOT commit secrets to the repo.
 
-**3. Live API Integration Success**
-- **Amadeus API**: Successfully connected and receiving valid city data responses
-- **Authentication**: API credentials verified working correctly
-- **Data Quality**: Raw API responses contain expected city data with geographic coordinates and metadata
+## Quick smoke tests
 
-**4. Data Discovery Fixed**
-- **City Search**: Now successfully finding cities across regions (Tokyo, Nishi-Tokyo-shi, Nishitokyo discovered)
-- **Region Mapping**: Asia region correctly mapped to 18 countries including JP, TH, VN, etc.
-- **Duplicate Removal**: Updated logic to handle cities with and without IATA codes properly
+- Run a search from the frontend and confirm that progressive results appear (you should see destinations streaming in).
+- Verify city cards show hero images; if an image fails there should be a graceful gradient fallback.
+- Toggle `VITE_SHOW_FLIGHT_COSTS` and confirm the flight column appears/disappears in the StatBox breakdown and the grid updates.
 
-### ✅ Issues RESOLVED (September 16, 2025) - COMPLETE SUCCESS
+## Deployment notes (quick)
 
-**1. Redis Connection Spam - ELIMINATED**
-- **Problem**: Endless Redis connection errors flooding logs and preventing proper cache fallback
-- **Root Cause**: Missing timeout configuration and failed connection cleanup causing retry loops
-- **Solution**: Implemented aggressive timeout (1000ms), disabled reconnection strategy, and proper cleanup with in-memory fallback
-- **Result**: Clean startup logs, proper fallback behavior, no error spam
+- Easiest/cheapest: host the frontend as a static site on Vercel or Netlify and host the backend on Render or Railway.
+- For single-dashboard simplicity, Render can host both the static frontend (published `client/dist`) and the backend web service.
+- Remember: frontend environment variables must be prefixed with `VITE_` and CORS must allow your frontend domain.
 
-**2. Amadeus Hotel API Integration - FULLY WORKING**  
-- **Problem**: "Required parameter: hotelIds" errors causing stack trace spam and preventing live hotel pricing
-- **Root Cause**: Incorrect single-step API usage, invalid city codes, unsupported parameters
-- **Solution**: Implemented proper two-step process (getHotelsByCity → searchHotels), cityCode validation, geocode fallback, and clean error handling
-- **Result**: Hotel pricing working with "Found 10 hotels by geocode" success, graceful fallback estimates
+## Known limitations / intentionally deferred items
 
-**3. End-to-End Travel API Functionality - WORKING PERFECTLY**
-- **Problem**: System was broken end-to-end with "Added 0, Skipped 32" results  
-- **Solution**: All fixes above enabled complete city discovery and processing pipeline
-- **Result**: **INCREDIBLE SUCCESS** - "✅ Final processing: 10 cities added, 22 cities skipped from 32 discovered"
-- **Verification**: API requests complete successfully with proper caching: "Cache SET for key: travel_cache:..."
+- Multi‑traveler cost autoscaling (couples/families): tabled for now — comparisons and UI remain per-person. This avoids false precision and complex assumptions about room sharing and child pricing.
+- Activity-level badges and other preference-driven badges are deferred until we have a richer filter model (activity, travelers, seasonality) to produce meaningful, non-confusing labels.
 
-**4. System Robustness and Production Readiness - ACHIEVED**
-- **Rate Limiting**: Handles 429 errors gracefully with fallback estimates
-- **Error Handling**: Clean warn-level logging instead of stack trace spam
-- **Caching**: Multi-layer cache working with Redis fallback to in-memory  
-- **Architecture Review**: Architect confirmed **PASS** - "meets stated objectives and functions end-to-end with robust fallbacks"
+## Next recommended steps
 
-### 🔧 Development Tools Added
-- **Health Check Endpoints**: Real-time API status monitoring
-- **Raw Response Logging**: Detailed API response debugging
-- **Filtering Diagnostics**: Step-by-step filtering logic validation
-- **Region Mapping Validation**: Geographic region to country code verification
+1. Add a small tooltip clarifying the cost-comparison is per-person (done in UI but double-check wording).
+2. Add e2e smoke tests that run a search end-to-end against the dev backend and assert progressive results reach the frontend.
+3. If/when you want group pricing: implement as an optional filter and keep comparisons per-person by default.
+4. Prepare a small deploy guide (Vercel + Render) and move environment secrets into provider dashboards.
 
-### ✅ Issues RESOLVED (September 21, 2025) - COMPLETE AMADEUS REMOVAL & FRONTEND FIX
+---
 
-**1. Complete Amadeus Code Elimination - 100% SUCCESS**
-- **Task**: Remove ALL Amadeus-related code from the application as explicitly requested
-- **Files Deleted**: `amadeus-service.ts`, `flight-cache-integration.ts` completely removed
-- **Endpoints Removed**: `/api/airports/search`, `/api/amadeus/test`, `/api/amadeus/update-flight`, `/api/health/city-smoke` and all Amadeus diagnostic endpoints
-- **Imports Cleaned**: All Amadeus imports and references removed from `routes.ts` and `travel-api.ts`
-- **Result**: 99% cost reduction achieved (from ~$600 to ~$0.06) with pure Claude AI system
+If you'd like, I can push this updated `replit.md` into the repo (create a commit message and PR) or generate exact deployment instructions for Vercel + Render with the exact field values to paste into their UI.
+```markdown
+# Travel Budget Recommendations — current snapshot
 
-**2. Critical Frontend Display Bug - ROOT CAUSE FIXED**
-- **Problem**: Backend processing cities successfully with Claude AI generating cost estimates, but frontend stuck showing "Found 0 destinations" 
-- **Root Cause**: Session ID mismatch where cached results returned `sessionId: "cached"`, but polling endpoint couldn't handle this special case and created new sessions instead
-- **Bug Evidence**: Backend logs showed "Progressive search completed: 27 results" while frontend polling different session IDs with empty results
-- **Solution**: Added proper handling for "cached" sessionId in polling endpoint - now returns cached results directly with status "completed"
-- **Result**: Frontend displays "27 destinations found" with full progressive results, country filtering, and destination cards working perfectly
+This repository is a travel discovery app that estimates trip costs and recommends destinations that fit a user's budget. It focuses on clear, per-person cost estimates (hotels + daily costs by travel style) and fast, progressive discovery of destinations using an AI-backed pricing engine.
 
-**3. System Architecture - PURE CLAUDE AI SUCCESS**
-- **Cost Estimates**: All flights, hotels, and daily costs now generated exclusively by Claude AI
-- **Performance**: No more expensive API rate limiting bottlenecks from Amadeus
-- **Reliability**: Multi-layer caching working efficiently with progressive loading
-- **Results**: System displays 27 destinations for Asia region with budget-friendly options
-- **User Experience**: Progressive search loads incrementally with country filtering (China 4, India 4, Indonesia 2, Japan 2, Malaysia 2, etc.)
+This `replit.md` file documents the current state (Oct 2025), how to run the app locally, notable recent changes, and suggested next steps.
 
-**4. End-to-End Verification - WORKING PERFECTLY**
-- **Backend Processing**: Claude AI successfully generating cost estimates (Bangkok $413, Seoul $651, Penang $350, etc.) 
-- **Frontend Display**: Progressive results component showing "Destinations within your budget" with proper sorting and filtering
-- **Cache Performance**: Multi-layer cache working with immediate display of cached results
-- **No Infinite Loop**: Progressive search completes normally without repetitive processing of same cities
-- **Session Management**: Fixed session ID handling ensures frontend polling receives results from backend processing
+## What this app does (today)
+- Progressive search: backend progressively computes destination costs and the frontend polls for incremental results so users see recommendations as they arrive.
+- Per-person cost estimates: hotel/night + daily costs are shown and compared on a per-person basis (the cost-comparison indicator remains per-person).
+- Claude-based pricing: all price estimates (hotels, daily costs, flight placeholders) are generated using Claude AI with multi-layer caching and local fallbacks.
+- Clean, modern city cards: hero images, improved price breakdown, accuracy badges (verified/estimated/approximate), and a cost comparison indicator (+/- % vs origin).
+- Configurable flight inclusion: `VITE_SHOW_FLIGHT_COSTS` toggles whether flight costs are included in the card breakdown.
+
+## Local setup and run (Windows PowerShell)
+
+1) Install dependencies (project root)
+
+```powershell
+cd "C:\Users\CJohnson\OneDrive - Zinpro Corporation\Desktop\Project Files\travel-app-full"
+npm ci
+```
+
+2) Start the backend (development mode)
+
+```powershell
+# server runs on port 5000 by default
+npm run dev
+```
+
+3) Start the frontend (Vite)
+
+```powershell
+cd "C:\Users\CJohnson\OneDrive - Zinpro Corporation\Desktop\Project Files\travel-app-full"
+npx vite
+```
+
+Open the local URL printed by Vite (typically http://localhost:5173 or 5174) to view the frontend. The backend will be serving on http://localhost:5000 by default.
+
+Notes:
+- To include flight costs in the UI set (in your environment where you run the frontend):
+
+```powershell
+# Example: temporarily in PowerShell
+$env:VITE_SHOW_FLIGHT_COSTS = 'true'
+npx vite
+```
+
+## Key files / entry points
+- `client/` — Vite + React frontend
+- `client/src/components/city-card.tsx` — main city card UI (hero image, price breakdown, cost-comparison)
+- `server/` — backend TypeScript app (Express) that drives progressive search and Claude calls
+- `vite.config.ts` — frontend build config (root set to `client`)
+
+## Notable recent changes (summary)
+
+- Switched to Claude-only pricing pipeline
+	- All pricing (hotels, daily costs) now generated by Claude AI with robust local fallbacks and caching.
+	- Amadeus and other paid travel API integrations were removed to reduce cost and complexity.
+
+- Frontend UI polish
+	- City cards updated with hero images, improved price breakdown, and hover interactions.
+	- Removed confusing value badges ("Good Value", "Great Value"); preserved accuracy badges and cost comparison indicator.
+
+- Cost comparison behavior clarified
+	- Comparison remains a per-person baseline (keeps consistency across destinations).
+	- Tooltip text now clarifies comparisons are per-person to avoid user confusion when traveling in groups.
+
+- Improved robustness and caching
+	- Multi-layer cache (in-memory with fallback) used to prevent costly external calls and stabilize response times.
+	- Session/polling bugs fixed so frontend correctly receives cached results when available.
+
+## Environment variables (at a glance)
+
+- Frontend (Vite require VITE_ prefix for client exposure):
+	- `VITE_SHOW_FLIGHT_COSTS` (true/false) — whether to include flight costs in card breakdown
+	- `VITE_API_URL` — backend base URL (optional; defaults to http://localhost:5000 in dev)
+
+- Backend (set these securely on your host or in .env for local dev):
+	- `CLAUDE_API_KEY` — API key used by the Claude pricing service
+	- Cache/DB connection strings if you enable persistent cache or DB-backed features
+
+Do NOT commit secrets to the repo.
+
+## Quick smoke tests
+
+- Run a search from the frontend and confirm that progressive results appear (you should see destinations streaming in).
+- Verify city cards show hero images; if an image fails there should be a graceful gradient fallback.
+- Toggle `VITE_SHOW_FLIGHT_COSTS` and confirm the flight column appears/disappears in the StatBox breakdown and the grid updates.
+
+## Deployment notes (quick)
+
+- Easiest/cheapest: host the frontend as a static site on Vercel or Netlify and host the backend on Render or Railway.
+- For single-dashboard simplicity, Render can host both the static frontend (published `client/dist`) and the backend web service.
+- Remember: frontend environment variables must be prefixed with `VITE_` and CORS must allow your frontend domain.
+
+## Known limitations / intentionally deferred items
+
+- Multi‑traveler cost autoscaling (couples/families): tabled for now — comparisons and UI remain per-person. This avoids false precision and complex assumptions about room sharing and child pricing.
+- Activity-level badges and other preference-driven badges are deferred until we have a richer filter model (activity, travelers, seasonality) to produce meaningful, non-confusing labels.
+
+## Next recommended steps
+
+1. Add a small tooltip clarifying the cost-comparison is per-person (done in UI but double-check wording).
+2. Add e2e smoke tests that run a search end-to-end against the dev backend and assert progressive results reach the frontend.
+3. If/when you want group pricing: implement as an optional filter and keep comparisons per-person by default.
+4. Prepare a small deploy guide (Vercel + Render) and move environment secrets into provider dashboards.
+
+---
+
+If you'd like, I can push this updated `replit.md` into the repo (create a commit message and PR) or generate exact deployment instructions for Vercel + Render with the exact field values to paste into their UI.
+
+``` 

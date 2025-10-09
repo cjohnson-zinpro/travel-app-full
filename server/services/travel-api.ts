@@ -410,34 +410,47 @@ export class TravelApiService {
           dailyEstimate = true;
         }
 
-        // Calculate totals
-        const totalP25 =
-          flightCost +
-          hotelPercentiles.p25 * params.nights +
-          dailyCost * params.nights;
-        const totalP35 =
-          flightCost +
-          hotelPercentiles.p35 * params.nights +
-          dailyCost * params.nights;
-        const totalP50 =
-          flightCost +
-          hotelPercentiles.p50 * params.nights +
-          dailyCost * params.nights;
-        const totalP75 =
-          flightCost +
-          hotelPercentiles.p75 * params.nights +
-          dailyCost * params.nights;
-
-        // Apply travel style adjustments for accurate budget filtering
-        const travelStyleAdjusted = this.applyTravelStyleAdjustments(
+        // Calculate totals using travel style adjustments (consistent with getLiveRecommendations)
+        const budgetCalculation = this.applyTravelStyleAdjustments(
           flightCost,
           hotelPercentiles.p25,
           hotelPercentiles.p50,
           hotelPercentiles.p75,
           dailyCost,
           params.nights,
-          params.travelStyle || "budget"
+          "budget"
         );
+        
+        const midRangeCalculation = this.applyTravelStyleAdjustments(
+          flightCost,
+          hotelPercentiles.p25,
+          hotelPercentiles.p50,
+          hotelPercentiles.p75,
+          dailyCost,
+          params.nights,
+          "mid"
+        );
+        
+        const luxuryCalculation = this.applyTravelStyleAdjustments(
+          flightCost,
+          hotelPercentiles.p25,
+          hotelPercentiles.p50,
+          hotelPercentiles.p75,
+          dailyCost,
+          params.nights,
+          "luxury"
+        );
+
+        // Map travel styles to percentile structure for consistency
+        const totalP25 = budgetCalculation.total;           // Budget style
+        const totalP35 = budgetCalculation.total;           // Budget-focused (same as P25)
+        const totalP50 = midRangeCalculation.total;         // Mid-range style
+        const totalP75 = luxuryCalculation.total;           // Luxury style
+
+        // Use the user's requested travel style for budget filtering
+        const travelStyleAdjusted = params.travelStyle === "luxury" ? luxuryCalculation
+          : params.travelStyle === "mid" ? midRangeCalculation
+          : budgetCalculation;
 
         // Use travel style adjusted total for budget filtering (matches frontend display)
         const travelStyle = params.travelStyle || "budget";
@@ -509,10 +522,10 @@ export class TravelApiService {
             flight: Math.round(flightCost),
             flightEstimate,
             flightSource: flightEstimate ? "estimate" : "claude", // Claude AI vs fallback
-            hotelPerNightP25: Math.round(hotelPercentiles.p25),
-            hotelPerNightP35: Math.round(hotelPercentiles.p35),
-            hotelPerNightP50: Math.round(hotelPercentiles.p50),
-            hotelPerNightP75: Math.round(hotelPercentiles.p75),
+            hotelPerNightP25: Math.round(budgetCalculation.hotelPerNight),      // Budget hotel
+            hotelPerNightP35: Math.round(budgetCalculation.hotelPerNight),      // Budget-focused (same as P25)
+            hotelPerNightP50: Math.round(midRangeCalculation.hotelPerNight),    // Mid-range hotel
+            hotelPerNightP75: Math.round(luxuryCalculation.hotelPerNight),      // Luxury hotel
             hotelEstimate,
             hotelSource: hotelSourceFromClaude ? "claude" : "estimate", // Claude AI vs fallback
             dailyPerDay: Math.round(dailyCost),

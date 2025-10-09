@@ -80,12 +80,12 @@ export interface CityDailyCosts {
 export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
   // NORTH AMERICA - MAJOR CITIES
   'new-york': {
-    dailyCost: { budget: 65, midRange: 145, luxury: 480 },
+    dailyCost: { budget: 65, midRange: 150, luxury: 495 },
     accommodation: { budget: 106, midRange: 228, luxury: 332 }, // Blended: hotels + limited Airbnb (regulated market)
     breakdown: {
       budget: { total: 65, meals: 28, transport: 12, activities: 18, drinks: 9, incidentals: 8 },
-      midRange: { total: 145, meals: 55, transport: 20, activities: 42, drinks: 28, incidentals: 15 },
-      luxury: { total: 480, meals: 170, transport: 35, activities: 150, drinks: 95, incidentals: 30 }
+      midRange: { total: 150, meals: 55, transport: 25, activities: 42, drinks: 28, incidentals: 15 },
+      luxury: { total: 495, meals: 170, transport: 50, activities: 150, drinks: 95, incidentals: 30 }
     },
     detailedBreakdown: {
       budget: {
@@ -181,8 +181,8 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
     accommodation: { budget: 89, midRange: 185, luxury: 298 }, // Blended: strong Airbnb market provides 15-20% savings
     breakdown: {
       budget: { total: 58, meals: 24, transport: 10, activities: 16, drinks: 8, incidentals: 8 },
-      midRange: { total: 125, meals: 48, transport: 18, activities: 35, drinks: 24, incidentals: 15 },
-      luxury: { total: 420, meals: 145, transport: 30, activities: 125, drinks: 90, incidentals: 30 }
+      midRange: { total: 125, meals: 48, transport: 20, activities: 33, drinks: 24, incidentals: 15 },
+      luxury: { total: 420, meals: 145, transport: 40, activities: 115, drinks: 90, incidentals: 30 }
     },
     detailedBreakdown: {
       budget: {
@@ -524,9 +524,9 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
     dailyCost: { budget: 52, midRange: 115, luxury: 390 },
     accommodation: { budget: 78, midRange: 155, luxury: 275 }, // Blended: business city with strong Airbnb market (17% savings)
     breakdown: {
-      budget: { total: 52, meals: 22, transport: 8, activities: 16, drinks: 8, incidentals: 8 },
-      midRange: { total: 115, meals: 42, transport: 15, activities: 32, drinks: 26, incidentals: 15 },
-      luxury: { total: 390, meals: 135, transport: 25, activities: 115, drinks: 85, incidentals: 30 }
+      budget: { total: 52, meals: 22, transport: 11, activities: 16, drinks: 8, incidentals: 8 },
+      midRange: { total: 115, meals: 42, transport: 20, activities: 32, drinks: 26, incidentals: 15 },
+      luxury: { total: 390, meals: 135, transport: 40, activities: 115, drinks: 85, incidentals: 30 }
     },
     detailedBreakdown: {
       budget: {
@@ -693,23 +693,23 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
   },
 
   'miami': {
-    dailyCost: { budget: 55, midRange: 125, luxury: 450 },
+    dailyCost: { budget: 59, midRange: 138, luxury: 480 },
     accommodation: { budget: 78, midRange: 165, luxury: 285 }, // Blended: strong Airbnb presence, seasonal pricing (15-20% savings)
     breakdown: {
-      budget: { total: 55, meals: 24, transport: 8, activities: 16, drinks: 9, incidentals: 8 },
-      midRange: { total: 125, meals: 48, transport: 15, activities: 35, drinks: 27, incidentals: 15 },
-      luxury: { total: 450, meals: 160, transport: 25, activities: 135, drinks: 100, incidentals: 30 }
+      budget: { total: 59, meals: 24, transport: 12, activities: 16, drinks: 9, incidentals: 8 },
+      midRange: { total: 138, meals: 48, transport: 28, activities: 35, drinks: 27, incidentals: 15 },
+      luxury: { total: 480, meals: 160, transport: 55, activities: 135, drinks: 100, incidentals: 30 }
     },
     confidence: 'high'
   },
 
   'las-vegas': {
-    dailyCost: { budget: 58, midRange: 140, luxury: 580 },
+    dailyCost: { budget: 60, midRange: 156, luxury: 615 },
     accommodation: { budget: 62, midRange: 128, luxury: 245 }, // Blended: casino comps + vacation rentals compete with hotels (20% savings)
     breakdown: {
-      budget: { total: 58, meals: 22, transport: 8, activities: 13, drinks: 15, incidentals: 8 },
-      midRange: { total: 140, meals: 40, transport: 12, activities: 35, drinks: 38, incidentals: 15 },
-      luxury: { total: 580, meals: 120, transport: 20, activities: 180, drinks: 200, incidentals: 60 }
+      budget: { total: 60, meals: 22, transport: 10, activities: 13, drinks: 15, incidentals: 8 },
+      midRange: { total: 156, meals: 40, transport: 28, activities: 35, drinks: 38, incidentals: 15 },
+      luxury: { total: 615, meals: 120, transport: 55, activities: 180, drinks: 200, incidentals: 60 }
     },
     confidence: 'high'
   },
@@ -719,8 +719,8 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
     accommodation: { budget: 85, midRange: 175, luxury: 298 }, // Blended: business-focused market, moderate Airbnb presence (15% savings)
     breakdown: {
       budget: { total: 58, meals: 24, transport: 10, activities: 16, drinks: 8, incidentals: 8 },
-      midRange: { total: 128, meals: 48, transport: 18, activities: 35, drinks: 27, incidentals: 15 },
-      luxury: { total: 430, meals: 150, transport: 30, activities: 125, drinks: 95, incidentals: 30 }
+      midRange: { total: 128, meals: 48, transport: 25, activities: 35, drinks: 27, incidentals: 15 },
+      luxury: { total: 430, meals: 150, transport: 50, activities: 125, drinks: 95, incidentals: 30 }
     },
     confidence: 'high'
   },
@@ -729,9 +729,9 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
     dailyCost: { budget: 55, midRange: 125, luxury: 440 },
     accommodation: { budget: 92, midRange: 185, luxury: 315 }, // Blended: educated market with good Airbnb options (15% savings)
     breakdown: {
-      budget: { total: 55, meals: 24, transport: 8, activities: 16, drinks: 9, incidentals: 8 },
-      midRange: { total: 125, meals: 48, transport: 15, activities: 35, drinks: 27, incidentals: 15 },
-      luxury: { total: 440, meals: 155, transport: 25, activities: 130, drinks: 100, incidentals: 30 }
+      budget: { total: 55, meals: 24, transport: 11, activities: 16, drinks: 9, incidentals: 8 },
+      midRange: { total: 125, meals: 48, transport: 20, activities: 35, drinks: 27, incidentals: 15 },
+      luxury: { total: 440, meals: 155, transport: 40, activities: 130, drinks: 100, incidentals: 30 }
     },
     confidence: 'high'
   },
@@ -740,86 +740,86 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
     dailyCost: { budget: 52, midRange: 115, luxury: 400 },
     accommodation: { budget: 78, midRange: 155, luxury: 268 }, // Blended: tech-friendly market with strong Airbnb culture (18% savings)
     breakdown: {
-      budget: { total: 52, meals: 22, transport: 8, activities: 16, drinks: 8, incidentals: 8 },
-      midRange: { total: 115, meals: 42, transport: 15, activities: 32, drinks: 26, incidentals: 15 },
-      luxury: { total: 400, meals: 140, transport: 25, activities: 120, drinks: 85, incidentals: 30 }
+      budget: { total: 52, meals: 22, transport: 11, activities: 16, drinks: 8, incidentals: 8 },
+      midRange: { total: 115, meals: 42, transport: 20, activities: 32, drinks: 26, incidentals: 15 },
+      luxury: { total: 400, meals: 140, transport: 40, activities: 120, drinks: 85, incidentals: 30 }
     },
     confidence: 'high'
   },
 
   'atlanta': {
-    dailyCost: { budget: 45, midRange: 98, luxury: 340 },
+    dailyCost: { budget: 47, midRange: 111, luxury: 370 },
     accommodation: { budget: 65, midRange: 125, luxury: 208 }, // Blended: affordable market with good vacation rental penetration (20% savings)
     breakdown: {
-      budget: { total: 45, meals: 18, transport: 8, activities: 14, drinks: 7, incidentals: 8 },
-      midRange: { total: 98, meals: 36, transport: 12, activities: 28, drinks: 22, incidentals: 12 },
-      luxury: { total: 340, meals: 115, transport: 20, activities: 105, drinks: 70, incidentals: 30 }
+      budget: { total: 47, meals: 18, transport: 10, activities: 14, drinks: 7, incidentals: 8 },
+      midRange: { total: 111, meals: 36, transport: 25, activities: 28, drinks: 22, incidentals: 12 },
+      luxury: { total: 370, meals: 115, transport: 50, activities: 105, drinks: 70, incidentals: 30 }
     },
     confidence: 'high'
   },
 
   'denver': {
-    dailyCost: { budget: 48, midRange: 105, luxury: 360 },
+    dailyCost: { budget: 50, midRange: 118, luxury: 390 },
     accommodation: { budget: 68, midRange: 135, luxury: 225 }, // Blended: outdoor tourism market with good vacation rental options (18% savings)
     breakdown: {
-      budget: { total: 48, meals: 20, transport: 8, activities: 15, drinks: 7, incidentals: 8 },
-      midRange: { total: 105, meals: 38, transport: 12, activities: 32, drinks: 23, incidentals: 12 },
-      luxury: { total: 360, meals: 125, transport: 20, activities: 115, drinks: 70, incidentals: 30 }
+      budget: { total: 50, meals: 20, transport: 10, activities: 15, drinks: 7, incidentals: 8 },
+      midRange: { total: 118, meals: 38, transport: 25, activities: 32, drinks: 23, incidentals: 12 },
+      luxury: { total: 390, meals: 125, transport: 50, activities: 115, drinks: 70, incidentals: 30 }
     },
     confidence: 'high'
   },
 
   'orlando': {
-    dailyCost: { budget: 48, midRange: 105, luxury: 360 },
+    dailyCost: { budget: 51, midRange: 117, luxury: 390 },
     accommodation: { budget: 72, midRange: 148, luxury: 265 }, // Blended: theme park tourism, strong vacation rental market (20% savings)
     breakdown: {
-      budget: { total: 48, meals: 22, transport: 12, activities: 10, drinks: 6, incidentals: 8 },
-      midRange: { total: 105, meals: 40, transport: 20, activities: 25, drinks: 15, incidentals: 12 },
-      luxury: { total: 360, meals: 125, transport: 35, activities: 110, drinks: 65, incidentals: 35 }
+      budget: { total: 51, meals: 22, transport: 15, activities: 10, drinks: 6, incidentals: 8 },
+      midRange: { total: 117, meals: 40, transport: 32, activities: 25, drinks: 15, incidentals: 12 },
+      luxury: { total: 390, meals: 125, transport: 65, activities: 110, drinks: 65, incidentals: 35 }
     },
     confidence: 'high'
   },
 
   'dallas': {
-    dailyCost: { budget: 42, midRange: 88, luxury: 310 },
+    dailyCost: { budget: 42, midRange: 91, luxury: 322 },
     accommodation: { budget: 58, midRange: 115, luxury: 185 }, // Blended: business-friendly market with competitive vacation rentals (22% savings)
     breakdown: {
-      budget: { total: 42, meals: 18, transport: 8, activities: 10, drinks: 6, incidentals: 8 },
-      midRange: { total: 88, meals: 34, transport: 12, activities: 22, drinks: 15, incidentals: 12 },
-      luxury: { total: 310, meals: 110, transport: 18, activities: 85, drinks: 67, incidentals: 30 }
+      budget: { total: 42, meals: 18, transport: 10, activities: 10, drinks: 6, incidentals: 8 },
+      midRange: { total: 91, meals: 34, transport: 25, activities: 22, drinks: 15, incidentals: 12 },
+      luxury: { total: 322, meals: 110, transport: 50, activities: 85, drinks: 67, incidentals: 30 }
     },
     confidence: 'high'
   },
 
   'houston': {
-    dailyCost: { budget: 40, midRange: 85, luxury: 300 },
+    dailyCost: { budget: 40, midRange: 88, luxury: 312 },
     accommodation: { budget: 55, midRange: 105, luxury: 175 }, // Blended: business city with affordable vacation rental market (20% savings)
     breakdown: {
       budget: { total: 40, meals: 18, transport: 8, activities: 9, drinks: 5, incidentals: 8 },
-      midRange: { total: 85, meals: 32, transport: 12, activities: 21, drinks: 15, incidentals: 12 },
-      luxury: { total: 300, meals: 105, transport: 18, activities: 80, drinks: 67, incidentals: 30 }
+      midRange: { total: 88, meals: 32, transport: 20, activities: 21, drinks: 15, incidentals: 12 },
+      luxury: { total: 312, meals: 105, transport: 40, activities: 80, drinks: 67, incidentals: 30 }
     },
     confidence: 'high'
   },
 
   'philadelphia': {
-    dailyCost: { budget: 45, midRange: 95, luxury: 330 },
+    dailyCost: { budget: 47, midRange: 108, luxury: 357 },
     accommodation: { budget: 68, midRange: 125, luxury: 205 }, // Blended: historic tourism with growing Airbnb market (18% savings)
     breakdown: {
-      budget: { total: 45, meals: 20, transport: 8, activities: 12, drinks: 6, incidentals: 8 },
-      midRange: { total: 95, meals: 36, transport: 12, activities: 25, drinks: 17, incidentals: 12 },
-      luxury: { total: 330, meals: 115, transport: 18, activities: 95, drinks: 72, incidentals: 30 }
+      budget: { total: 47, meals: 20, transport: 10, activities: 12, drinks: 6, incidentals: 8 },
+      midRange: { total: 108, meals: 36, transport: 25, activities: 25, drinks: 17, incidentals: 12 },
+      luxury: { total: 357, meals: 115, transport: 45, activities: 95, drinks: 72, incidentals: 30 }
     },
     confidence: 'high'
   },
 
   'san-diego': {
-    dailyCost: { budget: 52, midRange: 110, luxury: 380 },
+    dailyCost: { budget: 56, midRange: 123, luxury: 410 },
     accommodation: { budget: 88, midRange: 168, luxury: 278 }, // Blended: coastal tourism with strong vacation rental market (18% savings)
     breakdown: {
-      budget: { total: 52, meals: 24, transport: 8, activities: 14, drinks: 8, incidentals: 8 },
-      midRange: { total: 110, meals: 42, transport: 15, activities: 28, drinks: 20, incidentals: 15 },
-      luxury: { total: 380, meals: 135, transport: 25, activities: 110, drinks: 80, incidentals: 30 }
+      budget: { total: 56, meals: 24, transport: 12, activities: 14, drinks: 8, incidentals: 8 },
+      midRange: { total: 123, meals: 42, transport: 28, activities: 28, drinks: 20, incidentals: 15 },
+      luxury: { total: 410, meals: 135, transport: 55, activities: 110, drinks: 80, incidentals: 30 }
     },
     confidence: 'high'
   },
@@ -829,9 +829,9 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
     dailyCost: { budget: 45, midRange: 98, luxury: 350 },
     accommodation: { budget: 72, midRange: 145, luxury: 248 }, // Blended: major business city with good Airbnb penetration (17% savings)
     breakdown: {
-      budget: { total: 45, meals: 18, transport: 8, activities: 14, drinks: 7, incidentals: 8 },
-      midRange: { total: 98, meals: 36, transport: 15, activities: 27, drinks: 20, incidentals: 12 },
-      luxury: { total: 350, meals: 125, transport: 25, activities: 105, drinks: 70, incidentals: 25 }
+      budget: { total: 45, meals: 18, transport: 11, activities: 14, drinks: 7, incidentals: 8 },
+      midRange: { total: 98, meals: 36, transport: 20, activities: 27, drinks: 20, incidentals: 12 },
+      luxury: { total: 350, meals: 125, transport: 40, activities: 105, drinks: 70, incidentals: 25 }
     },
     confidence: 'high'
   },
@@ -840,9 +840,9 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
     dailyCost: { budget: 48, midRange: 105, luxury: 380 },
     accommodation: { budget: 78, midRange: 158, luxury: 268 }, // Blended: expensive west coast city with strong Airbnb market (15% savings)
     breakdown: {
-      budget: { total: 48, meals: 20, transport: 8, activities: 15, drinks: 7, incidentals: 8 },
-      midRange: { total: 105, meals: 40, transport: 15, activities: 30, drinks: 20, incidentals: 12 },
-      luxury: { total: 380, meals: 135, transport: 25, activities: 120, drinks: 75, incidentals: 25 }
+      budget: { total: 48, meals: 20, transport: 11, activities: 15, drinks: 7, incidentals: 8 },
+      midRange: { total: 105, meals: 40, transport: 20, activities: 30, drinks: 20, incidentals: 12 },
+      luxury: { total: 380, meals: 135, transport: 40, activities: 120, drinks: 75, incidentals: 25 }
     },
     confidence: 'high'
   },
@@ -851,9 +851,9 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
     dailyCost: { budget: 40, midRange: 88, luxury: 320 },
     accommodation: { budget: 58, midRange: 118, luxury: 198 }, // Blended: affordable city with strong francophone Airbnb culture (20% savings)
     breakdown: {
-      budget: { total: 40, meals: 16, transport: 6, activities: 14, drinks: 6, incidentals: 8 },
-      midRange: { total: 88, meals: 32, transport: 12, activities: 26, drinks: 18, incidentals: 12 },
-      luxury: { total: 320, meals: 115, transport: 20, activities: 100, drinks: 60, incidentals: 25 }
+      budget: { total: 40, meals: 16, transport: 10, activities: 14, drinks: 6, incidentals: 8 },
+      midRange: { total: 88, meals: 32, transport: 25, activities: 26, drinks: 18, incidentals: 12 },
+      luxury: { total: 320, meals: 115, transport: 50, activities: 100, drinks: 60, incidentals: 25 }
     },
     confidence: 'high'
   },
@@ -863,8 +863,8 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
     accommodation: { budget: 62, midRange: 125, luxury: 218 }, // Blended: government city with good Airbnb options (18% savings)
     breakdown: {
       budget: { total: 42, meals: 18, transport: 8, activities: 12, drinks: 6, incidentals: 8 },
-      midRange: { total: 88, meals: 34, transport: 12, activities: 24, drinks: 18, incidentals: 12 },
-      luxury: { total: 310, meals: 110, transport: 20, activities: 95, drinks: 70, incidentals: 25 }
+      midRange: { total: 88, meals: 34, transport: 20, activities: 24, drinks: 18, incidentals: 12 },
+      luxury: { total: 310, meals: 110, transport: 40, activities: 95, drinks: 70, incidentals: 25 }
     },
     confidence: 'high'
   },
@@ -873,9 +873,9 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
     dailyCost: { budget: 48, midRange: 100, luxury: 350 },
     accommodation: { budget: 68, midRange: 138, luxury: 238 }, // Blended: western Canadian city with good vacation rental market (18% savings)
     breakdown: {
-      budget: { total: 48, meals: 20, transport: 10, activities: 14, drinks: 6, incidentals: 8 },
-      midRange: { total: 100, meals: 38, transport: 15, activities: 28, drinks: 19, incidentals: 12 },
-      luxury: { total: 350, meals: 125, transport: 25, activities: 105, drinks: 70, incidentals: 25 }
+      budget: { total: 48, meals: 20, transport: 11, activities: 14, drinks: 6, incidentals: 8 },
+      midRange: { total: 100, meals: 38, transport: 20, activities: 28, drinks: 19, incidentals: 12 },
+      luxury: { total: 350, meals: 125, transport: 40, activities: 105, drinks: 70, incidentals: 25 }
     },
     confidence: 'high'
   },
@@ -884,21 +884,21 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
     dailyCost: { budget: 40, midRange: 85, luxury: 300 },
     accommodation: { budget: 58, midRange: 115, luxury: 195 }, // Blended: historic French city with strong vacation rental culture (20% savings)
     breakdown: {
-      budget: { total: 40, meals: 16, transport: 6, activities: 14, drinks: 6, incidentals: 8 },
-      midRange: { total: 85, meals: 32, transport: 12, activities: 25, drinks: 16, incidentals: 12 },
-      luxury: { total: 300, meals: 105, transport: 20, activities: 95, drinks: 65, incidentals: 25 }
+      budget: { total: 40, meals: 16, transport: 10, activities: 14, drinks: 6, incidentals: 8 },
+      midRange: { total: 85, meals: 32, transport: 25, activities: 25, drinks: 16, incidentals: 12 },
+      luxury: { total: 300, meals: 105, transport: 50, activities: 95, drinks: 65, incidentals: 25 }
     },
     confidence: 'high'
   },
 
   // LATIN AMERICA
   'mexico-city': {
-    dailyCost: { budget: 50, midRange: 75, luxury: 200 },
+    dailyCost: { budget: 50, midRange: 78, luxury: 220 },
     accommodation: { budget: 45, midRange: 85, luxury: 175 }, // Blended: popular destination, Airbnb pricing normalized (20% savings)
     breakdown: {
       budget: { total: 50, meals: 22, transport: 8, activities: 15, drinks: 10, incidentals: 8 },
-      midRange: { total: 75, meals: 32, transport: 12, activities: 25, drinks: 18, incidentals: 12 },
-      luxury: { total: 180, meals: 65, transport: 12, activities: 58, drinks: 30, incidentals: 25 }
+      midRange: { total: 78, meals: 32, transport: 20, activities: 25, drinks: 18, incidentals: 12 },
+      luxury: { total: 220, meals: 65, transport: 40, activities: 58, drinks: 30, incidentals: 25 }
     },
     detailedBreakdown: {
       budget: {
@@ -952,7 +952,7 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
         }
       },
       midRange: {
-        total: 75,
+        total: 78,
         meals: {
           amount: 32,
           examples: [
@@ -963,11 +963,12 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
           ]
         },
         transport: {
-          amount: 12,
+          amount: 15,
           examples: [
-            "Daily Uber rides: $8-12",
+            "Daily Uber rides: $10-15",
             "Airport taxi: $15-20",
-            "Tourist bus: $10-15"
+            "Tourist bus: $10-15",
+            "Occasional private car: $20-30"
           ]
         },
         activities: {
@@ -997,7 +998,7 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
         }
       },
       luxury: {
-        total: 180,
+        total: 220,
         meals: {
           amount: 65,
           examples: [
@@ -1008,12 +1009,14 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
           ]
         },
         transport: {
-          amount: 12,
+          amount: 35,
           examples: [
-            "Private driver: $40-60/day",
-            "Luxury airport transfer: $25-35",
-            "Premium car service: $15-25/trip"
-          ]
+            "Private driver: $60-80/day",
+            "Luxury airport transfer: $35-50",
+            "Premium car service: $25-40/trip",
+            "Helicopter tours: $150-250"
+          ],
+          tips: ["Private drivers essential for luxury experience", "Book premium transfers in advance"]
         },
         activities: {
           amount: 58,
@@ -1046,45 +1049,45 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
   },
 
   'cancun': {
-    dailyCost: { budget: 35, midRange: 78, luxury: 290 },
+    dailyCost: { budget: 35, midRange: 80, luxury: 300 },
     accommodation: { budget: 52, midRange: 118, luxury: 225 }, // Blended: major resort destination with vacation rental alternatives (15% savings)
     breakdown: {
-      budget: { total: 35, meals: 15, transport: 6, activities: 11, drinks: 3, incidentals: 8 },
-      midRange: { total: 78, meals: 30, transport: 10, activities: 26, drinks: 12, incidentals: 12 },
-      luxury: { total: 290, meals: 100, transport: 20, activities: 95, drinks: 50, incidentals: 25 }
+      budget: { total: 35, meals: 15, transport: 8, activities: 11, drinks: 3, incidentals: 8 },
+      midRange: { total: 80, meals: 30, transport: 20, activities: 26, drinks: 12, incidentals: 12 },
+      luxury: { total: 300, meals: 100, transport: 40, activities: 95, drinks: 50, incidentals: 25 }
     },
     confidence: 'high'
   },
 
   'rio-de-janeiro': {
-    dailyCost: { budget: 48, midRange: 82, luxury: 250 },
+    dailyCost: { budget: 50, midRange: 92, luxury: 280 },
     accommodation: { budget: 55, midRange: 98, luxury: 185 }, // Blended: major tourist city with strong vacation rental culture (20% savings)
     breakdown: {
-      budget: { total: 48, meals: 20, transport: 8, activities: 15, drinks: 8, incidentals: 8 },
-      midRange: { total: 82, meals: 32, transport: 12, activities: 26, drinks: 18, incidentals: 12 },
-      luxury: { total: 230, meals: 82, transport: 15, activities: 78, drinks: 40, incidentals: 25 }
+      budget: { total: 50, meals: 20, transport: 10, activities: 15, drinks: 8, incidentals: 8 },
+      midRange: { total: 92, meals: 32, transport: 22, activities: 26, drinks: 18, incidentals: 12 },
+      luxury: { total: 260, meals: 82, transport: 45, activities: 78, drinks: 40, incidentals: 25 }
     },
     confidence: 'high'
   },
 
   'sao-paulo': {
-    dailyCost: { budget: 52, midRange: 90, luxury: 280 },
+    dailyCost: { budget: 54, midRange: 100, luxury: 315 },
     accommodation: { budget: 48, midRange: 85, luxury: 165 }, // Blended: business center with emerging vacation rental market (18% savings)
     breakdown: {
-      budget: { total: 52, meals: 22, transport: 10, activities: 15, drinks: 8, incidentals: 8 },
-      midRange: { total: 90, meals: 35, transport: 15, activities: 28, drinks: 18, incidentals: 12 },
-      luxury: { total: 260, meals: 95, transport: 15, activities: 85, drinks: 40, incidentals: 25 }
+      budget: { total: 54, meals: 22, transport: 12, activities: 15, drinks: 8, incidentals: 8 },
+      midRange: { total: 100, meals: 35, transport: 25, activities: 28, drinks: 18, incidentals: 12 },
+      luxury: { total: 295, meals: 95, transport: 50, activities: 85, drinks: 40, incidentals: 25 }
     },
     confidence: 'high'
   },
 
   'buenos-aires': {
-    dailyCost: { budget: 48, midRange: 78, luxury: 235 },
+    dailyCost: { budget: 50, midRange: 88, luxury: 265 },
     accommodation: { budget: 42, midRange: 78, luxury: 160 }, // Blended: South American capital with strong Airbnb culture (22% savings)
     breakdown: {
-      budget: { total: 48, meals: 20, transport: 6, activities: 16, drinks: 8, incidentals: 8 },
-      midRange: { total: 78, meals: 32, transport: 10, activities: 25, drinks: 18, incidentals: 12 },
-      luxury: { total: 215, meals: 78, transport: 10, activities: 75, drinks: 37, incidentals: 25 }
+      budget: { total: 50, meals: 20, transport: 8, activities: 16, drinks: 8, incidentals: 8 },
+      midRange: { total: 88, meals: 32, transport: 20, activities: 25, drinks: 18, incidentals: 12 },
+      luxury: { total: 245, meals: 78, transport: 40, activities: 75, drinks: 37, incidentals: 25 }
     },
     detailedBreakdown: {
       budget: {
@@ -1176,23 +1179,23 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
   },
 
   'santiago': {
-    dailyCost: { budget: 52, midRange: 90, luxury: 280 },
+    dailyCost: { budget: 54, midRange: 100, luxury: 313 },
     accommodation: { budget: 52, midRange: 92, luxury: 180 }, // Blended: Chilean capital with growing vacation rental market (18% savings)
     breakdown: {
-      budget: { total: 52, meals: 22, transport: 8, activities: 18, drinks: 8, incidentals: 8 },
-      midRange: { total: 90, meals: 35, transport: 12, activities: 32, drinks: 18, incidentals: 12 },
-      luxury: { total: 260, meals: 90, transport: 12, activities: 95, drinks: 38, incidentals: 25 }
+      budget: { total: 54, meals: 22, transport: 10, activities: 18, drinks: 8, incidentals: 8 },
+      midRange: { total: 100, meals: 35, transport: 22, activities: 32, drinks: 18, incidentals: 12 },
+      luxury: { total: 293, meals: 90, transport: 45, activities: 95, drinks: 38, incidentals: 25 }
     },
     confidence: 'high'
   },
 
   'lima': {
-    dailyCost: { budget: 46, midRange: 72, luxury: 215 },
+    dailyCost: { budget: 47, midRange: 82, luxury: 243 },
     accommodation: { budget: 38, midRange: 68, luxury: 145 }, // Blended: Peruvian capital with emerging vacation rental options (20% savings)
     breakdown: {
-      budget: { total: 46, meals: 19, transport: 7, activities: 15, drinks: 8, incidentals: 8 },
-      midRange: { total: 72, meals: 28, transport: 10, activities: 24, drinks: 15, incidentals: 12 },
-      luxury: { total: 195, meals: 70, transport: 12, activities: 68, drinks: 30, incidentals: 25 }
+      budget: { total: 47, meals: 19, transport: 8, activities: 15, drinks: 8, incidentals: 8 },
+      midRange: { total: 82, meals: 28, transport: 20, activities: 24, drinks: 15, incidentals: 12 },
+      luxury: { total: 223, meals: 70, transport: 40, activities: 68, drinks: 30, incidentals: 25 }
     },
     confidence: 'high'
   },
@@ -1200,9 +1203,9 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
   'bogota': {
     dailyCost: { budget: 45, midRange: 68, luxury: 190 },
     breakdown: {
-      budget: { total: 45, meals: 18, transport: 6, activities: 15, drinks: 8, incidentals: 8 },
-      midRange: { total: 68, meals: 26, transport: 8, activities: 22, drinks: 15, incidentals: 12 },
-      luxury: { total: 170, meals: 60, transport: 8, activities: 57, drinks: 30, incidentals: 25 }
+      budget: { total: 45, meals: 18, transport: 8, activities: 15, drinks: 8, incidentals: 8 },
+      midRange: { total: 68, meals: 26, transport: 20, activities: 22, drinks: 15, incidentals: 12 },
+      luxury: { total: 170, meals: 60, transport: 40, activities: 57, drinks: 30, incidentals: 25 }
     },
     confidence: 'high'
   },
@@ -1213,8 +1216,8 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
     accommodation: { budget: 95, midRange: 185, luxury: 368 }, // Blended: expensive hotels, Airbnb regulated but available (12% savings)
     breakdown: {
       budget: { total: 58, meals: 24, transport: 10, activities: 18, drinks: 8, incidentals: 8 },
-      midRange: { total: 128, meals: 48, transport: 18, activities: 38, drinks: 24, incidentals: 15 },
-      luxury: { total: 460, meals: 160, transport: 30, activities: 140, drinks: 100, incidentals: 30 }
+      midRange: { total: 128, meals: 48, transport: 20, activities: 36, drinks: 24, incidentals: 15 },
+      luxury: { total: 460, meals: 160, transport: 40, activities: 130, drinks: 100, incidentals: 30 }
     },
     detailedBreakdown: {
       budget: {
@@ -1309,20 +1312,20 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
     dailyCost: { budget: 55, midRange: 125, luxury: 450 },
     accommodation: { budget: 88, midRange: 175, luxury: 332 }, // Blended: tourist market with good Airbnb options (15% savings)
     breakdown: {
-      budget: { total: 55, meals: 24, transport: 8, activities: 17, drinks: 8, incidentals: 8 },
-      midRange: { total: 125, meals: 48, transport: 15, activities: 36, drinks: 26, incidentals: 15 },
-      luxury: { total: 450, meals: 160, transport: 25, activities: 135, drinks: 100, incidentals: 30 }
+      budget: { total: 55, meals: 24, transport: 10, activities: 17, drinks: 8, incidentals: 8 },
+      midRange: { total: 125, meals: 48, transport: 20, activities: 31, drinks: 26, incidentals: 15 },
+      luxury: { total: 450, meals: 160, transport: 40, activities: 120, drinks: 100, incidentals: 30 }
     },
     confidence: 'high'
   },
 
   'rome': {
-    dailyCost: { budget: 48, midRange: 105, luxury: 380 },
+    dailyCost: { budget: 52, midRange: 121, luxury: 415 },
     accommodation: { budget: 72, midRange: 145, luxury: 285 }, // Blended: tourist city with strong Airbnb culture (16% savings)
     breakdown: {
-      budget: { total: 48, meals: 20, transport: 6, activities: 16, drinks: 8, incidentals: 8 },
-      midRange: { total: 105, meals: 40, transport: 12, activities: 32, drinks: 21, incidentals: 15 },
-      luxury: { total: 380, meals: 135, transport: 20, activities: 120, drinks: 80, incidentals: 25 }
+      budget: { total: 52, meals: 20, transport: 10, activities: 16, drinks: 8, incidentals: 8 },
+      midRange: { total: 121, meals: 40, transport: 28, activities: 32, drinks: 21, incidentals: 15 },
+      luxury: { total: 415, meals: 135, transport: 55, activities: 120, drinks: 80, incidentals: 25 }
     },
     detailedBreakdown: {
       budget: {
@@ -1489,12 +1492,12 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
   },
 
   'barcelona': {
-    dailyCost: { budget: 45, midRange: 98, luxury: 360 },
+    dailyCost: { budget: 49, midRange: 114, luxury: 395 },
     accommodation: { budget: 68, midRange: 135, luxury: 248 }, // Blended: popular tourist city with regulated but active Airbnb market (18% savings)
     breakdown: {
-      budget: { total: 45, meals: 18, transport: 6, activities: 15, drinks: 8, incidentals: 8 },
-      midRange: { total: 98, meals: 36, transport: 12, activities: 30, drinks: 20, incidentals: 15 },
-      luxury: { total: 360, meals: 125, transport: 20, activities: 115, drinks: 75, incidentals: 25 }
+      budget: { total: 49, meals: 18, transport: 10, activities: 15, drinks: 8, incidentals: 8 },
+      midRange: { total: 114, meals: 36, transport: 28, activities: 30, drinks: 20, incidentals: 15 },
+      luxury: { total: 395, meals: 125, transport: 55, activities: 115, drinks: 75, incidentals: 25 }
     },
     detailedBreakdown: {
       budget: {
@@ -1586,34 +1589,34 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
   },
 
   'amsterdam': {
-    dailyCost: { budget: 52, midRange: 110, luxury: 420 },
+    dailyCost: { budget: 56, midRange: 125, luxury: 455 },
     accommodation: { budget: 78, midRange: 158, luxury: 295 }, // Blended: tourist-friendly Airbnb market with good savings (18% savings)
     breakdown: {
-      budget: { total: 52, meals: 22, transport: 8, activities: 15, drinks: 9, incidentals: 8 },
-      midRange: { total: 110, meals: 42, transport: 15, activities: 30, drinks: 20, incidentals: 12 },
-      luxury: { total: 420, meals: 140, transport: 25, activities: 120, drinks: 95, incidentals: 40 }
+      budget: { total: 56, meals: 22, transport: 12, activities: 15, drinks: 9, incidentals: 8 },
+      midRange: { total: 125, meals: 42, transport: 30, activities: 30, drinks: 20, incidentals: 12 },
+      luxury: { total: 455, meals: 140, transport: 60, activities: 120, drinks: 95, incidentals: 40 }
     },
     confidence: 'high'
   },
 
   'berlin': {
-    dailyCost: { budget: 42, midRange: 88, luxury: 330 },
+    dailyCost: { budget: 46, midRange: 101, luxury: 360 },
     accommodation: { budget: 55, midRange: 115, luxury: 198 }, // Blended: affordable city with strong Airbnb culture (20% savings)
     breakdown: {
-      budget: { total: 42, meals: 18, transport: 6, activities: 13, drinks: 7, incidentals: 8 },
-      midRange: { total: 88, meals: 32, transport: 12, activities: 26, drinks: 18, incidentals: 12 },
-      luxury: { total: 330, meals: 115, transport: 20, activities: 100, drinks: 70, incidentals: 25 }
+      budget: { total: 46, meals: 18, transport: 10, activities: 13, drinks: 7, incidentals: 8 },
+      midRange: { total: 101, meals: 32, transport: 25, activities: 26, drinks: 18, incidentals: 12 },
+      luxury: { total: 360, meals: 115, transport: 50, activities: 100, drinks: 70, incidentals: 25 }
     },
     confidence: 'high'
   },
 
   'vienna': {
-    dailyCost: { budget: 48, midRange: 100, luxury: 380 },
+    dailyCost: { budget: 52, midRange: 115, luxury: 410 },
     accommodation: { budget: 65, midRange: 128, luxury: 228 }, // Blended: historic city with growing Airbnb market (16% savings)
     breakdown: {
-      budget: { total: 48, meals: 22, transport: 8, activities: 14, drinks: 7, incidentals: 8 },
-      midRange: { total: 100, meals: 40, transport: 15, activities: 28, drinks: 17, incidentals: 12 },
-      luxury: { total: 380, meals: 135, transport: 30, activities: 110, drinks: 80, incidentals: 25 }
+      budget: { total: 52, meals: 22, transport: 12, activities: 14, drinks: 7, incidentals: 8 },
+      midRange: { total: 115, meals: 40, transport: 30, activities: 28, drinks: 17, incidentals: 12 },
+      luxury: { total: 410, meals: 135, transport: 60, activities: 110, drinks: 80, incidentals: 25 }
     },
     confidence: 'high'
   },
@@ -1645,8 +1648,8 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
     accommodation: { budget: 88, midRange: 175, luxury: 295 }, // Blended: tech-friendly Nordic market with good Airbnb culture (15% savings)
     breakdown: {
       budget: { total: 62, meals: 28, transport: 10, activities: 18, drinks: 8, incidentals: 8 },
-      midRange: { total: 135, meals: 52, transport: 20, activities: 38, drinks: 25, incidentals: 15 },
-      luxury: { total: 490, meals: 170, transport: 35, activities: 155, drinks: 95, incidentals: 35 }
+      midRange: { total: 135, meals: 52, transport: 25, activities: 38, drinks: 25, incidentals: 15 },
+      luxury: { total: 490, meals: 170, transport: 50, activities: 155, drinks: 95, incidentals: 35 }
     },
     confidence: 'high'
   },
@@ -1666,53 +1669,53 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
     dailyCost: { budget: 88, midRange: 190, luxury: 680 },
     accommodation: { budget: 95, midRange: 180, luxury: 320 }, // Blended: expensive Nordic island market with limited Airbnb (8% savings)
     breakdown: {
-      budget: { total: 88, meals: 35, transport: 12, activities: 25, drinks: 18, incidentals: 10 },
-      midRange: { total: 190, meals: 70, transport: 20, activities: 55, drinks: 40, incidentals: 15 },
-      luxury: { total: 680, meals: 250, transport: 35, activities: 200, drinks: 155, incidentals: 40 }
+      budget: { total: 88, meals: 35, transport: 11, activities: 25, drinks: 18, incidentals: 10 },
+      midRange: { total: 190, meals: 70, transport: 28, activities: 55, drinks: 40, incidentals: 15 },
+      luxury: { total: 680, meals: 250, transport: 55, activities: 200, drinks: 155, incidentals: 40 }
     },
     confidence: 'high'
   },
 
   'lisbon': {
-    dailyCost: { budget: 35, midRange: 78, luxury: 290 },
+    dailyCost: { budget: 39, midRange: 92, luxury: 320 },
     accommodation: { budget: 52, midRange: 98, luxury: 260 }, // Blended: trendy Airbnbs now expensive, 15% savings
     breakdown: {
-      budget: { total: 35, meals: 15, transport: 4, activities: 12, drinks: 6, incidentals: 8 },
-      midRange: { total: 78, meals: 30, transport: 8, activities: 26, drinks: 14, incidentals: 12 },
-      luxury: { total: 290, meals: 105, transport: 15, activities: 95, drinks: 50, incidentals: 25 }
+      budget: { total: 39, meals: 15, transport: 8, activities: 12, drinks: 6, incidentals: 8 },
+      midRange: { total: 92, meals: 30, transport: 22, activities: 26, drinks: 14, incidentals: 12 },
+      luxury: { total: 320, meals: 105, transport: 45, activities: 95, drinks: 50, incidentals: 25 }
     },
     confidence: 'high'
   },
 
   'madrid': {
-    dailyCost: { budget: 42, midRange: 90, luxury: 340 },
+    dailyCost: { budget: 46, midRange: 107, luxury: 375 },
     accommodation: { budget: 58, midRange: 115, luxury: 208 }, // Blended: Spanish capital with strong Airbnb culture (18% savings)
     breakdown: {
-      budget: { total: 42, meals: 18, transport: 4, activities: 14, drinks: 8, incidentals: 8 },
-      midRange: { total: 90, meals: 34, transport: 8, activities: 28, drinks: 20, incidentals: 12 },
-      luxury: { total: 340, meals: 120, transport: 15, activities: 105, drinks: 75, incidentals: 25 }
+      budget: { total: 46, meals: 18, transport: 8, activities: 14, drinks: 8, incidentals: 8 },
+      midRange: { total: 107, meals: 34, transport: 25, activities: 28, drinks: 20, incidentals: 12 },
+      luxury: { total: 375, meals: 120, transport: 50, activities: 105, drinks: 75, incidentals: 25 }
     },
     confidence: 'high'
   },
 
   'prague': {
-    dailyCost: { budget: 52, midRange: 85, luxury: 270 },
+    dailyCost: { budget: 54, midRange: 98, luxury: 308 },
     accommodation: { budget: 58, midRange: 108, luxury: 200 }, // Blended: popular Eastern European city with excellent Airbnb culture (22% savings)
     breakdown: {
-      budget: { total: 52, meals: 22, transport: 8, activities: 18, drinks: 10, incidentals: 8 },
-      midRange: { total: 85, meals: 32, transport: 12, activities: 28, drinks: 18, incidentals: 12 },
-      luxury: { total: 250, meals: 90, transport: 12, activities: 85, drinks: 38, incidentals: 25 }
+      budget: { total: 54, meals: 22, transport: 10, activities: 18, drinks: 10, incidentals: 8 },
+      midRange: { total: 98, meals: 32, transport: 25, activities: 28, drinks: 18, incidentals: 12 },
+      luxury: { total: 288, meals: 90, transport: 50, activities: 85, drinks: 38, incidentals: 25 }
     },
     confidence: 'high'
   },
 
   'budapest': {
-    dailyCost: { budget: 48, midRange: 78, luxury: 250 },
+    dailyCost: { budget: 48, midRange: 80, luxury: 265 },
     accommodation: { budget: 52, midRange: 88, luxury: 165 }, // Blended: affordable Eastern European city with strong Airbnb culture (25% savings)
     breakdown: {
-      budget: { total: 48, meals: 20, transport: 6, activities: 16, drinks: 10, incidentals: 8 },
-      midRange: { total: 78, meals: 30, transport: 10, activities: 26, drinks: 18, incidentals: 12 },
-      luxury: { total: 230, meals: 82, transport: 10, activities: 78, drinks: 35, incidentals: 25 }
+      budget: { total: 48, meals: 20, transport: 8, activities: 16, drinks: 10, incidentals: 8 },
+      midRange: { total: 80, meals: 30, transport: 20, activities: 26, drinks: 18, incidentals: 12 },
+      luxury: { total: 245, meals: 82, transport: 40, activities: 78, drinks: 35, incidentals: 25 }
     },
     confidence: 'high'
   },
@@ -1722,8 +1725,8 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
     accommodation: { budget: 78, midRange: 148, luxury: 268 }, // Blended: expensive Irish market with growing Airbnb acceptance (16% savings)
     breakdown: {
       budget: { total: 52, meals: 22, transport: 8, activities: 16, drinks: 8, incidentals: 8 },
-      midRange: { total: 115, meals: 42, transport: 15, activities: 32, drinks: 26, incidentals: 15 },
-      luxury: { total: 420, meals: 150, transport: 25, activities: 120, drinks: 100, incidentals: 25 }
+      midRange: { total: 115, meals: 42, transport: 20, activities: 32, drinks: 26, incidentals: 15 },
+      luxury: { total: 420, meals: 150, transport: 40, activities: 120, drinks: 100, incidentals: 25 }
     },
     confidence: 'high'
   },
@@ -1732,9 +1735,9 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
     dailyCost: { budget: 48, midRange: 105, luxury: 390 },
     accommodation: { budget: 85, midRange: 165, luxury: 295 }, // Blended: French Riviera tourism with good vacation rental market (18% savings)
     breakdown: {
-      budget: { total: 48, meals: 20, transport: 6, activities: 16, drinks: 8, incidentals: 8 },
-      midRange: { total: 105, meals: 40, transport: 12, activities: 32, drinks: 21, incidentals: 15 },
-      luxury: { total: 390, meals: 145, transport: 20, activities: 120, drinks: 80, incidentals: 25 }
+      budget: { total: 48, meals: 20, transport: 10, activities: 16, drinks: 8, incidentals: 8 },
+      midRange: { total: 105, meals: 40, transport: 25, activities: 32, drinks: 21, incidentals: 15 },
+      luxury: { total: 390, meals: 145, transport: 50, activities: 120, drinks: 80, incidentals: 25 }
     },
     confidence: 'high'
   },
@@ -1743,9 +1746,9 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
     dailyCost: { budget: 42, midRange: 90, luxury: 340 },
     accommodation: { budget: 62, midRange: 118, luxury: 208 }, // Blended: French regional city with good Airbnb penetration (20% savings)
     breakdown: {
-      budget: { total: 42, meals: 18, transport: 6, activities: 14, drinks: 6, incidentals: 8 },
-      midRange: { total: 90, meals: 34, transport: 12, activities: 26, drinks: 18, incidentals: 12 },
-      luxury: { total: 340, meals: 125, transport: 20, activities: 100, drinks: 70, incidentals: 25 }
+      budget: { total: 42, meals: 18, transport: 8, activities: 14, drinks: 6, incidentals: 8 },
+      midRange: { total: 90, meals: 34, transport: 20, activities: 26, drinks: 18, incidentals: 12 },
+      luxury: { total: 340, meals: 125, transport: 40, activities: 100, drinks: 70, incidentals: 25 }
     },
     confidence: 'high'
   },
@@ -1755,8 +1758,8 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
     accommodation: { budget: 68, midRange: 138, luxury: 248 }, // Blended: business-focused German city with competitive Airbnb market (18% savings)
     breakdown: {
       budget: { total: 48, meals: 20, transport: 8, activities: 15, drinks: 7, incidentals: 8 },
-      midRange: { total: 100, meals: 38, transport: 15, activities: 28, drinks: 19, incidentals: 12 },
-      luxury: { total: 370, meals: 135, transport: 25, activities: 105, drinks: 80, incidentals: 25 }
+      midRange: { total: 100, meals: 38, transport: 20, activities: 28, drinks: 19, incidentals: 12 },
+      luxury: { total: 370, meals: 135, transport: 40, activities: 105, drinks: 80, incidentals: 25 }
     },
     confidence: 'high'
   },
@@ -1765,21 +1768,21 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
     dailyCost: { budget: 45, midRange: 95, luxury: 350 },
     accommodation: { budget: 62, midRange: 125, luxury: 218 }, // Blended: German port city with competitive Airbnb market (18% savings)
     breakdown: {
-      budget: { total: 45, meals: 18, transport: 8, activities: 14, drinks: 7, incidentals: 8 },
-      midRange: { total: 95, meals: 36, transport: 15, activities: 26, drinks: 18, incidentals: 12 },
-      luxury: { total: 350, meals: 125, transport: 25, activities: 100, drinks: 75, incidentals: 25 }
+      budget: { total: 45, meals: 18, transport: 10, activities: 14, drinks: 7, incidentals: 8 },
+      midRange: { total: 95, meals: 36, transport: 25, activities: 26, drinks: 18, incidentals: 12 },
+      luxury: { total: 350, meals: 125, transport: 50, activities: 100, drinks: 75, incidentals: 25 }
     },
     confidence: 'high'
   },
 
   // ASIA
   'tokyo': {
-    dailyCost: { budget: 45, midRange: 98, luxury: 360 },
+    dailyCost: { budget: 49, midRange: 113, luxury: 390 },
     accommodation: { budget: 58, midRange: 125, luxury: 248 }, // Blended: traditional hotels + growing vacation rental market (15% savings)
     breakdown: {
-      budget: { total: 45, meals: 20, transport: 8, activities: 12, drinks: 7, incidentals: 8 },
-      midRange: { total: 98, meals: 38, transport: 15, activities: 27, drinks: 18, incidentals: 12 },
-      luxury: { total: 360, meals: 125, transport: 30, activities: 110, drinks: 70, incidentals: 25 }
+      budget: { total: 49, meals: 20, transport: 12, activities: 12, drinks: 7, incidentals: 8 },
+      midRange: { total: 113, meals: 38, transport: 30, activities: 27, drinks: 18, incidentals: 12 },
+      luxury: { total: 390, meals: 125, transport: 60, activities: 110, drinks: 70, incidentals: 25 }
     },
     detailedBreakdown: {
       budget: {
@@ -1871,12 +1874,12 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
   },
 
   'seoul': {
-    dailyCost: { budget: 32, midRange: 72, luxury: 270 },
+    dailyCost: { budget: 36, midRange: 86, luxury: 300 },
     accommodation: { budget: 45, midRange: 85, luxury: 168 }, // Blended: modern city with growing vacation rental market (17% savings)
     breakdown: {
-      budget: { total: 32, meals: 14, transport: 4, activities: 10, drinks: 6, incidentals: 8 },
-      midRange: { total: 72, meals: 28, transport: 8, activities: 24, drinks: 12, incidentals: 12 },
-      luxury: { total: 270, meals: 95, transport: 15, activities: 90, drinks: 45, incidentals: 25 }
+      budget: { total: 36, meals: 14, transport: 8, activities: 10, drinks: 6, incidentals: 8 },
+      midRange: { total: 86, meals: 28, transport: 22, activities: 24, drinks: 12, incidentals: 12 },
+      luxury: { total: 300, meals: 95, transport: 45, activities: 90, drinks: 45, incidentals: 25 }
     },
     detailedBreakdown: {
       budget: {
@@ -2043,12 +2046,12 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
   },
 
   'singapore': {
-    dailyCost: { budget: 38, midRange: 85, luxury: 320 },
+    dailyCost: { budget: 42, midRange: 100, luxury: 350 },
     accommodation: { budget: 68, midRange: 146, luxury: 288 }, // Blended: strict regulations = minimal Airbnb savings (10%)
     breakdown: {
-      budget: { total: 38, meals: 16, transport: 6, activities: 12, drinks: 6, incidentals: 8 },
-      midRange: { total: 85, meals: 32, transport: 10, activities: 27, drinks: 16, incidentals: 12 },
-      luxury: { total: 320, meals: 115, transport: 20, activities: 105, drinks: 55, incidentals: 25 }
+      budget: { total: 42, meals: 16, transport: 10, activities: 12, drinks: 6, incidentals: 8 },
+      midRange: { total: 100, meals: 32, transport: 25, activities: 27, drinks: 16, incidentals: 12 },
+      luxury: { total: 350, meals: 115, transport: 50, activities: 105, drinks: 55, incidentals: 25 }
     },
     detailedBreakdown: {
       budget: {
@@ -2215,12 +2218,12 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
   },
 
   'bangkok': {
-    dailyCost: { budget: 42, midRange: 65, luxury: 180 },
+    dailyCost: { budget: 44, midRange: 77, luxury: 208 },
     accommodation: { budget: 25, midRange: 55, luxury: 165 }, // Blended: good Airbnb options reduce costs 15-25%
     breakdown: {
-      budget: { total: 42, meals: 18, transport: 6, activities: 12, drinks: 6, incidentals: 5 },
-      midRange: { total: 65, meals: 25, transport: 8, activities: 20, drinks: 12, incidentals: 8 },
-      luxury: { total: 160, meals: 60, transport: 12, activities: 60, drinks: 23, incidentals: 15 }
+      budget: { total: 44, meals: 18, transport: 8, activities: 12, drinks: 6, incidentals: 5 },
+      midRange: { total: 77, meals: 25, transport: 20, activities: 20, drinks: 12, incidentals: 8 },
+      luxury: { total: 188, meals: 60, transport: 40, activities: 60, drinks: 23, incidentals: 15 }
     },
     detailedBreakdown: {
       budget: {
@@ -2368,12 +2371,12 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
   },
 
   'kuala-lumpur': {
-    dailyCost: { budget: 22, midRange: 50, luxury: 185 },
+    dailyCost: { budget: 24, midRange: 57, luxury: 200 },
     accommodation: { budget: 28, midRange: 58, luxury: 135 }, // Blended: strong SE Asian vacation rental market with good savings (20% savings)
     breakdown: {
-      budget: { total: 22, meals: 9, transport: 3, activities: 7, drinks: 3, incidentals: 8 },
-      midRange: { total: 50, meals: 18, transport: 6, activities: 16, drinks: 10, incidentals: 12 },
-      luxury: { total: 185, meals: 65, transport: 12, activities: 60, drinks: 33, incidentals: 25 }
+      budget: { total: 24, meals: 9, transport: 8, activities: 7, drinks: 3, incidentals: 8 },
+      midRange: { total: 50, meals: 18, transport: 20, activities: 16, drinks: 10, incidentals: 12 },
+      luxury: { total: 185, meals: 65, transport: 40, activities: 60, drinks: 33, incidentals: 25 }
     },
     confidence: 'high'
   },
@@ -2382,20 +2385,20 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
     dailyCost: { budget: 16, midRange: 38, luxury: 145 },
     accommodation: { budget: 18, midRange: 38, luxury: 98 }, // Blended: emerging vacation rental market with significant savings (25% savings)
     breakdown: {
-      budget: { total: 16, meals: 7, transport: 2, activities: 4, drinks: 3, incidentals: 8 },
-      midRange: { total: 38, meals: 14, transport: 4, activities: 10, drinks: 10, incidentals: 12 },
-      luxury: { total: 145, meals: 50, transport: 8, activities: 45, drinks: 27, incidentals: 25 }
+      budget: { total: 16, meals: 7, transport: 8, activities: 4, drinks: 3, incidentals: 8 },
+      midRange: { total: 38, meals: 14, transport: 20, activities: 10, drinks: 10, incidentals: 12 },
+      luxury: { total: 145, meals: 50, transport: 40, activities: 45, drinks: 27, incidentals: 25 }
     },
     confidence: 'high'
   },
 
   'jakarta': {
-    dailyCost: { budget: 17, midRange: 38, luxury: 140 },
+    dailyCost: { budget: 19, midRange: 44, luxury: 150 },
     accommodation: { budget: 22, midRange: 45, luxury: 115 }, // Blended: growing SE Asian market with vacation rental savings (22% savings)
     breakdown: {
-      budget: { total: 17, meals: 7, transport: 2, activities: 6, drinks: 3, incidentals: 5 },
-      midRange: { total: 38, meals: 16, transport: 4, activities: 14, drinks: 6, incidentals: 8 },
-      luxury: { total: 140, meals: 55, transport: 12, activities: 50, drinks: 18, incidentals: 15 }
+      budget: { total: 19, meals: 7, transport: 8, activities: 6, drinks: 3, incidentals: 5 },
+      midRange: { total: 38, meals: 16, transport: 20, activities: 14, drinks: 6, incidentals: 8 },
+      luxury: { total: 140, meals: 55, transport: 40, activities: 50, drinks: 18, incidentals: 15 }
     },
     confidence: 'high'
   },
@@ -2404,20 +2407,20 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
     dailyCost: { budget: 20, midRange: 45, luxury: 170 },
     accommodation: { budget: 24, midRange: 52, luxury: 135 }, // Blended: growing Filipino market with emerging vacation rental culture (22% savings)
     breakdown: {
-      budget: { total: 20, meals: 8, transport: 3, activities: 6, drinks: 3, incidentals: 8 },
-      midRange: { total: 45, meals: 16, transport: 5, activities: 14, drinks: 10, incidentals: 12 },
-      luxury: { total: 170, meals: 60, transport: 10, activities: 55, drinks: 30, incidentals: 25 }
+      budget: { total: 20, meals: 8, transport: 8, activities: 6, drinks: 3, incidentals: 8 },
+      midRange: { total: 45, meals: 16, transport: 20, activities: 14, drinks: 10, incidentals: 12 },
+      luxury: { total: 170, meals: 60, transport: 40, activities: 55, drinks: 30, incidentals: 25 }
     },
     confidence: 'high'
   },
 
   'mumbai': {
-    dailyCost: { budget: 38, midRange: 62, luxury: 180 },
+    dailyCost: { budget: 38, midRange: 64, luxury: 192 },
     accommodation: { budget: 32, midRange: 58, luxury: 140 }, // Blended: growing Indian market with emerging vacation rentals (18% savings)
     breakdown: {
-      budget: { total: 38, meals: 16, transport: 6, activities: 12, drinks: 8, incidentals: 8 },
-      midRange: { total: 62, meals: 24, transport: 10, activities: 18, drinks: 15, incidentals: 12 },
-      luxury: { total: 160, meals: 55, transport: 8, activities: 50, drinks: 32, incidentals: 25 }
+      budget: { total: 38, meals: 16, transport: 8, activities: 12, drinks: 8, incidentals: 8 },
+      midRange: { total: 64, meals: 24, transport: 20, activities: 18, drinks: 15, incidentals: 12 },
+      luxury: { total: 172, meals: 55, transport: 40, activities: 50, drinks: 32, incidentals: 25 }
     },
     detailedBreakdown: {
       budget: {
@@ -2587,9 +2590,9 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
     dailyCost: { budget: 16, midRange: 38, luxury: 145 },
     accommodation: { budget: 18, midRange: 42, luxury: 118 }, // Blended: capital city with growing vacation rental market (20% savings)
     breakdown: {
-      budget: { total: 16, meals: 7, transport: 2, activities: 4, drinks: 3, incidentals: 8 },
-      midRange: { total: 38, meals: 14, transport: 4, activities: 10, drinks: 10, incidentals: 12 },
-      luxury: { total: 145, meals: 50, transport: 8, activities: 45, drinks: 27, incidentals: 25 }
+      budget: { total: 16, meals: 7, transport: 8, activities: 4, drinks: 3, incidentals: 8 },
+      midRange: { total: 38, meals: 14, transport: 20, activities: 10, drinks: 10, incidentals: 12 },
+      luxury: { total: 145, meals: 50, transport: 40, activities: 45, drinks: 27, incidentals: 25 }
     },
     confidence: 'high'
   },
@@ -2695,9 +2698,9 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
     dailyCost: { budget: 28, midRange: 62, luxury: 230 },
     accommodation: { budget: 35, midRange: 68, luxury: 148 }, // Blended: major tourist city with strong Airbnb market (22% savings)
     breakdown: {
-      budget: { total: 28, meals: 12, transport: 3, activities: 10, drinks: 5, incidentals: 8 },
-      midRange: { total: 62, meals: 24, transport: 5, activities: 21, drinks: 12, incidentals: 12 },
-      luxury: { total: 230, meals: 82, transport: 10, activities: 78, drinks: 35, incidentals: 25 }
+      budget: { total: 28, meals: 12, transport: 8, activities: 10, drinks: 5, incidentals: 8 },
+      midRange: { total: 62, meals: 24, transport: 20, activities: 21, drinks: 12, incidentals: 12 },
+      luxury: { total: 230, meals: 82, transport: 40, activities: 78, drinks: 35, incidentals: 25 }
     },
     detailedBreakdown: {
       budget: {
@@ -2864,46 +2867,46 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
   },
 
   'hong-kong': {
-    dailyCost: { budget: 42, midRange: 92, luxury: 340 },
+    dailyCost: { budget: 46, midRange: 108, luxury: 375 },
     accommodation: { budget: 78, midRange: 155, luxury: 298 }, // Blended: expensive hotels, limited Airbnb options (12% savings)
     breakdown: {
-      budget: { total: 42, meals: 18, transport: 6, activities: 13, drinks: 7, incidentals: 8 },
-      midRange: { total: 92, meals: 36, transport: 12, activities: 26, drinks: 18, incidentals: 12 },
-      luxury: { total: 340, meals: 120, transport: 20, activities: 105, drinks: 70, incidentals: 25 }
+      budget: { total: 46, meals: 18, transport: 10, activities: 13, drinks: 7, incidentals: 8 },
+      midRange: { total: 108, meals: 36, transport: 28, activities: 26, drinks: 18, incidentals: 12 },
+      luxury: { total: 375, meals: 120, transport: 55, activities: 105, drinks: 70, incidentals: 25 }
     },
     confidence: 'high'
   },
 
   'shanghai': {
-    dailyCost: { budget: 32, midRange: 72, luxury: 270 },
+    dailyCost: { budget: 32, midRange: 74, luxury: 280 },
     accommodation: { budget: 45, midRange: 88, luxury: 178 }, // Blended: major Chinese city with emerging vacation rental market (15% savings)
     breakdown: {
-      budget: { total: 32, meals: 14, transport: 4, activities: 10, drinks: 6, incidentals: 8 },
-      midRange: { total: 72, meals: 28, transport: 8, activities: 24, drinks: 12, incidentals: 12 },
-      luxury: { total: 270, meals: 95, transport: 15, activities: 90, drinks: 45, incidentals: 25 }
+      budget: { total: 32, meals: 14, transport: 8, activities: 10, drinks: 6, incidentals: 8 },
+      midRange: { total: 74, meals: 28, transport: 20, activities: 24, drinks: 12, incidentals: 12 },
+      luxury: { total: 280, meals: 95, transport: 40, activities: 90, drinks: 45, incidentals: 25 }
     },
     confidence: 'high'
   },
 
   // OCEANIA
   'sydney': {
-    dailyCost: { budget: 58, midRange: 125, luxury: 450 },
+    dailyCost: { budget: 61, midRange: 138, luxury: 480 },
     accommodation: { budget: 95, midRange: 185, luxury: 328 }, // Blended: expensive Australian market with strong Airbnb culture (14% savings)
     breakdown: {
-      budget: { total: 58, meals: 24, transport: 12, activities: 16, drinks: 8, incidentals: 8 },
-      midRange: { total: 125, meals: 48, transport: 22, activities: 32, drinks: 23, incidentals: 15 },
-      luxury: { total: 450, meals: 160, transport: 40, activities: 135, drinks: 90, incidentals: 25 }
+      budget: { total: 61, meals: 24, transport: 15, activities: 16, drinks: 8, incidentals: 8 },
+      midRange: { total: 138, meals: 48, transport: 35, activities: 32, drinks: 23, incidentals: 15 },
+      luxury: { total: 480, meals: 160, transport: 70, activities: 135, drinks: 90, incidentals: 25 }
     },
     confidence: 'high'
   },
 
   'melbourne': {
-    dailyCost: { budget: 52, midRange: 115, luxury: 420 },
+    dailyCost: { budget: 54, midRange: 127, luxury: 450 },
     accommodation: { budget: 82, midRange: 165, luxury: 288 }, // Blended: cultural city with good Airbnb market (16% savings)
     breakdown: {
-      budget: { total: 52, meals: 22, transport: 10, activities: 15, drinks: 7, incidentals: 8 },
-      midRange: { total: 115, meals: 44, transport: 18, activities: 32, drinks: 21, incidentals: 15 },
-      luxury: { total: 420, meals: 150, transport: 35, activities: 130, drinks: 80, incidentals: 25 }
+      budget: { total: 54, meals: 22, transport: 12, activities: 15, drinks: 7, incidentals: 8 },
+      midRange: { total: 127, meals: 44, transport: 30, activities: 32, drinks: 21, incidentals: 15 },
+      luxury: { total: 450, meals: 150, transport: 65, activities: 130, drinks: 80, incidentals: 25 }
     },
     confidence: 'high'
   },
@@ -2912,8 +2915,8 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
     dailyCost: { budget: 48, midRange: 105, luxury: 380 },
     breakdown: {
       budget: { total: 48, meals: 20, transport: 8, activities: 15, drinks: 7, incidentals: 8 },
-      midRange: { total: 105, meals: 40, transport: 15, activities: 30, drinks: 20, incidentals: 15 },
-      luxury: { total: 380, meals: 135, transport: 25, activities: 120, drinks: 75, incidentals: 25 }
+      midRange: { total: 105, meals: 40, transport: 20, activities: 30, drinks: 20, incidentals: 15 },
+      luxury: { total: 380, meals: 135, transport: 40, activities: 120, drinks: 75, incidentals: 25 }
     },
     confidence: 'high'
   },
@@ -2922,8 +2925,8 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
     dailyCost: { budget: 52, midRange: 115, luxury: 420 },
     breakdown: {
       budget: { total: 52, meals: 22, transport: 8, activities: 17, drinks: 7, incidentals: 8 },
-      midRange: { total: 115, meals: 42, transport: 15, activities: 38, drinks: 20, incidentals: 15 },
-      luxury: { total: 420, meals: 145, transport: 25, activities: 150, drinks: 75, incidentals: 25 }
+      midRange: { total: 115, meals: 42, transport: 20, activities: 38, drinks: 20, incidentals: 15 },
+      luxury: { total: 420, meals: 145, transport: 40, activities: 150, drinks: 75, incidentals: 25 }
     },
     confidence: 'high'
   },
@@ -2932,9 +2935,9 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
   'cairo': {
     dailyCost: { budget: 36, midRange: 62, luxury: 180 },
     breakdown: {
-      budget: { total: 36, meals: 15, transport: 5, activities: 12, drinks: 8, incidentals: 8 },
-      midRange: { total: 62, meals: 24, transport: 8, activities: 20, drinks: 15, incidentals: 12 },
-      luxury: { total: 160, meals: 55, transport: 8, activities: 50, drinks: 32, incidentals: 25 }
+      budget: { total: 36, meals: 15, transport: 8, activities: 12, drinks: 8, incidentals: 8 },
+      midRange: { total: 69, meals: 24, transport: 20, activities: 20, drinks: 15, incidentals: 12 },
+      luxury: { total: 160, meals: 55, transport: 40, activities: 50, drinks: 32, incidentals: 25 }
     },
     confidence: 'high'
   },
@@ -2942,9 +2945,9 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
   'cape-town': {
     dailyCost: { budget: 28, midRange: 62, luxury: 230 },
     breakdown: {
-      budget: { total: 28, meals: 12, transport: 4, activities: 9, drinks: 3, incidentals: 8 },
-      midRange: { total: 62, meals: 24, transport: 6, activities: 20, drinks: 12, incidentals: 12 },
-      luxury: { total: 230, meals: 82, transport: 15, activities: 78, drinks: 40, incidentals: 25 }
+      budget: { total: 28, meals: 12, transport: 8, activities: 9, drinks: 3, incidentals: 8 },
+      midRange: { total: 68, meals: 24, transport: 20, activities: 20, drinks: 12, incidentals: 12 },
+      luxury: { total: 245, meals: 82, transport: 40, activities: 78, drinks: 40, incidentals: 25 }
     },
     confidence: 'high'
   },
@@ -2952,9 +2955,9 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
   'marrakech': {
     dailyCost: { budget: 24, midRange: 52, luxury: 195 },
     breakdown: {
-      budget: { total: 24, meals: 10, transport: 3, activities: 8, drinks: 3, incidentals: 8 },
-      midRange: { total: 52, meals: 20, transport: 5, activities: 17, drinks: 10, incidentals: 12 },
-      luxury: { total: 195, meals: 70, transport: 12, activities: 68, drinks: 30, incidentals: 25 }
+      budget: { total: 24, meals: 10, transport: 8, activities: 8, drinks: 3, incidentals: 8 },
+      midRange: { total: 52, meals: 20, transport: 20, activities: 17, drinks: 10, incidentals: 12 },
+      luxury: { total: 195, meals: 70, transport: 40, activities: 68, drinks: 30, incidentals: 25 }
     },
     confidence: 'high'
   },
@@ -2964,9 +2967,9 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
     dailyCost: { budget: 35, midRange: 75, luxury: 280 },
     accommodation: { budget: 48, midRange: 92, luxury: 172 }, // Blended: Spanish tourist city with strong vacation rental culture (20% savings)
     breakdown: {
-      budget: { total: 35, meals: 15, transport: 4, activities: 12, drinks: 6, incidentals: 8 },
-      midRange: { total: 75, meals: 28, transport: 8, activities: 24, drinks: 15, incidentals: 12 },
-      luxury: { total: 280, meals: 100, transport: 15, activities: 85, drinks: 55, incidentals: 25 }
+      budget: { total: 35, meals: 15, transport: 8, activities: 12, drinks: 6, incidentals: 8 },
+      midRange: { total: 75, meals: 28, transport: 20, activities: 24, drinks: 15, incidentals: 12 },
+      luxury: { total: 290, meals: 100, transport: 40, activities: 85, drinks: 55, incidentals: 25 }
     },
     confidence: 'high'
   },
@@ -2986,9 +2989,9 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
     dailyCost: { budget: 45, midRange: 95, luxury: 360 },
     accommodation: { budget: 62, midRange: 125, luxury: 225 }, // Blended: Belgian capital with growing Airbnb market (16% savings)
     breakdown: {
-      budget: { total: 45, meals: 18, transport: 8, activities: 14, drinks: 7, incidentals: 8 },
-      midRange: { total: 95, meals: 36, transport: 15, activities: 26, drinks: 18, incidentals: 12 },
-      luxury: { total: 360, meals: 130, transport: 25, activities: 100, drinks: 80, incidentals: 25 }
+      budget: { total: 45, meals: 18, transport: 10, activities: 14, drinks: 7, incidentals: 8 },
+      midRange: { total: 95, meals: 36, transport: 25, activities: 26, drinks: 18, incidentals: 12 },
+      luxury: { total: 360, meals: 130, transport: 50, activities: 100, drinks: 80, incidentals: 25 }
     },
     confidence: 'high'
   },
@@ -2997,9 +3000,9 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
     dailyCost: { budget: 32, midRange: 68, luxury: 260 },
     accommodation: { budget: 42, midRange: 82, luxury: 158 }, // Blended: Portuguese tourist city with excellent vacation rental market (20% savings)
     breakdown: {
-      budget: { total: 32, meals: 14, transport: 4, activities: 10, drinks: 6, incidentals: 8 },
-      midRange: { total: 68, meals: 26, transport: 8, activities: 20, drinks: 14, incidentals: 12 },
-      luxury: { total: 260, meals: 95, transport: 15, activities: 80, drinks: 55, incidentals: 25 }
+      budget: { total: 32, meals: 14, transport: 8, activities: 10, drinks: 6, incidentals: 8 },
+      midRange: { total: 68, meals: 26, transport: 20, activities: 20, drinks: 14, incidentals: 12 },
+      luxury: { total: 260, meals: 95, transport: 40, activities: 80, drinks: 55, incidentals: 25 }
     },
     confidence: 'high'
   },
@@ -3007,9 +3010,9 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
   'athens': {
     dailyCost: { budget: 32, midRange: 70, luxury: 260 },
     breakdown: {
-      budget: { total: 32, meals: 14, transport: 4, activities: 10, drinks: 6, incidentals: 8 },
-      midRange: { total: 70, meals: 26, transport: 8, activities: 22, drinks: 14, incidentals: 12 },
-      luxury: { total: 260, meals: 90, transport: 15, activities: 85, drinks: 55, incidentals: 25 }
+      budget: { total: 32, meals: 14, transport: 8, activities: 10, drinks: 6, incidentals: 8 },
+      midRange: { total: 70, meals: 26, transport: 20, activities: 22, drinks: 14, incidentals: 12 },
+      luxury: { total: 260, meals: 90, transport: 40, activities: 85, drinks: 55, incidentals: 25 }
     },
     confidence: 'high'
   },
@@ -3018,8 +3021,8 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
     dailyCost: { budget: 65, midRange: 135, luxury: 480 },
     breakdown: {
       budget: { total: 65, meals: 28, transport: 12, activities: 18, drinks: 9, incidentals: 12 },
-      midRange: { total: 135, meals: 52, transport: 20, activities: 38, drinks: 25, incidentals: 20 },
-      luxury: { total: 480, meals: 170, transport: 35, activities: 140, drinks: 105, incidentals: 30 }
+      midRange: { total: 135, meals: 52, transport: 30, activities: 38, drinks: 25, incidentals: 20 },
+      luxury: { total: 480, meals: 170, transport: 60, activities: 140, drinks: 105, incidentals: 30 }
     },
     confidence: 'high'
   },
@@ -3027,9 +3030,9 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
   'warsaw': {
     dailyCost: { budget: 30, midRange: 65, luxury: 240 },
     breakdown: {
-      budget: { total: 30, meals: 12, transport: 5, activities: 10, drinks: 5, incidentals: 8 },
-      midRange: { total: 65, meals: 24, transport: 8, activities: 21, drinks: 12, incidentals: 12 },
-      luxury: { total: 240, meals: 85, transport: 15, activities: 80, drinks: 45, incidentals: 25 }
+      budget: { total: 30, meals: 12, transport: 8, activities: 10, drinks: 5, incidentals: 8 },
+      midRange: { total: 65, meals: 24, transport: 20, activities: 21, drinks: 12, incidentals: 12 },
+      luxury: { total: 240, meals: 85, transport: 40, activities: 80, drinks: 45, incidentals: 25 }
     },
     confidence: 'high'
   },
@@ -3037,9 +3040,9 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
   'krakow': {
     dailyCost: { budget: 28, midRange: 60, luxury: 220 },
     breakdown: {
-      budget: { total: 28, meals: 11, transport: 4, activities: 10, drinks: 5, incidentals: 8 },
-      midRange: { total: 60, meals: 22, transport: 6, activities: 20, drinks: 12, incidentals: 12 },
-      luxury: { total: 220, meals: 78, transport: 12, activities: 75, drinks: 40, incidentals: 25 }
+      budget: { total: 28, meals: 11, transport: 8, activities: 10, drinks: 5, incidentals: 8 },
+      midRange: { total: 60, meals: 22, transport: 20, activities: 20, drinks: 12, incidentals: 12 },
+      luxury: { total: 220, meals: 78, transport: 40, activities: 75, drinks: 40, incidentals: 25 }
     },
     confidence: 'high'
   },
@@ -3049,8 +3052,8 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
     accommodation: { budget: 78, midRange: 148, luxury: 268 }, // Blended: Nordic capital with growing tech-friendly Airbnb market (14% savings)
     breakdown: {
       budget: { total: 55, meals: 24, transport: 10, activities: 16, drinks: 7, incidentals: 8 },
-      midRange: { total: 120, meals: 46, transport: 20, activities: 34, drinks: 20, incidentals: 15 },
-      luxury: { total: 450, meals: 160, transport: 35, activities: 135, drinks: 95, incidentals: 25 }
+      midRange: { total: 120, meals: 46, transport: 25, activities: 34, drinks: 20, incidentals: 15 },
+      luxury: { total: 450, meals: 160, transport: 50, activities: 135, drinks: 95, incidentals: 25 }
     },
     confidence: 'high'
   },
@@ -3059,9 +3062,9 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
     dailyCost: { budget: 32, midRange: 68, luxury: 250 },
     accommodation: { budget: 42, midRange: 82, luxury: 155 }, // Blended: Croatian capital with excellent Airbnb culture (22% savings)
     breakdown: {
-      budget: { total: 32, meals: 14, transport: 4, activities: 11, drinks: 5, incidentals: 8 },
-      midRange: { total: 68, meals: 26, transport: 8, activities: 22, drinks: 12, incidentals: 12 },
-      luxury: { total: 250, meals: 90, transport: 15, activities: 80, drinks: 40, incidentals: 25 }
+      budget: { total: 32, meals: 14, transport: 8, activities: 11, drinks: 5, incidentals: 8 },
+      midRange: { total: 68, meals: 26, transport: 20, activities: 22, drinks: 12, incidentals: 12 },
+      luxury: { total: 250, meals: 90, transport: 40, activities: 80, drinks: 40, incidentals: 25 }
     },
     confidence: 'high'
   },
@@ -3070,9 +3073,9 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
     dailyCost: { budget: 48, midRange: 105, luxury: 390 },
     accommodation: { budget: 58, midRange: 115, luxury: 218 }, // Blended: Croatian tourist hotspot with strong vacation rental market (20% savings)
     breakdown: {
-      budget: { total: 48, meals: 20, transport: 6, activities: 17, drinks: 7, incidentals: 8 },
-      midRange: { total: 105, meals: 40, transport: 12, activities: 33, drinks: 20, incidentals: 15 },
-      luxury: { total: 390, meals: 140, transport: 20, activities: 125, drinks: 80, incidentals: 25 }
+      budget: { total: 48, meals: 20, transport: 8, activities: 17, drinks: 7, incidentals: 8 },
+      midRange: { total: 105, meals: 40, transport: 20, activities: 33, drinks: 20, incidentals: 15 },
+      luxury: { total: 390, meals: 140, transport: 40, activities: 125, drinks: 80, incidentals: 25 }
     },
     confidence: 'high'
   },
@@ -3081,9 +3084,9 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
     dailyCost: { budget: 30, midRange: 65, luxury: 240 },
     accommodation: { budget: 38, midRange: 75, luxury: 148 }, // Blended: Turkish resort destination with growing vacation rental market (20% savings)
     breakdown: {
-      budget: { total: 30, meals: 12, transport: 4, activities: 11, drinks: 5, incidentals: 8 },
-      midRange: { total: 65, meals: 24, transport: 6, activities: 23, drinks: 12, incidentals: 12 },
-      luxury: { total: 240, meals: 85, transport: 12, activities: 85, drinks: 43, incidentals: 25 }
+      budget: { total: 30, meals: 12, transport: 8, activities: 11, drinks: 5, incidentals: 8 },
+      midRange: { total: 65, meals: 24, transport: 20, activities: 23, drinks: 12, incidentals: 12 },
+      luxury: { total: 240, meals: 85, transport: 40, activities: 85, drinks: 43, incidentals: 25 }
     },
     confidence: 'high'
   },
@@ -3091,9 +3094,9 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
   'bucharest': {
     dailyCost: { budget: 26, midRange: 55, luxury: 205 },
     breakdown: {
-      budget: { total: 26, meals: 11, transport: 3, activities: 9, drinks: 5, incidentals: 8 },
-      midRange: { total: 55, meals: 20, transport: 5, activities: 18, drinks: 12, incidentals: 12 },
-      luxury: { total: 205, meals: 72, transport: 10, activities: 75, drinks: 33, incidentals: 25 }
+      budget: { total: 26, meals: 11, transport: 8, activities: 9, drinks: 5, incidentals: 8 },
+      midRange: { total: 55, meals: 20, transport: 20, activities: 18, drinks: 12, incidentals: 12 },
+      luxury: { total: 205, meals: 72, transport: 40, activities: 75, drinks: 33, incidentals: 25 }
     },
     confidence: 'high'
   },
@@ -3102,21 +3105,21 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
     dailyCost: { budget: 42, midRange: 90, luxury: 330 },
     accommodation: { budget: 68, midRange: 128, luxury: 228 }, // Blended: northern English city with good Airbnb culture (18% savings)
     breakdown: {
-      budget: { total: 42, meals: 18, transport: 6, activities: 13, drinks: 7, incidentals: 8 },
-      midRange: { total: 90, meals: 34, transport: 12, activities: 26, drinks: 18, incidentals: 12 },
-      luxury: { total: 330, meals: 115, transport: 20, activities: 105, drinks: 65, incidentals: 25 }
+      budget: { total: 42, meals: 18, transport: 10, activities: 13, drinks: 7, incidentals: 8 },
+      midRange: { total: 90, meals: 34, transport: 25, activities: 26, drinks: 18, incidentals: 12 },
+      luxury: { total: 330, meals: 115, transport: 50, activities: 105, drinks: 65, incidentals: 25 }
     },
     confidence: 'high'
   },
 
   // MISSING ASIAN CITIES - BATCH 1
   'beijing': {
-    dailyCost: { budget: 28, midRange: 65, luxury: 240 },
+    dailyCost: { budget: 28, midRange: 67, luxury: 250 },
     accommodation: { budget: 45, midRange: 88, luxury: 168 }, // Blended: Chinese capital with regulated but growing short-term rental market (18% savings)
     breakdown: {
-      budget: { total: 28, meals: 12, transport: 4, activities: 8, drinks: 4, incidentals: 8 },
-      midRange: { total: 65, meals: 25, transport: 8, activities: 20, drinks: 12, incidentals: 12 },
-      luxury: { total: 240, meals: 85, transport: 15, activities: 80, drinks: 45, incidentals: 25 }
+      budget: { total: 28, meals: 12, transport: 8, activities: 8, drinks: 4, incidentals: 8 },
+      midRange: { total: 67, meals: 25, transport: 20, activities: 20, drinks: 12, incidentals: 12 },
+      luxury: { total: 250, meals: 85, transport: 40, activities: 80, drinks: 45, incidentals: 25 }
     },
     confidence: 'high'
   },
@@ -3125,20 +3128,20 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
     dailyCost: { budget: 26, midRange: 58, luxury: 220 },
     accommodation: { budget: 42, midRange: 82, luxury: 155 }, // Blended: southern Chinese business city with emerging short-term rental market (18% savings)
     breakdown: {
-      budget: { total: 26, meals: 11, transport: 3, activities: 8, drinks: 4, incidentals: 8 },
-      midRange: { total: 58, meals: 22, transport: 6, activities: 18, drinks: 12, incidentals: 12 },
-      luxury: { total: 220, meals: 78, transport: 12, activities: 75, drinks: 40, incidentals: 25 }
+      budget: { total: 26, meals: 11, transport: 8, activities: 8, drinks: 4, incidentals: 8 },
+      midRange: { total: 58, meals: 22, transport: 20, activities: 18, drinks: 12, incidentals: 12 },
+      luxury: { total: 220, meals: 78, transport: 40, activities: 75, drinks: 40, incidentals: 25 }
     },
     confidence: 'high'
   },
 
   'chiang-mai': {
-    dailyCost: { budget: 38, midRange: 60, luxury: 170 },
+    dailyCost: { budget: 38, midRange: 62, luxury: 180 },
     accommodation: { budget: 28, midRange: 52, luxury: 115 }, // Blended: northern Thai city with excellent backpacker and digital nomad Airbnb market (25% savings)
     breakdown: {
-      budget: { total: 38, meals: 16, transport: 5, activities: 12, drinks: 8, incidentals: 8 },
-      midRange: { total: 60, meals: 22, transport: 8, activities: 18, drinks: 12, incidentals: 12 },
-      luxury: { total: 150, meals: 55, transport: 10, activities: 45, drinks: 25, incidentals: 25 }
+      budget: { total: 38, meals: 16, transport: 8, activities: 12, drinks: 8, incidentals: 8 },
+      midRange: { total: 62, meals: 22, transport: 20, activities: 18, drinks: 12, incidentals: 12 },
+      luxury: { total: 160, meals: 55, transport: 40, activities: 45, drinks: 25, incidentals: 25 }
     },
     confidence: 'high'
   },
@@ -3147,9 +3150,9 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
     dailyCost: { budget: 25, midRange: 55, luxury: 200 },
     accommodation: { budget: 32, midRange: 68, luxury: 142 }, // Blended: Thai resort island with excellent vacation rental market (25% savings)
     breakdown: {
-      budget: { total: 25, meals: 10, transport: 4, activities: 8, drinks: 3, incidentals: 8 },
-      midRange: { total: 55, meals: 20, transport: 8, activities: 15, drinks: 12, incidentals: 12 },
-      luxury: { total: 200, meals: 70, transport: 15, activities: 65, drinks: 35, incidentals: 25 }
+      budget: { total: 25, meals: 10, transport: 8, activities: 8, drinks: 3, incidentals: 8 },
+      midRange: { total: 55, meals: 20, transport: 20, activities: 15, drinks: 12, incidentals: 12 },
+      luxury: { total: 200, meals: 70, transport: 40, activities: 65, drinks: 35, incidentals: 25 }
     },
     confidence: 'high'
   },
@@ -3157,9 +3160,9 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
   'penang': {
     dailyCost: { budget: 22, midRange: 48, luxury: 180 },
     breakdown: {
-      budget: { total: 22, meals: 9, transport: 3, activities: 7, drinks: 3, incidentals: 8 },
-      midRange: { total: 48, meals: 18, transport: 6, activities: 14, drinks: 10, incidentals: 12 },
-      luxury: { total: 180, meals: 65, transport: 12, activities: 55, drinks: 33, incidentals: 25 }
+      budget: { total: 22, meals: 9, transport: 8, activities: 7, drinks: 3, incidentals: 8 },
+      midRange: { total: 48, meals: 18, transport: 20, activities: 14, drinks: 10, incidentals: 12 },
+      luxury: { total: 180, meals: 65, transport: 40, activities: 55, drinks: 33, incidentals: 25 }
     },
     confidence: 'high'
   },
@@ -3167,9 +3170,9 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
   'cebu': {
     dailyCost: { budget: 20, midRange: 45, luxury: 170 },
     breakdown: {
-      budget: { total: 20, meals: 8, transport: 3, activities: 6, drinks: 3, incidentals: 8 },
-      midRange: { total: 45, meals: 16, transport: 5, activities: 14, drinks: 10, incidentals: 12 },
-      luxury: { total: 170, meals: 60, transport: 10, activities: 55, drinks: 30, incidentals: 25 }
+      budget: { total: 20, meals: 8, transport: 8, activities: 6, drinks: 3, incidentals: 8 },
+      midRange: { total: 45, meals: 16, transport: 20, activities: 14, drinks: 10, incidentals: 12 },
+      luxury: { total: 170, meals: 60, transport: 40, activities: 55, drinks: 30, incidentals: 25 }
     },
     confidence: 'high'
   },
@@ -3177,9 +3180,9 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
   'bangalore': {
     dailyCost: { budget: 36, midRange: 62, luxury: 180 },
     breakdown: {
-      budget: { total: 36, meals: 15, transport: 5, activities: 12, drinks: 8, incidentals: 8 },
-      midRange: { total: 62, meals: 24, transport: 8, activities: 20, drinks: 15, incidentals: 12 },
-      luxury: { total: 160, meals: 55, transport: 8, activities: 50, drinks: 32, incidentals: 25 }
+      budget: { total: 36, meals: 15, transport: 8, activities: 12, drinks: 8, incidentals: 8 },
+      midRange: { total: 62, meals: 24, transport: 20, activities: 20, drinks: 15, incidentals: 12 },
+      luxury: { total: 160, meals: 55, transport: 40, activities: 50, drinks: 32, incidentals: 25 }
     },
     confidence: 'high'
   },
@@ -3187,9 +3190,9 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
   'chennai': {
     dailyCost: { budget: 16, midRange: 38, luxury: 145 },
     breakdown: {
-      budget: { total: 16, meals: 7, transport: 2, activities: 4, drinks: 3, incidentals: 8 },
-      midRange: { total: 38, meals: 14, transport: 4, activities: 10, drinks: 10, incidentals: 12 },
-      luxury: { total: 145, meals: 50, transport: 8, activities: 45, drinks: 27, incidentals: 25 }
+      budget: { total: 16, meals: 7, transport: 8, activities: 4, drinks: 3, incidentals: 8 },
+      midRange: { total: 38, meals: 14, transport: 20, activities: 10, drinks: 10, incidentals: 12 },
+      luxury: { total: 145, meals: 50, transport: 40, activities: 45, drinks: 27, incidentals: 25 }
     },
     confidence: 'high'
   },
@@ -3198,8 +3201,8 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
     dailyCost: { budget: 55, midRange: 125, luxury: 450 },
     breakdown: {
       budget: { total: 55, meals: 24, transport: 10, activities: 16, drinks: 5, incidentals: 12 },
-      midRange: { total: 125, meals: 48, transport: 20, activities: 32, drinks: 25, incidentals: 20 },
-      luxury: { total: 450, meals: 160, transport: 35, activities: 135, drinks: 85, incidentals: 35 }
+      midRange: { total: 125, meals: 48, transport: 25, activities: 32, drinks: 25, incidentals: 20 },
+      luxury: { total: 450, meals: 160, transport: 50, activities: 135, drinks: 85, incidentals: 35 }
     },
     confidence: 'high'
   },
@@ -3208,8 +3211,8 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
     dailyCost: { budget: 52, midRange: 118, luxury: 420 },
     breakdown: {
       budget: { total: 52, meals: 22, transport: 10, activities: 15, drinks: 5, incidentals: 12 },
-      midRange: { total: 118, meals: 45, transport: 18, activities: 30, drinks: 25, incidentals: 20 },
-      luxury: { total: 420, meals: 150, transport: 30, activities: 125, drinks: 80, incidentals: 35 }
+      midRange: { total: 118, meals: 45, transport: 25, activities: 30, drinks: 25, incidentals: 20 },
+      luxury: { total: 420, meals: 150, transport: 50, activities: 125, drinks: 80, incidentals: 35 }
     },
     confidence: 'high'
   },
@@ -3217,9 +3220,9 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
   'taipei': {
     dailyCost: { budget: 32, midRange: 70, luxury: 260 },
     breakdown: {
-      budget: { total: 32, meals: 14, transport: 4, activities: 10, drinks: 4, incidentals: 8 },
-      midRange: { total: 70, meals: 26, transport: 8, activities: 22, drinks: 14, incidentals: 12 },
-      luxury: { total: 260, meals: 90, transport: 15, activities: 85, drinks: 55, incidentals: 25 }
+      budget: { total: 32, meals: 14, transport: 8, activities: 10, drinks: 4, incidentals: 8 },
+      midRange: { total: 70, meals: 26, transport: 20, activities: 22, drinks: 14, incidentals: 12 },
+      luxury: { total: 260, meals: 90, transport: 40, activities: 85, drinks: 55, incidentals: 25 }
     },
     confidence: 'high'
   },
@@ -3227,9 +3230,9 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
   'colombo': {
     dailyCost: { budget: 16, midRange: 38, luxury: 145 },
     breakdown: {
-      budget: { total: 16, meals: 7, transport: 2, activities: 4, drinks: 3, incidentals: 8 },
-      midRange: { total: 38, meals: 14, transport: 4, activities: 10, drinks: 10, incidentals: 12 },
-      luxury: { total: 145, meals: 50, transport: 8, activities: 45, drinks: 27, incidentals: 25 }
+      budget: { total: 16, meals: 7, transport: 8, activities: 4, drinks: 3, incidentals: 8 },
+      midRange: { total: 38, meals: 14, transport: 20, activities: 10, drinks: 10, incidentals: 12 },
+      luxury: { total: 145, meals: 50, transport: 40, activities: 45, drinks: 27, incidentals: 25 }
     },
     confidence: 'high'
   },
@@ -3247,21 +3250,21 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
   'bali': {
     dailyCost: { budget: 20, midRange: 45, luxury: 170 },
     breakdown: {
-      budget: { total: 20, meals: 8, transport: 3, activities: 6, drinks: 3, incidentals: 8 },
-      midRange: { total: 45, meals: 16, transport: 5, activities: 14, drinks: 10, incidentals: 12 },
-      luxury: { total: 170, meals: 60, transport: 10, activities: 55, drinks: 30, incidentals: 25 }
+      budget: { total: 20, meals: 8, transport: 8, activities: 6, drinks: 3, incidentals: 8 },
+      midRange: { total: 45, meals: 16, transport: 20, activities: 14, drinks: 10, incidentals: 12 },
+      luxury: { total: 170, meals: 60, transport: 40, activities: 55, drinks: 30, incidentals: 25 }
     },
     confidence: 'high'
   },
 
   // MISSING OCEANIA CITIES - COMPLETE SET
   'brisbane': {
-    dailyCost: { budget: 52, midRange: 110, luxury: 400 },
+    dailyCost: { budget: 52, midRange: 112, luxury: 405 },
     accommodation: { budget: 75, midRange: 142, luxury: 258 }, // Blended: Australian city with good Airbnb market (16% savings)
     breakdown: {
       budget: { total: 52, meals: 22, transport: 10, activities: 15, drinks: 7, incidentals: 8 },
-      midRange: { total: 110, meals: 42, transport: 20, activities: 28, drinks: 20, incidentals: 15 },
-      luxury: { total: 400, meals: 145, transport: 35, activities: 120, drinks: 75, incidentals: 25 }
+      midRange: { total: 112, meals: 42, transport: 22, activities: 28, drinks: 20, incidentals: 15 },
+      luxury: { total: 405, meals: 145, transport: 40, activities: 120, drinks: 75, incidentals: 25 }
     },
     confidence: 'high'
   },
@@ -3271,8 +3274,8 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
     accommodation: { budget: 72, midRange: 135, luxury: 245 }, // Blended: western Australian city with growing Airbnb market (16% savings)
     breakdown: {
       budget: { total: 48, meals: 20, transport: 10, activities: 13, drinks: 7, incidentals: 8 },
-      midRange: { total: 105, meals: 40, transport: 18, activities: 27, drinks: 20, incidentals: 15 },
-      luxury: { total: 380, meals: 135, transport: 30, activities: 115, drinks: 75, incidentals: 25 }
+      midRange: { total: 105, meals: 40, transport: 25, activities: 27, drinks: 20, incidentals: 15 },
+      luxury: { total: 380, meals: 135, transport: 50, activities: 115, drinks: 75, incidentals: 25 }
     },
     confidence: 'high'
   },
@@ -3281,9 +3284,9 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
     dailyCost: { budget: 45, midRange: 98, luxury: 360 },
     accommodation: { budget: 68, midRange: 128, luxury: 232 }, // Blended: South Australian city with good Airbnb culture (16% savings)
     breakdown: {
-      budget: { total: 45, meals: 18, transport: 8, activities: 14, drinks: 7, incidentals: 8 },
-      midRange: { total: 98, meals: 36, transport: 15, activities: 27, drinks: 20, incidentals: 15 },
-      luxury: { total: 360, meals: 125, transport: 25, activities: 115, drinks: 70, incidentals: 25 }
+      budget: { total: 45, meals: 18, transport: 11, activities: 14, drinks: 7, incidentals: 8 },
+      midRange: { total: 98, meals: 36, transport: 20, activities: 27, drinks: 20, incidentals: 15 },
+      luxury: { total: 360, meals: 125, transport: 40, activities: 115, drinks: 70, incidentals: 25 }
     },
     confidence: 'high'
   },
@@ -3293,8 +3296,8 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
     accommodation: { budget: 78, midRange: 148, luxury: 268 }, // Blended: Australian resort city with excellent vacation rental market (16% savings)
     breakdown: {
       budget: { total: 55, meals: 23, transport: 10, activities: 17, drinks: 7, incidentals: 8 },
-      midRange: { total: 115, meals: 44, transport: 18, activities: 33, drinks: 20, incidentals: 15 },
-      luxury: { total: 420, meals: 150, transport: 30, activities: 135, drinks: 80, incidentals: 25 }
+      midRange: { total: 115, meals: 44, transport: 25, activities: 33, drinks: 20, incidentals: 15 },
+      luxury: { total: 420, meals: 150, transport: 50, activities: 135, drinks: 80, incidentals: 25 }
     },
     confidence: 'high'
   },
@@ -3304,8 +3307,8 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
     accommodation: { budget: 68, midRange: 132, luxury: 242 }, // Blended: New Zealand's largest city with growing Airbnb culture (15% savings)
     breakdown: {
       budget: { total: 48, meals: 20, transport: 8, activities: 15, drinks: 7, incidentals: 8 },
-      midRange: { total: 105, meals: 40, transport: 15, activities: 30, drinks: 20, incidentals: 15 },
-      luxury: { total: 380, meals: 135, transport: 25, activities: 120, drinks: 75, incidentals: 25 }
+      midRange: { total: 105, meals: 40, transport: 20, activities: 30, drinks: 20, incidentals: 15 },
+      luxury: { total: 380, meals: 135, transport: 40, activities: 120, drinks: 75, incidentals: 25 }
     },
     confidence: 'high'
   },
@@ -3315,8 +3318,8 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
     accommodation: { budget: 62, midRange: 118, luxury: 218 }, // Blended: New Zealand capital with good vacation rental options (15% savings)
     breakdown: {
       budget: { total: 45, meals: 18, transport: 8, activities: 14, drinks: 7, incidentals: 8 },
-      midRange: { total: 98, meals: 36, transport: 15, activities: 27, drinks: 20, incidentals: 15 },
-      luxury: { total: 360, meals: 125, transport: 25, activities: 115, drinks: 70, incidentals: 25 }
+      midRange: { total: 98, meals: 36, transport: 20, activities: 27, drinks: 20, incidentals: 15 },
+      luxury: { total: 360, meals: 125, transport: 40, activities: 115, drinks: 70, incidentals: 25 }
     },
     confidence: 'high'
   },
@@ -3325,9 +3328,9 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
     dailyCost: { budget: 42, midRange: 90, luxury: 330 },
     accommodation: { budget: 58, midRange: 112, luxury: 205 }, // Blended: New Zealand city with decent vacation rental options (15% savings)
     breakdown: {
-      budget: { total: 42, meals: 16, transport: 8, activities: 13, drinks: 7, incidentals: 8 },
-      midRange: { total: 90, meals: 34, transport: 12, activities: 24, drinks: 20, incidentals: 15 },
-      luxury: { total: 330, meals: 115, transport: 20, activities: 105, drinks: 65, incidentals: 25 }
+      budget: { total: 42, meals: 16, transport: 11, activities: 13, drinks: 7, incidentals: 8 },
+      midRange: { total: 90, meals: 34, transport: 20, activities: 24, drinks: 20, incidentals: 15 },
+      luxury: { total: 330, meals: 115, transport: 40, activities: 105, drinks: 65, incidentals: 25 }
     },
     confidence: 'high'
   },
@@ -3336,9 +3339,9 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
   'alexandria': {
     dailyCost: { budget: 20, midRange: 45, luxury: 170 },
     breakdown: {
-      budget: { total: 20, meals: 8, transport: 3, activities: 6, drinks: 3, incidentals: 8 },
-      midRange: { total: 45, meals: 16, transport: 5, activities: 14, drinks: 10, incidentals: 12 },
-      luxury: { total: 170, meals: 60, transport: 10, activities: 55, drinks: 30, incidentals: 25 }
+      budget: { total: 20, meals: 8, transport: 8, activities: 6, drinks: 3, incidentals: 8 },
+      midRange: { total: 45, meals: 16, transport: 20, activities: 14, drinks: 10, incidentals: 12 },
+      luxury: { total: 170, meals: 60, transport: 40, activities: 55, drinks: 30, incidentals: 25 }
     },
     confidence: 'high'
   },
@@ -3346,9 +3349,9 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
   'johannesburg': {
     dailyCost: { budget: 26, midRange: 55, luxury: 205 },
     breakdown: {
-      budget: { total: 26, meals: 11, transport: 4, activities: 8, drinks: 3, incidentals: 8 },
-      midRange: { total: 55, meals: 20, transport: 6, activities: 19, drinks: 10, incidentals: 12 },
-      luxury: { total: 205, meals: 72, transport: 12, activities: 70, drinks: 36, incidentals: 25 }
+      budget: { total: 26, meals: 11, transport: 8, activities: 8, drinks: 3, incidentals: 8 },
+      midRange: { total: 55, meals: 20, transport: 20, activities: 19, drinks: 10, incidentals: 12 },
+      luxury: { total: 205, meals: 72, transport: 40, activities: 70, drinks: 36, incidentals: 25 }
     },
     confidence: 'high'
   },
@@ -3356,9 +3359,9 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
   'durban': {
     dailyCost: { budget: 24, midRange: 50, luxury: 185 },
     breakdown: {
-      budget: { total: 24, meals: 10, transport: 4, activities: 7, drinks: 3, incidentals: 8 },
-      midRange: { total: 50, meals: 18, transport: 5, activities: 17, drinks: 10, incidentals: 12 },
-      luxury: { total: 185, meals: 65, transport: 10, activities: 65, drinks: 30, incidentals: 25 }
+      budget: { total: 24, meals: 10, transport: 8, activities: 7, drinks: 3, incidentals: 8 },
+      midRange: { total: 50, meals: 18, transport: 20, activities: 17, drinks: 10, incidentals: 12 },
+      luxury: { total: 185, meals: 65, transport: 40, activities: 65, drinks: 30, incidentals: 25 }
     },
     confidence: 'high'
   },
@@ -3366,9 +3369,9 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
   'casablanca': {
     dailyCost: { budget: 22, midRange: 48, luxury: 180 },
     breakdown: {
-      budget: { total: 22, meals: 9, transport: 3, activities: 7, drinks: 3, incidentals: 8 },
-      midRange: { total: 48, meals: 18, transport: 5, activities: 15, drinks: 10, incidentals: 12 },
-      luxury: { total: 180, meals: 65, transport: 12, activities: 58, drinks: 30, incidentals: 25 }
+      budget: { total: 22, meals: 9, transport: 8, activities: 7, drinks: 3, incidentals: 8 },
+      midRange: { total: 48, meals: 18, transport: 20, activities: 15, drinks: 10, incidentals: 12 },
+      luxury: { total: 180, meals: 65, transport: 40, activities: 58, drinks: 30, incidentals: 25 }
     },
     confidence: 'high'
   },
@@ -3376,9 +3379,9 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
   'nairobi': {
     dailyCost: { budget: 20, midRange: 45, luxury: 170 },
     breakdown: {
-      budget: { total: 20, meals: 8, transport: 3, activities: 6, drinks: 3, incidentals: 8 },
-      midRange: { total: 45, meals: 16, transport: 5, activities: 14, drinks: 10, incidentals: 12 },
-      luxury: { total: 170, meals: 60, transport: 10, activities: 55, drinks: 30, incidentals: 25 }
+      budget: { total: 20, meals: 8, transport: 8, activities: 6, drinks: 3, incidentals: 8 },
+      midRange: { total: 45, meals: 16, transport: 20, activities: 14, drinks: 10, incidentals: 12 },
+      luxury: { total: 170, meals: 60, transport: 40, activities: 55, drinks: 30, incidentals: 25 }
     },
     confidence: 'high'
   },
@@ -3386,9 +3389,9 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
   'addis-ababa': {
     dailyCost: { budget: 16, midRange: 38, luxury: 145 },
     breakdown: {
-      budget: { total: 16, meals: 7, transport: 2, activities: 4, drinks: 3, incidentals: 8 },
-      midRange: { total: 38, meals: 14, transport: 4, activities: 10, drinks: 10, incidentals: 12 },
-      luxury: { total: 145, meals: 50, transport: 8, activities: 45, drinks: 27, incidentals: 25 }
+      budget: { total: 16, meals: 7, transport: 8, activities: 4, drinks: 3, incidentals: 8 },
+      midRange: { total: 38, meals: 14, transport: 20, activities: 10, drinks: 10, incidentals: 12 },
+      luxury: { total: 145, meals: 50, transport: 40, activities: 45, drinks: 27, incidentals: 25 }
     },
     confidence: 'high'
   },
@@ -3396,9 +3399,9 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
   'lagos': {
     dailyCost: { budget: 24, midRange: 52, luxury: 195 },
     breakdown: {
-      budget: { total: 24, meals: 10, transport: 4, activities: 7, drinks: 3, incidentals: 8 },
-      midRange: { total: 52, meals: 20, transport: 6, activities: 16, drinks: 10, incidentals: 12 },
-      luxury: { total: 195, meals: 70, transport: 15, activities: 65, drinks: 30, incidentals: 25 }
+      budget: { total: 24, meals: 10, transport: 8, activities: 7, drinks: 3, incidentals: 8 },
+      midRange: { total: 52, meals: 20, transport: 20, activities: 16, drinks: 10, incidentals: 12 },
+      luxury: { total: 195, meals: 70, transport: 40, activities: 65, drinks: 30, incidentals: 25 }
     },
     confidence: 'high'
   },
@@ -3406,9 +3409,9 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
   'accra': {
     dailyCost: { budget: 22, midRange: 48, luxury: 180 },
     breakdown: {
-      budget: { total: 22, meals: 9, transport: 3, activities: 7, drinks: 3, incidentals: 8 },
-      midRange: { total: 48, meals: 18, transport: 5, activities: 15, drinks: 10, incidentals: 12 },
-      luxury: { total: 180, meals: 65, transport: 12, activities: 58, drinks: 30, incidentals: 25 }
+      budget: { total: 22, meals: 9, transport: 8, activities: 7, drinks: 3, incidentals: 8 },
+      midRange: { total: 48, meals: 18, transport: 20, activities: 15, drinks: 10, incidentals: 12 },
+      luxury: { total: 180, meals: 65, transport: 40, activities: 58, drinks: 30, incidentals: 25 }
     },
     confidence: 'high'
   },
@@ -3416,9 +3419,9 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
   'tunis': {
     dailyCost: { budget: 20, midRange: 45, luxury: 170 },
     breakdown: {
-      budget: { total: 20, meals: 8, transport: 3, activities: 6, drinks: 3, incidentals: 8 },
-      midRange: { total: 45, meals: 16, transport: 5, activities: 14, drinks: 10, incidentals: 12 },
-      luxury: { total: 170, meals: 60, transport: 10, activities: 55, drinks: 30, incidentals: 25 }
+      budget: { total: 20, meals: 8, transport: 8, activities: 6, drinks: 3, incidentals: 8 },
+      midRange: { total: 45, meals: 16, transport: 20, activities: 14, drinks: 10, incidentals: 12 },
+      luxury: { total: 170, meals: 60, transport: 40, activities: 55, drinks: 30, incidentals: 25 }
     },
     confidence: 'high'
   },
@@ -3427,9 +3430,9 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
   'salvador': {
     dailyCost: { budget: 22, midRange: 48, luxury: 180 },
     breakdown: {
-      budget: { total: 22, meals: 9, transport: 4, activities: 6, drinks: 3, incidentals: 8 },
-      midRange: { total: 48, meals: 18, transport: 6, activities: 14, drinks: 10, incidentals: 12 },
-      luxury: { total: 180, meals: 65, transport: 15, activities: 55, drinks: 30, incidentals: 25 }
+      budget: { total: 22, meals: 9, transport: 8, activities: 6, drinks: 3, incidentals: 8 },
+      midRange: { total: 48, meals: 18, transport: 20, activities: 14, drinks: 10, incidentals: 12 },
+      luxury: { total: 180, meals: 65, transport: 40, activities: 55, drinks: 30, incidentals: 25 }
     },
     confidence: 'high'
   },
@@ -3437,9 +3440,9 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
   'fortaleza': {
     dailyCost: { budget: 20, midRange: 45, luxury: 170 },
     breakdown: {
-      budget: { total: 20, meals: 8, transport: 3, activities: 6, drinks: 3, incidentals: 8 },
-      midRange: { total: 45, meals: 16, transport: 5, activities: 14, drinks: 10, incidentals: 12 },
-      luxury: { total: 170, meals: 60, transport: 10, activities: 55, drinks: 30, incidentals: 25 }
+      budget: { total: 20, meals: 8, transport: 8, activities: 6, drinks: 3, incidentals: 8 },
+      midRange: { total: 45, meals: 16, transport: 20, activities: 14, drinks: 10, incidentals: 12 },
+      luxury: { total: 170, meals: 60, transport: 40, activities: 55, drinks: 30, incidentals: 25 }
     },
     confidence: 'high'
   },
@@ -3447,9 +3450,9 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
   'brasilia': {
     dailyCost: { budget: 26, midRange: 55, luxury: 205 },
     breakdown: {
-      budget: { total: 26, meals: 11, transport: 4, activities: 8, drinks: 3, incidentals: 8 },
-      midRange: { total: 55, meals: 20, transport: 6, activities: 19, drinks: 10, incidentals: 12 },
-      luxury: { total: 205, meals: 72, transport: 12, activities: 70, drinks: 36, incidentals: 25 }
+      budget: { total: 26, meals: 11, transport: 8, activities: 8, drinks: 3, incidentals: 8 },
+      midRange: { total: 55, meals: 20, transport: 20, activities: 19, drinks: 10, incidentals: 12 },
+      luxury: { total: 205, meals: 72, transport: 40, activities: 70, drinks: 36, incidentals: 25 }
     },
     confidence: 'high'
   },
@@ -3457,9 +3460,9 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
   'manaus': {
     dailyCost: { budget: 24, midRange: 50, luxury: 185 },
     breakdown: {
-      budget: { total: 24, meals: 10, transport: 4, activities: 7, drinks: 3, incidentals: 8 },
-      midRange: { total: 50, meals: 18, transport: 5, activities: 17, drinks: 10, incidentals: 12 },
-      luxury: { total: 185, meals: 65, transport: 10, activities: 65, drinks: 30, incidentals: 25 }
+      budget: { total: 24, meals: 10, transport: 8, activities: 7, drinks: 3, incidentals: 8 },
+      midRange: { total: 50, meals: 18, transport: 20, activities: 17, drinks: 10, incidentals: 12 },
+      luxury: { total: 185, meals: 65, transport: 40, activities: 65, drinks: 30, incidentals: 25 }
     },
     confidence: 'high'
   },
@@ -3467,9 +3470,9 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
   'curitiba': {
     dailyCost: { budget: 24, midRange: 52, luxury: 195 },
     breakdown: {
-      budget: { total: 24, meals: 10, transport: 4, activities: 7, drinks: 3, incidentals: 8 },
-      midRange: { total: 52, meals: 20, transport: 6, activities: 16, drinks: 10, incidentals: 12 },
-      luxury: { total: 195, meals: 70, transport: 15, activities: 65, drinks: 30, incidentals: 25 }
+      budget: { total: 24, meals: 10, transport: 8, activities: 7, drinks: 3, incidentals: 8 },
+      midRange: { total: 52, meals: 20, transport: 20, activities: 16, drinks: 10, incidentals: 12 },
+      luxury: { total: 195, meals: 70, transport: 40, activities: 65, drinks: 30, incidentals: 25 }
     },
     confidence: 'high'
   },
@@ -3477,9 +3480,9 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
   'medellin': {
     dailyCost: { budget: 18, midRange: 40, luxury: 150 },
     breakdown: {
-      budget: { total: 18, meals: 7, transport: 3, activities: 5, drinks: 3, incidentals: 8 },
-      midRange: { total: 40, meals: 15, transport: 4, activities: 11, drinks: 10, incidentals: 12 },
-      luxury: { total: 150, meals: 55, transport: 8, activities: 45, drinks: 27, incidentals: 25 }
+      budget: { total: 18, meals: 7, transport: 8, activities: 5, drinks: 3, incidentals: 8 },
+      midRange: { total: 40, meals: 15, transport: 20, activities: 11, drinks: 10, incidentals: 12 },
+      luxury: { total: 150, meals: 55, transport: 40, activities: 45, drinks: 27, incidentals: 25 }
     },
     confidence: 'high'
   },
@@ -3487,9 +3490,9 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
   'cartagena': {
     dailyCost: { budget: 20, midRange: 45, luxury: 170 },
     breakdown: {
-      budget: { total: 20, meals: 8, transport: 3, activities: 6, drinks: 3, incidentals: 8 },
-      midRange: { total: 45, meals: 16, transport: 5, activities: 14, drinks: 10, incidentals: 12 },
-      luxury: { total: 170, meals: 60, transport: 10, activities: 55, drinks: 30, incidentals: 25 }
+      budget: { total: 20, meals: 8, transport: 8, activities: 6, drinks: 3, incidentals: 8 },
+      midRange: { total: 45, meals: 16, transport: 20, activities: 14, drinks: 10, incidentals: 12 },
+      luxury: { total: 170, meals: 60, transport: 40, activities: 55, drinks: 30, incidentals: 25 }
     },
     confidence: 'high'
   },
@@ -3497,9 +3500,9 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
   'quito': {
     dailyCost: { budget: 16, midRange: 38, luxury: 145 },
     breakdown: {
-      budget: { total: 16, meals: 7, transport: 2, activities: 4, drinks: 3, incidentals: 8 },
-      midRange: { total: 38, meals: 14, transport: 4, activities: 10, drinks: 10, incidentals: 12 },
-      luxury: { total: 145, meals: 50, transport: 8, activities: 45, drinks: 27, incidentals: 25 }
+      budget: { total: 16, meals: 7, transport: 8, activities: 4, drinks: 3, incidentals: 8 },
+      midRange: { total: 38, meals: 14, transport: 20, activities: 10, drinks: 10, incidentals: 12 },
+      luxury: { total: 145, meals: 50, transport: 40, activities: 45, drinks: 27, incidentals: 25 }
     },
     confidence: 'high'
   },
@@ -3507,9 +3510,9 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
   'guayaquil': {
     dailyCost: { budget: 18, midRange: 40, luxury: 150 },
     breakdown: {
-      budget: { total: 18, meals: 7, transport: 3, activities: 5, drinks: 3, incidentals: 8 },
-      midRange: { total: 40, meals: 15, transport: 4, activities: 11, drinks: 10, incidentals: 12 },
-      luxury: { total: 150, meals: 55, transport: 8, activities: 45, drinks: 27, incidentals: 25 }
+      budget: { total: 18, meals: 7, transport: 8, activities: 5, drinks: 3, incidentals: 8 },
+      midRange: { total: 40, meals: 15, transport: 20, activities: 11, drinks: 10, incidentals: 12 },
+      luxury: { total: 150, meals: 55, transport: 40, activities: 45, drinks: 27, incidentals: 25 }
     },
     confidence: 'high'
   },
@@ -3517,9 +3520,9 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
   'arequipa': {
     dailyCost: { budget: 16, midRange: 35, luxury: 130 },
     breakdown: {
-      budget: { total: 16, meals: 6, transport: 2, activities: 5, drinks: 3, incidentals: 8 },
-      midRange: { total: 35, meals: 13, transport: 3, activities: 9, drinks: 10, incidentals: 12 },
-      luxury: { total: 130, meals: 45, transport: 7, activities: 40, drinks: 23, incidentals: 25 }
+      budget: { total: 16, meals: 6, transport: 8, activities: 5, drinks: 3, incidentals: 8 },
+      midRange: { total: 35, meals: 13, transport: 20, activities: 9, drinks: 10, incidentals: 12 },
+      luxury: { total: 130, meals: 45, transport: 40, activities: 40, drinks: 23, incidentals: 25 }
     },
     confidence: 'high'
   },
@@ -3527,9 +3530,9 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
   'sucre': {
     dailyCost: { budget: 14, midRange: 32, luxury: 125 },
     breakdown: {
-      budget: { total: 14, meals: 5, transport: 2, activities: 4, drinks: 3, incidentals: 8 },
-      midRange: { total: 32, meals: 12, transport: 3, activities: 7, drinks: 10, incidentals: 12 },
-      luxury: { total: 125, meals: 42, transport: 8, activities: 37, drinks: 23, incidentals: 25 }
+      budget: { total: 14, meals: 5, transport: 8, activities: 4, drinks: 3, incidentals: 8 },
+      midRange: { total: 32, meals: 12, transport: 20, activities: 7, drinks: 10, incidentals: 12 },
+      luxury: { total: 125, meals: 42, transport: 40, activities: 37, drinks: 23, incidentals: 25 }
     },
     confidence: 'high'
   },
@@ -3537,9 +3540,9 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
   'santa-cruz': {
     dailyCost: { budget: 16, midRange: 35, luxury: 130 },
     breakdown: {
-      budget: { total: 16, meals: 6, transport: 2, activities: 5, drinks: 3, incidentals: 8 },
-      midRange: { total: 35, meals: 13, transport: 3, activities: 9, drinks: 10, incidentals: 12 },
-      luxury: { total: 130, meals: 45, transport: 7, activities: 40, drinks: 23, incidentals: 25 }
+      budget: { total: 16, meals: 6, transport: 8, activities: 5, drinks: 3, incidentals: 8 },
+      midRange: { total: 35, meals: 13, transport: 20, activities: 9, drinks: 10, incidentals: 12 },
+      luxury: { total: 130, meals: 45, transport: 40, activities: 40, drinks: 23, incidentals: 25 }
     },
     confidence: 'high'
   },
@@ -3547,9 +3550,9 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
   'asuncion': {
     dailyCost: { budget: 16, midRange: 38, luxury: 145 },
     breakdown: {
-      budget: { total: 16, meals: 7, transport: 2, activities: 4, drinks: 3, incidentals: 8 },
-      midRange: { total: 38, meals: 14, transport: 4, activities: 10, drinks: 10, incidentals: 12 },
-      luxury: { total: 145, meals: 50, transport: 8, activities: 45, drinks: 27, incidentals: 25 }
+      budget: { total: 16, meals: 7, transport: 8, activities: 4, drinks: 3, incidentals: 8 },
+      midRange: { total: 38, meals: 14, transport: 20, activities: 10, drinks: 10, incidentals: 12 },
+      luxury: { total: 145, meals: 50, transport: 40, activities: 45, drinks: 27, incidentals: 25 }
     },
     confidence: 'high'
   },
@@ -3557,9 +3560,9 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
   'montevideo': {
     dailyCost: { budget: 28, midRange: 60, luxury: 220 },
     breakdown: {
-      budget: { total: 28, meals: 12, transport: 4, activities: 9, drinks: 3, incidentals: 8 },
-      midRange: { total: 60, meals: 22, transport: 6, activities: 22, drinks: 10, incidentals: 12 },
-      luxury: { total: 220, meals: 78, transport: 12, activities: 85, drinks: 30, incidentals: 25 }
+      budget: { total: 28, meals: 12, transport: 8, activities: 9, drinks: 3, incidentals: 8 },
+      midRange: { total: 60, meals: 22, transport: 20, activities: 22, drinks: 10, incidentals: 12 },
+      luxury: { total: 220, meals: 78, transport: 40, activities: 85, drinks: 30, incidentals: 25 }
     },
     confidence: 'high'
   },
@@ -3567,9 +3570,9 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
   'punta-del-este': {
     dailyCost: { budget: 35, midRange: 75, luxury: 280 },
     breakdown: {
-      budget: { total: 35, meals: 15, transport: 5, activities: 12, drinks: 3, incidentals: 8 },
-      midRange: { total: 75, meals: 28, transport: 8, activities: 29, drinks: 10, incidentals: 12 },
-      luxury: { total: 280, meals: 98, transport: 15, activities: 122, drinks: 30, incidentals: 25 }
+      budget: { total: 35, meals: 15, transport: 8, activities: 12, drinks: 3, incidentals: 8 },
+      midRange: { total: 75, meals: 28, transport: 20, activities: 29, drinks: 10, incidentals: 12 },
+      luxury: { total: 280, meals: 98, transport: 40, activities: 122, drinks: 30, incidentals: 25 }
     },
     confidence: 'high'
   },
@@ -3577,30 +3580,189 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
   'caracas': {
     dailyCost: { budget: 18, midRange: 40, luxury: 150 },
     breakdown: {
-      budget: { total: 18, meals: 7, transport: 3, activities: 5, drinks: 3, incidentals: 8 },
-      midRange: { total: 40, meals: 15, transport: 4, activities: 11, drinks: 10, incidentals: 12 },
-      luxury: { total: 150, meals: 55, transport: 8, activities: 45, drinks: 27, incidentals: 25 }
+      budget: { total: 18, meals: 7, transport: 8, activities: 5, drinks: 3, incidentals: 8 },
+      midRange: { total: 40, meals: 15, transport: 20, activities: 11, drinks: 10, incidentals: 12 },
+      luxury: { total: 150, meals: 55, transport: 40, activities: 45, drinks: 27, incidentals: 25 }
     },
     confidence: 'high'
   },
 
   // FINAL BATCH - REMAINING CITIES
   'puerto-vallarta': {
-    dailyCost: { budget: 22, midRange: 48, luxury: 180 },
+    dailyCost: { budget: 22, midRange: 51, luxury: 188 },
+    accommodation: { budget: 42, midRange: 85, luxury: 190 }, // Beach resort destination with vacation rental options (12% savings)
     breakdown: {
-      budget: { total: 22, meals: 9, transport: 3, activities: 7, drinks: 3, incidentals: 8 },
-      midRange: { total: 48, meals: 18, transport: 5, activities: 15, drinks: 10, incidentals: 12 },
-      luxury: { total: 180, meals: 65, transport: 12, activities: 58, drinks: 30, incidentals: 25 }
+      budget: { total: 22, meals: 9, transport: 8, activities: 7, drinks: 3, incidentals: 8 },
+      midRange: { total: 51, meals: 18, transport: 20, activities: 15, drinks: 10, incidentals: 12 },
+      luxury: { total: 188, meals: 65, transport: 40, activities: 58, drinks: 30, incidentals: 25 }
     },
     confidence: 'high'
   },
 
   'acapulco': {
-    dailyCost: { budget: 20, midRange: 45, luxury: 170 },
+    dailyCost: { budget: 20, midRange: 48, luxury: 178 },
+    accommodation: { budget: 38, midRange: 75, luxury: 165 }, // Classic beach resort with mix of hotels and vacation rentals (10% savings)
     breakdown: {
-      budget: { total: 20, meals: 8, transport: 3, activities: 6, drinks: 3, incidentals: 8 },
-      midRange: { total: 45, meals: 16, transport: 5, activities: 14, drinks: 10, incidentals: 12 },
-      luxury: { total: 170, meals: 60, transport: 10, activities: 55, drinks: 30, incidentals: 25 }
+      budget: { total: 20, meals: 8, transport: 8, activities: 6, drinks: 3, incidentals: 8 },
+      midRange: { total: 48, meals: 16, transport: 20, activities: 14, drinks: 10, incidentals: 12 },
+      luxury: { total: 178, meals: 60, transport: 40, activities: 55, drinks: 30, incidentals: 25 }
+    },
+    confidence: 'high'
+  },
+
+  'guadalajara': {
+    dailyCost: { budget: 32, midRange: 62, luxury: 203 },
+    accommodation: { budget: 40, midRange: 78, luxury: 155 }, // Major inland city with cultural attractions and good vacation rental options (15% savings)
+    breakdown: {
+      budget: { total: 32, meals: 14, transport: 8, activities: 9, drinks: 4, incidentals: 8 },
+      midRange: { total: 62, meals: 24, transport: 20, activities: 18, drinks: 12, incidentals: 12 },
+      luxury: { total: 203, meals: 68, transport: 40, activities: 60, drinks: 30, incidentals: 25 }
+    },
+    detailedBreakdown: {
+      budget: {
+        total: 32,
+        meals: {
+          amount: 14,
+          examples: [
+            "Breakfast: Café de olla + birote $2-3",
+            "Lunch: Torta ahogada $3-5",
+            "Dinner: Pozole rojo $4-7",
+            "Snacks: Tejuino or agua fresca $1-2"
+          ],
+          tips: ["Try birria in its birthplace", "Mercado San Juan de Dios has cheap eats", "Torta ahogada is the local specialty"]
+        },
+        transport: {
+          amount: 5,
+          examples: [
+            "Macrobus rides: $0.40 per trip",
+            "Local bus: $0.30 per trip",
+            "Uber short rides: $1-3",
+            "Bike rental: $5-8/day"
+          ],
+          tips: ["Macrobus is modern and efficient", "Walking downtown is very doable", "Uber is affordable and safe"]
+        },
+        activities: {
+          amount: 9,
+          examples: [
+            "Historic center walking: Free",
+            "Hospicio Cabañas: $3-5",
+            "Tlaquepaque market: Free browsing",
+            "Tequila day trip: $15-25"
+          ],
+          tips: ["Historic center is UNESCO World Heritage", "Free mariachi in Plaza de Armas evenings", "Tequila tours are must-do"]
+        },
+        drinks: {
+          amount: 4,
+          examples: [
+            "Tequila shots: $1-2",
+            "Local beer: $1-2",
+            "Coffee: $1-2",
+            "Fresh juice: $1-2"
+          ],
+          tips: ["Tequila is cheaper here than anywhere", "Try raicilla, local agave spirit"]
+        },
+        incidentals: {
+          amount: 8,
+          examples: [
+            "Market crafts: $3-10",
+            "Tips: $1-2 per service",
+            "Phone data: $5-10"
+          ]
+        }
+      },
+      midRange: {
+        total: 62,
+        meals: {
+          amount: 24,
+          examples: [
+            "Nice breakfast: $5-8",
+            "Restaurant lunch: $8-12",
+            "Traditional dinner: $10-16",
+            "Tequila tasting: $8-15"
+          ]
+        },
+        transport: {
+          amount: 12,
+          examples: [
+            "Daily Uber rides: $8-12",
+            "Tequila tour transport: $15-20",
+            "Airport taxi: $10-15",
+            "Car rental: $25-35/day"
+          ]
+        },
+        activities: {
+          amount: 18,
+          examples: [
+            "Tequila distillery tour: $20-30",
+            "Guided city tour: $15-25",
+            "Tlaquepaque artisan workshops: $10-20",
+            "Lucha libre tickets: $8-15"
+          ]
+        },
+        drinks: {
+          amount: 12,
+          examples: [
+            "Premium tequila tasting: $10-18",
+            "Cocktails: $4-8",
+            "Craft beer: $3-5"
+          ]
+        },
+        incidentals: {
+          amount: 12,
+          examples: [
+            "Artisan shopping: $15-30",
+            "Tips: $3-5 per service",
+            "Miscellaneous: $5-10"
+          ]
+        }
+      },
+      luxury: {
+        total: 203,
+        meals: {
+          amount: 68,
+          examples: [
+            "5-star breakfast: $12-20",
+            "Fine dining lunch: $20-30",
+            "Gourmet dinner: $35-50",
+            "Premium tequila experience: $25-40"
+          ]
+        },
+        transport: {
+          amount: 30,
+          examples: [
+            "Private driver: $50-70/day",
+            "Luxury airport transfer: $30-40",
+            "Premium tequila tour transport: $60-80",
+            "Helicopter transfers: $100-200"
+          ],
+          tips: ["Private drivers essential for tequila region tours", "Book luxury transfers in advance"]
+        },
+        activities: {
+          amount: 60,
+          examples: [
+            "Private tequila master class: $80-120",
+            "VIP cultural tours: $60-100",
+            "Exclusive artisan experiences: $50-80",
+            "Private mariachi performance: $100-200"
+          ]
+        },
+        drinks: {
+          amount: 30,
+          examples: [
+            "Ultra-premium tequila: $15-25/shot",
+            "High-end cocktail bars: $8-15",
+            "Private tastings: $20-40"
+          ]
+        },
+        incidentals: {
+          amount: 25,
+          examples: [
+            "Luxury shopping: $50-200",
+            "Concierge services: $10-20",
+            "Premium experiences: $20-50"
+          ]
+        }
+      }
     },
     confidence: 'high'
   },
@@ -3608,9 +3770,9 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
   'san-jose-costa-rica': {
     dailyCost: { budget: 24, midRange: 52, luxury: 195 },
     breakdown: {
-      budget: { total: 24, meals: 10, transport: 4, activities: 7, drinks: 3, incidentals: 8 },
-      midRange: { total: 52, meals: 20, transport: 6, activities: 16, drinks: 10, incidentals: 12 },
-      luxury: { total: 195, meals: 70, transport: 15, activities: 65, drinks: 30, incidentals: 25 }
+      budget: { total: 24, meals: 10, transport: 8, activities: 7, drinks: 3, incidentals: 8 },
+      midRange: { total: 52, meals: 20, transport: 20, activities: 16, drinks: 10, incidentals: 12 },
+      luxury: { total: 195, meals: 70, transport: 40, activities: 65, drinks: 30, incidentals: 25 }
     },
     confidence: 'high'
   },
@@ -3618,9 +3780,9 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
   'panama-city': {
     dailyCost: { budget: 26, midRange: 55, luxury: 205 },
     breakdown: {
-      budget: { total: 26, meals: 11, transport: 4, activities: 8, drinks: 3, incidentals: 8 },
-      midRange: { total: 55, meals: 20, transport: 6, activities: 19, drinks: 10, incidentals: 12 },
-      luxury: { total: 205, meals: 72, transport: 12, activities: 70, drinks: 36, incidentals: 25 }
+      budget: { total: 26, meals: 11, transport: 8, activities: 8, drinks: 3, incidentals: 8 },
+      midRange: { total: 55, meals: 20, transport: 20, activities: 19, drinks: 10, incidentals: 12 },
+      luxury: { total: 205, meals: 72, transport: 40, activities: 70, drinks: 36, incidentals: 25 }
     },
     confidence: 'high'
   },
@@ -3628,9 +3790,9 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
   'guatemala-city': {
     dailyCost: { budget: 18, midRange: 40, luxury: 150 },
     breakdown: {
-      budget: { total: 18, meals: 7, transport: 3, activities: 5, drinks: 3, incidentals: 8 },
-      midRange: { total: 40, meals: 15, transport: 4, activities: 11, drinks: 10, incidentals: 12 },
-      luxury: { total: 150, meals: 55, transport: 8, activities: 45, drinks: 27, incidentals: 25 }
+      budget: { total: 18, meals: 7, transport: 8, activities: 5, drinks: 3, incidentals: 8 },
+      midRange: { total: 40, meals: 15, transport: 20, activities: 11, drinks: 10, incidentals: 12 },
+      luxury: { total: 150, meals: 55, transport: 40, activities: 45, drinks: 27, incidentals: 25 }
     },
     confidence: 'high'
   },
@@ -3638,9 +3800,9 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
   'san-salvador': {
     dailyCost: { budget: 20, midRange: 45, luxury: 170 },
     breakdown: {
-      budget: { total: 20, meals: 8, transport: 3, activities: 6, drinks: 3, incidentals: 8 },
-      midRange: { total: 45, meals: 16, transport: 5, activities: 14, drinks: 10, incidentals: 12 },
-      luxury: { total: 170, meals: 60, transport: 10, activities: 55, drinks: 30, incidentals: 25 }
+      budget: { total: 20, meals: 8, transport: 8, activities: 6, drinks: 3, incidentals: 8 },
+      midRange: { total: 45, meals: 16, transport: 20, activities: 14, drinks: 10, incidentals: 12 },
+      luxury: { total: 170, meals: 60, transport: 40, activities: 55, drinks: 30, incidentals: 25 }
     },
     confidence: 'high'
   },
@@ -3648,9 +3810,9 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
   'tegucigalpa': {
     dailyCost: { budget: 16, midRange: 38, luxury: 145 },
     breakdown: {
-      budget: { total: 16, meals: 7, transport: 2, activities: 4, drinks: 3, incidentals: 8 },
-      midRange: { total: 38, meals: 14, transport: 4, activities: 10, drinks: 10, incidentals: 12 },
-      luxury: { total: 145, meals: 50, transport: 8, activities: 45, drinks: 27, incidentals: 25 }
+      budget: { total: 16, meals: 7, transport: 8, activities: 4, drinks: 3, incidentals: 8 },
+      midRange: { total: 38, meals: 14, transport: 20, activities: 10, drinks: 10, incidentals: 12 },
+      luxury: { total: 145, meals: 50, transport: 40, activities: 45, drinks: 27, incidentals: 25 }
     },
     confidence: 'high'
   },
@@ -3658,9 +3820,9 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
   'managua': {
     dailyCost: { budget: 16, midRange: 35, luxury: 130 },
     breakdown: {
-      budget: { total: 16, meals: 6, transport: 2, activities: 5, drinks: 3, incidentals: 8 },
-      midRange: { total: 35, meals: 13, transport: 3, activities: 9, drinks: 10, incidentals: 12 },
-      luxury: { total: 130, meals: 45, transport: 7, activities: 40, drinks: 23, incidentals: 25 }
+      budget: { total: 16, meals: 6, transport: 8, activities: 5, drinks: 3, incidentals: 8 },
+      midRange: { total: 35, meals: 13, transport: 20, activities: 9, drinks: 10, incidentals: 12 },
+      luxury: { total: 130, meals: 45, transport: 40, activities: 40, drinks: 23, incidentals: 25 }
     },
     confidence: 'high'
   },
@@ -3668,9 +3830,9 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
   'kingston': {
     dailyCost: { budget: 28, midRange: 60, luxury: 220 },
     breakdown: {
-      budget: { total: 28, meals: 12, transport: 4, activities: 9, drinks: 3, incidentals: 8 },
-      midRange: { total: 60, meals: 22, transport: 6, activities: 22, drinks: 10, incidentals: 12 },
-      luxury: { total: 220, meals: 78, transport: 12, activities: 85, drinks: 30, incidentals: 25 }
+      budget: { total: 28, meals: 12, transport: 8, activities: 9, drinks: 3, incidentals: 8 },
+      midRange: { total: 60, meals: 22, transport: 20, activities: 22, drinks: 10, incidentals: 12 },
+      luxury: { total: 220, meals: 78, transport: 40, activities: 85, drinks: 30, incidentals: 25 }
     },
     confidence: 'high'
   },
@@ -3678,9 +3840,9 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
   'santo-domingo': {
     dailyCost: { budget: 22, midRange: 48, luxury: 180 },
     breakdown: {
-      budget: { total: 22, meals: 9, transport: 3, activities: 7, drinks: 3, incidentals: 8 },
-      midRange: { total: 48, meals: 18, transport: 5, activities: 15, drinks: 10, incidentals: 12 },
-      luxury: { total: 180, meals: 65, transport: 12, activities: 58, drinks: 30, incidentals: 25 }
+      budget: { total: 22, meals: 9, transport: 8, activities: 7, drinks: 3, incidentals: 8 },
+      midRange: { total: 48, meals: 18, transport: 20, activities: 15, drinks: 10, incidentals: 12 },
+      luxury: { total: 180, meals: 65, transport: 40, activities: 58, drinks: 30, incidentals: 25 }
     },
     confidence: 'high'
   },
@@ -3688,9 +3850,9 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
   'port-au-prince': {
     dailyCost: { budget: 20, midRange: 45, luxury: 170 },
     breakdown: {
-      budget: { total: 20, meals: 8, transport: 3, activities: 6, drinks: 3, incidentals: 8 },
-      midRange: { total: 45, meals: 16, transport: 5, activities: 14, drinks: 10, incidentals: 12 },
-      luxury: { total: 170, meals: 60, transport: 10, activities: 55, drinks: 30, incidentals: 25 }
+      budget: { total: 20, meals: 8, transport: 8, activities: 6, drinks: 3, incidentals: 8 },
+      midRange: { total: 45, meals: 16, transport: 20, activities: 14, drinks: 10, incidentals: 12 },
+      luxury: { total: 170, meals: 60, transport: 40, activities: 55, drinks: 30, incidentals: 25 }
     },
     confidence: 'high'
   },
@@ -3699,8 +3861,8 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
     dailyCost: { budget: 45, midRange: 95, luxury: 350 },
     breakdown: {
       budget: { total: 45, meals: 18, transport: 8, activities: 14, drinks: 7, incidentals: 8 },
-      midRange: { total: 95, meals: 35, transport: 15, activities: 25, drinks: 20, incidentals: 15 },
-      luxury: { total: 350, meals: 125, transport: 25, activities: 115, drinks: 60, incidentals: 25 }
+      midRange: { total: 95, meals: 35, transport: 20, activities: 25, drinks: 20, incidentals: 15 },
+      luxury: { total: 350, meals: 125, transport: 40, activities: 115, drinks: 60, incidentals: 25 }
     },
     confidence: 'high'
   },
@@ -3709,8 +3871,8 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
     dailyCost: { budget: 42, midRange: 90, luxury: 330 },
     breakdown: {
       budget: { total: 42, meals: 16, transport: 8, activities: 13, drinks: 7, incidentals: 8 },
-      midRange: { total: 90, meals: 34, transport: 12, activities: 24, drinks: 20, incidentals: 15 },
-      luxury: { total: 330, meals: 115, transport: 20, activities: 105, drinks: 65, incidentals: 25 }
+      midRange: { total: 90, meals: 34, transport: 20, activities: 24, drinks: 20, incidentals: 15 },
+      luxury: { total: 330, meals: 115, transport: 40, activities: 105, drinks: 65, incidentals: 25 }
     },
     confidence: 'high'
   },
@@ -3718,32 +3880,32 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
   'port-of-spain': {
     dailyCost: { budget: 38, midRange: 80, luxury: 295 },
     breakdown: {
-      budget: { total: 38, meals: 15, transport: 7, activities: 11, drinks: 7, incidentals: 8 },
-      midRange: { total: 80, meals: 30, transport: 10, activities: 20, drinks: 20, incidentals: 15 },
-      luxury: { total: 295, meals: 105, transport: 18, activities: 95, drinks: 52, incidentals: 25 }
+      budget: { total: 38, meals: 15, transport: 8, activities: 11, drinks: 7, incidentals: 8 },
+      midRange: { total: 80, meals: 30, transport: 20, activities: 20, drinks: 20, incidentals: 15 },
+      luxury: { total: 295, meals: 105, transport: 40, activities: 95, drinks: 52, incidentals: 25 }
     },
     confidence: 'high'
   },
 
   // MAJOR US DEPARTURE CITIES - MISSING FROM DATABASE
   'phoenix': {
-    dailyCost: { budget: 48, midRange: 105, luxury: 380 },
+    dailyCost: { budget: 50, midRange: 117, luxury: 410 },
     accommodation: { budget: 72, midRange: 142, luxury: 258 }, // Blended: desert city with good Airbnb market (18% savings)
     breakdown: {
-      budget: { total: 48, meals: 20, transport: 10, activities: 13, drinks: 7, incidentals: 8 },
-      midRange: { total: 105, meals: 40, transport: 18, activities: 27, drinks: 20, incidentals: 15 },
-      luxury: { total: 380, meals: 135, transport: 30, activities: 115, drinks: 75, incidentals: 25 }
+      budget: { total: 50, meals: 20, transport: 12, activities: 13, drinks: 7, incidentals: 8 },
+      midRange: { total: 117, meals: 40, transport: 30, activities: 27, drinks: 20, incidentals: 15 },
+      luxury: { total: 410, meals: 135, transport: 60, activities: 115, drinks: 75, incidentals: 25 }
     },
     confidence: 'high'
   },
 
   'detroit': {
-    dailyCost: { budget: 40, midRange: 85, luxury: 310 },
+    dailyCost: { budget: 42, midRange: 98, luxury: 340 },
     accommodation: { budget: 58, midRange: 118, luxury: 198 }, // Blended: revitalizing city with growing Airbnb market (20% savings)
     breakdown: {
-      budget: { total: 40, meals: 16, transport: 8, activities: 11, drinks: 7, incidentals: 8 },
-      midRange: { total: 85, meals: 32, transport: 12, activities: 23, drinks: 18, incidentals: 12 },
-      luxury: { total: 310, meals: 110, transport: 20, activities: 90, drinks: 65, incidentals: 25 }
+      budget: { total: 42, meals: 16, transport: 10, activities: 11, drinks: 7, incidentals: 8 },
+      midRange: { total: 98, meals: 32, transport: 25, activities: 23, drinks: 18, incidentals: 12 },
+      luxury: { total: 340, meals: 110, transport: 50, activities: 90, drinks: 65, incidentals: 25 }
     },
     confidence: 'high'
   },
@@ -3753,19 +3915,19 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
     accommodation: { budget: 68, midRange: 132, luxury: 238 }, // Blended: midwest city with good vacation rental market (17% savings)
     breakdown: {
       budget: { total: 45, meals: 18, transport: 8, activities: 14, drinks: 7, incidentals: 8 },
-      midRange: { total: 98, meals: 36, transport: 15, activities: 27, drinks: 20, incidentals: 15 },
-      luxury: { total: 360, meals: 125, transport: 25, activities: 110, drinks: 75, incidentals: 25 }
+      midRange: { total: 98, meals: 36, transport: 20, activities: 27, drinks: 20, incidentals: 15 },
+      luxury: { total: 360, meals: 125, transport: 40, activities: 110, drinks: 75, incidentals: 25 }
     },
     confidence: 'high'
   },
 
   'salt-lake-city': {
-    dailyCost: { budget: 42, midRange: 90, luxury: 340 },
+    dailyCost: { budget: 42, midRange: 93, luxury: 350 },
     accommodation: { budget: 62, midRange: 125, luxury: 218 }, // Blended: outdoor recreation city with good Airbnb culture (18% savings)
     breakdown: {
       budget: { total: 42, meals: 18, transport: 8, activities: 12, drinks: 6, incidentals: 8 },
-      midRange: { total: 90, meals: 34, transport: 12, activities: 26, drinks: 18, incidentals: 12 },
-      luxury: { total: 340, meals: 120, transport: 20, activities: 105, drinks: 70, incidentals: 25 }
+      midRange: { total: 93, meals: 34, transport: 20, activities: 26, drinks: 18, incidentals: 12 },
+      luxury: { total: 350, meals: 120, transport: 40, activities: 105, drinks: 70, incidentals: 25 }
     },
     confidence: 'high'
   },
@@ -3775,41 +3937,41 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
     accommodation: { budget: 75, midRange: 148, luxury: 268 }, // Blended: progressive city with strong Airbnb culture (18% savings)
     breakdown: {
       budget: { total: 48, meals: 20, transport: 8, activities: 15, drinks: 7, incidentals: 8 },
-      midRange: { total: 105, meals: 40, transport: 15, activities: 30, drinks: 20, incidentals: 15 },
-      luxury: { total: 380, meals: 135, transport: 25, activities: 120, drinks: 75, incidentals: 25 }
+      midRange: { total: 105, meals: 40, transport: 20, activities: 30, drinks: 20, incidentals: 15 },
+      luxury: { total: 380, meals: 135, transport: 40, activities: 120, drinks: 75, incidentals: 25 }
     },
     confidence: 'high'
   },
 
   'nashville': {
-    dailyCost: { budget: 42, midRange: 90, luxury: 340 },
+    dailyCost: { budget: 42, midRange: 93, luxury: 350 },
     accommodation: { budget: 65, midRange: 128, luxury: 225 }, // Blended: music city with excellent vacation rental market (20% savings)
     breakdown: {
       budget: { total: 42, meals: 18, transport: 8, activities: 11, drinks: 7, incidentals: 8 },
-      midRange: { total: 90, meals: 34, transport: 12, activities: 26, drinks: 18, incidentals: 12 },
-      luxury: { total: 340, meals: 120, transport: 20, activities: 105, drinks: 70, incidentals: 25 }
+      midRange: { total: 93, meals: 34, transport: 20, activities: 26, drinks: 18, incidentals: 12 },
+      luxury: { total: 350, meals: 120, transport: 40, activities: 105, drinks: 70, incidentals: 25 }
     },
     confidence: 'high'
   },
 
   'charlotte': {
-    dailyCost: { budget: 40, midRange: 85, luxury: 320 },
+    dailyCost: { budget: 42, midRange: 98, luxury: 350 },
     accommodation: { budget: 62, midRange: 122, luxury: 205 }, // Blended: southern business hub with growing Airbnb market (18% savings)
     breakdown: {
-      budget: { total: 40, meals: 16, transport: 8, activities: 11, drinks: 7, incidentals: 8 },
-      midRange: { total: 85, meals: 32, transport: 12, activities: 23, drinks: 18, incidentals: 12 },
-      luxury: { total: 320, meals: 115, transport: 20, activities: 95, drinks: 65, incidentals: 25 }
+      budget: { total: 42, meals: 16, transport: 10, activities: 11, drinks: 7, incidentals: 8 },
+      midRange: { total: 98, meals: 32, transport: 25, activities: 23, drinks: 18, incidentals: 12 },
+      luxury: { total: 350, meals: 115, transport: 50, activities: 95, drinks: 65, incidentals: 25 }
     },
     confidence: 'high'
   },
 
   'kansas-city': {
-    dailyCost: { budget: 38, midRange: 80, luxury: 295 },
+    dailyCost: { budget: 38, midRange: 83, luxury: 302 },
     accommodation: { budget: 55, midRange: 108, luxury: 188 }, // Blended: midwest city with affordable vacation rental market (20% savings)
     breakdown: {
-      budget: { total: 38, meals: 15, transport: 8, activities: 10, drinks: 7, incidentals: 8 },
-      midRange: { total: 80, meals: 30, transport: 12, activities: 20, drinks: 18, incidentals: 12 },
-      luxury: { total: 295, meals: 105, transport: 18, activities: 85, drinks: 62, incidentals: 25 }
+      budget: { total: 38, meals: 15, transport: 10, activities: 10, drinks: 7, incidentals: 8 },
+      midRange: { total: 83, meals: 30, transport: 25, activities: 20, drinks: 18, incidentals: 12 },
+      luxury: { total: 302, meals: 105, transport: 50, activities: 85, drinks: 62, incidentals: 25 }
     },
     confidence: 'high'
   },
@@ -3818,20 +3980,20 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
     dailyCost: { budget: 40, midRange: 85, luxury: 320 },
     accommodation: { budget: 58, midRange: 115, luxury: 198 }, // Blended: revitalized city with good Airbnb culture (18% savings)
     breakdown: {
-      budget: { total: 40, meals: 16, transport: 8, activities: 11, drinks: 7, incidentals: 8 },
-      midRange: { total: 85, meals: 32, transport: 12, activities: 23, drinks: 18, incidentals: 12 },
-      luxury: { total: 320, meals: 115, transport: 20, activities: 95, drinks: 65, incidentals: 25 }
+      budget: { total: 40, meals: 16, transport: 10, activities: 11, drinks: 7, incidentals: 8 },
+      midRange: { total: 85, meals: 32, transport: 25, activities: 23, drinks: 18, incidentals: 12 },
+      luxury: { total: 320, meals: 115, transport: 50, activities: 95, drinks: 65, incidentals: 25 }
     },
     confidence: 'high'
   },
 
   'cleveland': {
-    dailyCost: { budget: 38, midRange: 80, luxury: 295 },
+    dailyCost: { budget: 38, midRange: 83, luxury: 302 },
     accommodation: { budget: 55, midRange: 108, luxury: 185 }, // Blended: affordable midwest city with good vacation rental options (20% savings)
     breakdown: {
       budget: { total: 38, meals: 15, transport: 8, activities: 10, drinks: 7, incidentals: 8 },
-      midRange: { total: 80, meals: 30, transport: 12, activities: 20, drinks: 18, incidentals: 12 },
-      luxury: { total: 295, meals: 105, transport: 18, activities: 85, drinks: 62, incidentals: 25 }
+      midRange: { total: 83, meals: 30, transport: 20, activities: 20, drinks: 18, incidentals: 12 },
+      luxury: { total: 302, meals: 105, transport: 40, activities: 85, drinks: 62, incidentals: 25 }
     },
     confidence: 'high'
   }
