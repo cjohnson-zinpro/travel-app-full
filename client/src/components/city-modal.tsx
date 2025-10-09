@@ -2561,8 +2561,8 @@ export function CityModal({
             {city.city} is a vibrant destination offering unique cultural experiences and attractions for travelers.
           </p>
 
-          {/* Trip Total and Budget Alignment */}
-          <div className="relative overflow-hidden rounded-xl h-48 border border-primary/20">
+          {/* Hero Section - Trip Total with City Image Background */}
+          <div className="relative overflow-hidden rounded-xl h-80 border border-primary/20 mb-6">
             {/* Background Image */}
             <div 
               className="absolute inset-0 bg-cover bg-center bg-no-repeat"
@@ -2571,18 +2571,19 @@ export function CityModal({
               }}
             />
             {/* Dark overlay for better text contrast */}
-            <div className="absolute inset-0 bg-black/50" />
+            <div className="absolute inset-0 bg-black/40" />
             {/* Gradient overlay for enhanced text readability */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
             
+            {/* Trip Total Content */}
             <div className="relative h-full flex flex-col justify-center p-8">
-              <div className="text-center mb-4">
-                <div className="flex items-center justify-center gap-2 mb-3">
+              <div className="text-center mb-6">
+                <div className="flex items-center justify-center gap-2 mb-4">
                   <div className="w-2 h-2 rounded-full bg-white animate-pulse" />
                   <p className="text-sm font-medium text-white/90 drop-shadow-lg">Estimated Trip Total</p>
                   <div className="w-2 h-2 rounded-full bg-white animate-pulse" />
                 </div>
-                <p className="text-4xl font-bold text-white drop-shadow-lg mb-3">
+                <p className="text-5xl font-bold text-white drop-shadow-lg mb-4">
                   {(() => {
                     const baseTotal = displayTotal;
                     const lowerBound = Math.round(baseTotal * 0.85); // 15% lower
@@ -2590,9 +2591,9 @@ export function CityModal({
                     return `${formatCurrency(lowerBound)} - ${formatCurrency(upperBound)}`;
                   })()} 
                 </p>
-                <div className="flex items-center justify-center gap-4 text-xs text-white/80 mb-4 drop-shadow">
+                <div className="flex items-center justify-center gap-4 text-sm text-white/80 mb-6 drop-shadow">
                   <div className="flex items-center gap-1">
-                    <Clock className="h-3 w-3" />
+                    <Clock className="h-4 w-4" />
                     <span>{city.nights} nights</span>
                   </div>
                   <div className="w-1 h-1 rounded-full bg-white/50" />
@@ -2608,25 +2609,33 @@ export function CityModal({
                 </div>
               </div>
               <div className="flex justify-center">
-                <Badge className={`${budgetAlignment.color} border-0 shadow-lg backdrop-blur-sm bg-white/10`}>
+                <Badge className={`${budgetAlignment.color} border-0 shadow-lg backdrop-blur-sm bg-white/10 px-4 py-2`}>
                   <div className="flex items-center gap-1 text-white drop-shadow">
-                    {budgetAlignment.icon && <budgetAlignment.icon className="h-3 w-3" />}
-                    {getBudgetText(budgetAlignment.status)}
+                    {budgetAlignment.icon && <budgetAlignment.icon className="h-4 w-4" />}
+                    <span className="font-medium">{getBudgetText(budgetAlignment.status)}</span>
                   </div>
                 </Badge>
+              </div>
+            </div>
+
+            {/* Overlaid Tabs */}
+            <div className="absolute bottom-0 left-0 right-0 p-6">
+              <div className="backdrop-blur-md bg-black/30 rounded-lg border border-white/20">
+                <Tabs defaultValue="overview" className="w-full">
+                  <TabsList className="grid w-full grid-cols-4 bg-transparent border-0">
+                    <TabsTrigger value="overview" className="text-white/80 data-[state=active]:text-white data-[state=active]:bg-white/20 border-0">Overview</TabsTrigger>
+                    <TabsTrigger value="costs" className="text-white/80 data-[state=active]:text-white data-[state=active]:bg-white/20 border-0">Cost Breakdown</TabsTrigger>
+                    <TabsTrigger value="insights" className="text-white/80 data-[state=active]:text-white data-[state=active]:bg-white/20 border-0">Smart Insights</TabsTrigger>
+                    <TabsTrigger value="culture" className="text-white/80 data-[state=active]:text-white data-[state=active]:bg-white/20 border-0">Cultural Guide</TabsTrigger>
+                  </TabsList>
+                </Tabs>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Main Content with Tabs */}
+        {/* Main Content with Tab Content */}
         <Tabs defaultValue="overview" className="w-full">
-          <TabsList className="grid w-full grid-cols-4">
-            <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="costs">Cost Breakdown</TabsTrigger>
-            <TabsTrigger value="insights">Smart Insights</TabsTrigger>
-            <TabsTrigger value="culture">Cultural Guide</TabsTrigger>
-          </TabsList>
 
           {/* Overview Tab */}
           <TabsContent value="overview" className="space-y-4 mt-6 min-h-[600px] w-full max-w-none">
