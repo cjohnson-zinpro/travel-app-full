@@ -2778,14 +2778,14 @@ export function CityModal({
                     <InteractiveMap 
                       city={getDisplayCityName(city.city)}
                       coordinates={city.coordinates}
-                      height="h-48"
+                      height="h-80"
                       className="w-full"
                     />
                   </div>
                   
                   {/* Fallback to Google Maps */}
                   <div 
-                    className="w-full h-12 bg-gradient-to-r from-blue-600 to-green-600 rounded-lg flex items-center justify-center cursor-pointer hover:from-blue-700 hover:to-green-700 transition-all duration-200 group"
+                    className="w-full h-10 bg-gradient-to-r from-blue-600 to-green-600 rounded-lg flex items-center justify-center cursor-pointer hover:from-blue-700 hover:to-green-700 transition-all duration-200 group mb-3"
                     onClick={() => openGoogleMaps(city.city)}
                   >
                     <div className="text-center">
