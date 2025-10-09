@@ -2579,7 +2579,7 @@ export function CityModal({
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
             
             {/* Trip Total Content */}
-            <div className="relative h-full flex flex-col justify-center p-8">
+            <div className="relative h-full flex flex-col justify-center p-8 pb-28">
               <div className="text-center mb-6">
                 <div className="flex items-center justify-center gap-2 mb-4">
                   <div className="w-2 h-2 rounded-full bg-white animate-pulse" />
@@ -2611,7 +2611,7 @@ export function CityModal({
                   <span>Excludes flights</span>
                 </div>
               </div>
-              <div className="flex justify-center">
+              <div className="flex justify-center mb-4">
                 <Badge className={`${budgetAlignment.color} border-0 shadow-lg backdrop-blur-sm bg-white/10 px-4 py-2`}>
                   <div className="flex items-center gap-1 text-white drop-shadow">
                     {budgetAlignment.icon && <budgetAlignment.icon className="h-4 w-4" />}
@@ -2622,13 +2622,13 @@ export function CityModal({
             </div>
 
             {/* Overlaid Tabs */}
-            <div className="absolute bottom-0 left-0 right-0 p-6">
+            <div className="absolute bottom-0 left-0 right-0 p-4">
               <div className="backdrop-blur-md bg-black/30 rounded-lg border border-white/20">
-                <TabsList className="grid w-full grid-cols-4 bg-transparent border-0">
-                  <TabsTrigger value="overview" className="text-white/80 data-[state=active]:text-white data-[state=active]:bg-white/20 border-0">Overview</TabsTrigger>
-                  <TabsTrigger value="costs" className="text-white/80 data-[state=active]:text-white data-[state=active]:bg-white/20 border-0">Cost Breakdown</TabsTrigger>
-                  <TabsTrigger value="insights" className="text-white/80 data-[state=active]:text-white data-[state=active]:bg-white/20 border-0">Smart Insights</TabsTrigger>
-                  <TabsTrigger value="culture" className="text-white/80 data-[state=active]:text-white data-[state=active]:bg-white/20 border-0">Cultural Guide</TabsTrigger>
+                <TabsList className="grid w-full grid-cols-4 bg-transparent border-0 h-12">
+                  <TabsTrigger value="overview" className="text-white/80 data-[state=active]:text-white data-[state=active]:bg-white/20 border-0 text-sm">Overview</TabsTrigger>
+                  <TabsTrigger value="costs" className="text-white/80 data-[state=active]:text-white data-[state=active]:bg-white/20 border-0 text-sm">Cost Breakdown</TabsTrigger>
+                  <TabsTrigger value="insights" className="text-white/80 data-[state=active]:text-white data-[state=active]:bg-white/20 border-0 text-sm">Smart Insights</TabsTrigger>
+                  <TabsTrigger value="culture" className="text-white/80 data-[state=active]:text-white data-[state=active]:bg-white/20 border-0 text-sm">Cultural Guide</TabsTrigger>
                 </TabsList>
               </div>
             </div>
