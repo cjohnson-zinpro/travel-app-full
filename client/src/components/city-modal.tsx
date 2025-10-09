@@ -2560,7 +2560,10 @@ export function CityModal({
           <p className="text-sm text-muted-foreground">
             {city.city} is a vibrant destination offering unique cultural experiences and attractions for travelers.
           </p>
+        </div>
 
+        {/* Main Content with Tabs */}
+        <Tabs defaultValue="overview" className="w-full">
           {/* Hero Section - Trip Total with City Image Background */}
           <div className="relative overflow-hidden rounded-xl h-80 border border-primary/20 mb-6">
             {/* Background Image */}
@@ -2621,21 +2624,15 @@ export function CityModal({
             {/* Overlaid Tabs */}
             <div className="absolute bottom-0 left-0 right-0 p-6">
               <div className="backdrop-blur-md bg-black/30 rounded-lg border border-white/20">
-                <Tabs defaultValue="overview" className="w-full">
-                  <TabsList className="grid w-full grid-cols-4 bg-transparent border-0">
-                    <TabsTrigger value="overview" className="text-white/80 data-[state=active]:text-white data-[state=active]:bg-white/20 border-0">Overview</TabsTrigger>
-                    <TabsTrigger value="costs" className="text-white/80 data-[state=active]:text-white data-[state=active]:bg-white/20 border-0">Cost Breakdown</TabsTrigger>
-                    <TabsTrigger value="insights" className="text-white/80 data-[state=active]:text-white data-[state=active]:bg-white/20 border-0">Smart Insights</TabsTrigger>
-                    <TabsTrigger value="culture" className="text-white/80 data-[state=active]:text-white data-[state=active]:bg-white/20 border-0">Cultural Guide</TabsTrigger>
-                  </TabsList>
-                </Tabs>
+                <TabsList className="grid w-full grid-cols-4 bg-transparent border-0">
+                  <TabsTrigger value="overview" className="text-white/80 data-[state=active]:text-white data-[state=active]:bg-white/20 border-0">Overview</TabsTrigger>
+                  <TabsTrigger value="costs" className="text-white/80 data-[state=active]:text-white data-[state=active]:bg-white/20 border-0">Cost Breakdown</TabsTrigger>
+                  <TabsTrigger value="insights" className="text-white/80 data-[state=active]:text-white data-[state=active]:bg-white/20 border-0">Smart Insights</TabsTrigger>
+                  <TabsTrigger value="culture" className="text-white/80 data-[state=active]:text-white data-[state=active]:bg-white/20 border-0">Cultural Guide</TabsTrigger>
+                </TabsList>
               </div>
             </div>
           </div>
-        </div>
-
-        {/* Main Content with Tab Content */}
-        <Tabs defaultValue="overview" className="w-full">
 
           {/* Overview Tab */}
           <TabsContent value="overview" className="space-y-4 mt-6 min-h-[600px] w-full max-w-none">
