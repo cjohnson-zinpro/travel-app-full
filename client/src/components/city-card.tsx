@@ -45,6 +45,94 @@ export function CityCard({
     return cityImages[cityName] || "https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=800&h=400&fit=crop&crop=center&auto=format&q=80"; // Generic city fallback
   };
 
+  // Function to identify capital cities
+  const isCapitalCity = (cityName: string, country: string): boolean => {
+    const capitals: Record<string, string[]> = {
+      "United States": ["Washington", "Washington D.C."],
+      "United Kingdom": ["London"],
+      "Canada": ["Ottawa"],
+      "France": ["Paris"],
+      "Germany": ["Berlin"],
+      "Italy": ["Rome"],
+      "Spain": ["Madrid"],
+      "Japan": ["Tokyo"],
+      "China": ["Beijing"],
+      "India": ["New Delhi", "Delhi"],
+      "Australia": ["Canberra"],
+      "Brazil": ["Brasília", "Brasilia"],
+      "Mexico": ["Mexico City"],
+      "Russia": ["Moscow"],
+      "South Korea": ["Seoul"],
+      "Thailand": ["Bangkok"],
+      "Egypt": ["Cairo"],
+      "South Africa": ["Cape Town", "Pretoria", "Bloemfontein"], // Multiple capitals
+      "Netherlands": ["Amsterdam", "The Hague"], // Amsterdam is capital, The Hague is seat of government
+      "Turkey": ["Ankara"],
+      "Greece": ["Athens"],
+      "Argentina": ["Buenos Aires"],
+      "Chile": ["Santiago"],
+      "Colombia": ["Bogotá", "Bogota"],
+      "Peru": ["Lima"],
+      "Malaysia": ["Kuala Lumpur"],
+      "Singapore": ["Singapore"],
+      "Indonesia": ["Jakarta"],
+      "Philippines": ["Manila"],
+      "Vietnam": ["Hanoi"],
+      "Cambodia": ["Phnom Penh"],
+      "Myanmar": ["Naypyidaw", "Yangon"], // Naypyidaw is capital, Yangon is largest city
+      "Sri Lanka": ["Colombo", "Sri Jayawardenepura Kotte"],
+      "Bangladesh": ["Dhaka"],
+      "Pakistan": ["Islamabad"],
+      "Nepal": ["Kathmandu"],
+      "Israel": ["Jerusalem"],
+      "Jordan": ["Amman"],
+      "United Arab Emirates": ["Abu Dhabi"],
+      "Qatar": ["Doha"],
+      "Saudi Arabia": ["Riyadh"],
+      "Morocco": ["Rabat"],
+      "Kenya": ["Nairobi"],
+      "Tanzania": ["Dodoma"],
+      "Ethiopia": ["Addis Ababa"],
+      "Ghana": ["Accra"],
+      "Nigeria": ["Abuja"],
+      "New Zealand": ["Wellington"],
+      "Fiji": ["Suva"],
+      "Costa Rica": ["San José", "San Jose"],
+      "Panama": ["Panama City"],
+      "Guatemala": ["Guatemala City"],
+      "Jamaica": ["Kingston"],
+      "Cuba": ["Havana"],
+      "Dominican Republic": ["Santo Domingo"],
+      "Czech Republic": ["Prague"],
+      "Poland": ["Warsaw"],
+      "Hungary": ["Budapest"],
+      "Croatia": ["Zagreb"],
+      "Romania": ["Bucharest"],
+      "Bulgaria": ["Sofia"],
+      "Norway": ["Oslo"],
+      "Sweden": ["Stockholm"],
+      "Denmark": ["Copenhagen"],
+      "Finland": ["Helsinki"],
+      "Iceland": ["Reykjavik"],
+      "Austria": ["Vienna"],
+      "Switzerland": ["Bern"],
+      "Belgium": ["Brussels"],
+      "Portugal": ["Lisbon"],
+      "Ireland": ["Dublin"],
+      "Kazakhstan": ["Nur-Sultan", "Astana"],
+      "Mongolia": ["Ulaanbaatar"],
+      "Uzbekistan": ["Tashkent"],
+    };
+
+    const countryCapitals = capitals[country];
+    if (!countryCapitals) return false;
+    
+    return countryCapitals.some(capital => 
+      cityName.toLowerCase().includes(capital.toLowerCase()) || 
+      capital.toLowerCase().includes(cityName.toLowerCase())
+    );
+  };
+
   // Removed budget status badges - will add comprehensive badges once other filtering criteria (activity level, etc.) are defined
   
   const accuracyClasses = {
@@ -473,7 +561,7 @@ export function CityCard({
       data-testid={`card-city-${city.cityId}`}
     >
       {/* Hero Image Section */}
-      <div className="relative h-48 overflow-hidden">
+      <div className="relative h-40 sm:h-48 overflow-hidden">
         <img
           src={heroImage}
           alt={`${city.city} hero image`}
@@ -498,16 +586,25 @@ export function CityCard({
         <CostComparisonIndicator />
         
         {/* City Name Overlay */}
-        <div className="absolute bottom-0 left-0 right-0 p-4">
-          <h5
-            className="text-2xl font-bold text-white drop-shadow-lg"
-            data-testid={`text-city-name-${city.cityId}`}
-            title={city.city}
-          >
-            {city.city}
-          </h5>
+        <div className="absolute bottom-0 left-0 right-0 p-2 sm:p-4">
+          <div className="flex items-center gap-2 mb-1">
+            <h5
+              className="text-xl sm:text-2xl font-bold text-white drop-shadow-lg"
+              data-testid={`text-city-name-${city.cityId}`}
+              title={city.city}
+            >
+              {city.city}
+            </h5>
+            {isCapitalCity(city.city, city.country) && (
+              <div className="flex items-center">
+                <span className="text-yellow-400 drop-shadow-lg" title="Capital City">
+                  👑
+                </span>
+              </div>
+            )}
+          </div>
           <p
-            className="text-white/90 text-sm drop-shadow-md flex items-center"
+            className="text-white/90 text-xs sm:text-sm drop-shadow-md flex items-center"
             data-testid={`text-city-info-${city.cityId}`}
             title={`${city.country} • ${city.region}`}
           >
@@ -523,15 +620,15 @@ export function CityCard({
         </div>
       </div>
 
-      <CardContent className="p-5">
+      <CardContent className="p-3 sm:p-5">
         {/* TOP ROW — Accuracy and Travel Style Badges */}
-        <div className="flex items-center justify-between gap-3 mb-4">
+        <div className="flex items-center justify-between gap-1 sm:gap-3 mb-3 sm:mb-4">
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
                 <Badge
                   variant="outline"
-                  className={`whitespace-nowrap border px-2 py-0.5 text-xs font-medium ${accuracyClasses[getAccuracyLevel(city)]}`}
+                  className={`whitespace-nowrap border px-1 sm:px-2 py-0.5 text-xs sm:text-xs font-medium ${accuracyClasses[getAccuracyLevel(city)]}`}
                   data-testid={`badge-accuracy-${city.cityId}`}
                 >
                   {(() => {
@@ -553,7 +650,7 @@ export function CityCard({
               <TooltipTrigger asChild>
                 <Badge
                   variant="secondary"
-                  className="whitespace-nowrap bg-muted text-muted-foreground cursor-help"
+                  className="whitespace-nowrap bg-muted text-muted-foreground cursor-help px-1 sm:px-2 py-0.5 text-xs sm:text-xs"
                   data-testid={`text-total-range-${city.cityId}`}
                 >
                   {travelStyle.charAt(0).toUpperCase() + travelStyle.slice(1)}
@@ -573,81 +670,94 @@ export function CityCard({
           </TooltipProvider>
         </div>
 
-        {/* ENHANCED PRICE SECTION */}
-        <div className="bg-gradient-to-r from-primary/5 to-primary/10 rounded-lg p-4 mb-5">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium text-muted-foreground">
-              {showFlightCosts ? 'Trip Total' : 'Trip Total (no flights)'}
-            </span>
-            <div className="flex items-center gap-1">
-              <Heart className="h-4 w-4 text-primary/60" />
-              <span className="text-xs text-primary/80 font-medium">{city.nights} nights</span>
-            </div>
-          </div>
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <div className="cursor-help">
-                  <span className="text-3xl font-bold text-primary flex items-baseline gap-1">
-                    <span className="text-xl text-muted-foreground">~</span>
-                    {formatCurrency(showFlightCosts ? displayTotal : (displayTotal - (city.breakdown?.flight || 0)))}
-                  </span>
-                  <div className="text-xs text-muted-foreground mt-1">
-                    Estimated for {travelStyle === 'mid' ? 'mid-range' : travelStyle} travel
+        {/* WEB-LIKE CONNECTED COST STRUCTURE */}
+        <div className="bg-gradient-to-r from-primary/5 to-primary/10 rounded-lg p-3 sm:p-6 mb-5">
+          <div className="space-y-4 sm:space-y-6">
+            <div className="text-center">
+              <p className="text-xs sm:text-sm text-muted-foreground">
+                {showFlightCosts ? 'Trip Total' : 'Trip Total (no flights)'}
+              </p>
+              <p className="text-xs sm:text-sm text-primary/80 font-medium">{city.nights} nights</p>
+              
+              {/* Top Level - Total Trip Cost */}
+              <div className="relative flex justify-center mb-6 sm:mb-8 mt-3 sm:mt-4">
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div className="bg-white border-2 border-gray-300 px-4 sm:px-8 py-3 sm:py-4 rounded-lg shadow-sm cursor-help w-48 sm:w-60 h-16 sm:h-20 flex flex-col justify-center">
+                        <div className="flex items-center justify-center gap-2 mb-1">
+                       
+                            <div className="text-xl sm:text-3xl font-extrabold text-gray-800">
+                            ~{formatCurrency(showFlightCosts ? displayTotal : (displayTotal - (city.breakdown?.flight || 0)))}
+                          </div>
+                   
+                        </div>
+                        <div className="text-xs text-gray-600">Estimated trip total</div>
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent className="max-w-xs">
+                      <p className="text-xs">
+                        Estimated total cost for {city.nights} nights using {travelStyle === 'mid' ? 'mid-range' : travelStyle} travel style.
+                      </p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+                
+                {/* Connecting line down */}
+                <div className="absolute top-full w-0.5 h-6 sm:h-8 bg-gray-300"></div>
+              </div>
+
+              {/* Middle Level - Daily Total */}
+              <div className="relative flex justify-center mb-6 sm:mb-8">
+                <div className="bg-white border-2 border-gray-300 px-4 sm:px-8 py-3 sm:py-4 rounded-lg shadow-sm w-48 sm:w-60 h-16 sm:h-20 flex flex-col justify-center">
+                  <div className="text-base sm:text-lg font-bold text-gray-800 mb-1">
+                    ${Math.round((showFlightCosts ? displayTotal : (displayTotal - (city.breakdown?.flight || 0))) / city.nights)}/day
+                  </div>
+                  <div className="text-xs text-gray-600">Daily cost to stay here</div>
+                </div>
+                
+                {/* Connecting lines - T-junction */}
+                <div className="absolute top-full w-0.5 h-4 sm:h-6 bg-gray-300"></div>
+                <div className="absolute top-full left-1/2 transform -translate-x-1/2 translate-y-4 sm:translate-y-6">
+                  <div className="w-32 sm:w-40 h-0.5 bg-gray-300"></div>
+                </div>
+              </div>
+
+              {/* Bottom Level - Hotel and Daily Costs */}
+              <div className="grid grid-cols-2 gap-4 sm:gap-8 relative">
+                {/* Left connecting line */}
+                <div className="absolute left-1/4 -top-4 sm:-top-6 w-0.5 h-4 sm:h-6 bg-gray-300"></div>
+                {/* Right connecting line */}
+                <div className="absolute right-1/4 -top-4 sm:-top-6 w-0.5 h-4 sm:h-6 bg-gray-300"></div>
+                
+                {/* Hotel per night */}
+                <div className="text-center bg-white border border-gray-200 p-2 sm:p-3 rounded-lg shadow-sm">
+                  <div className="text-xs text-gray-600 font-medium mb-1 sm:mb-2">Hotel / night</div>
+                  <div className="text-sm sm:text-lg font-bold text-gray-800">
+                    {formatCurrency(city.breakdown?.hotelPerNightP50 || Math.round(displayTotal * 0.6 / city.nights))}
                   </div>
                 </div>
-              </TooltipTrigger>
-              <TooltipContent className="max-w-xs">
-                <p className="text-xs">
-                  Estimated total cost for {city.nights} nights using {travelStyle === 'mid' ? 'mid-range' : travelStyle} travel style. Prices are approximations based on live data and AI estimates.
-                </p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        </div>
-
-        {/* ENHANCED BREAKDOWN */}
-        <div
-          className={`gap-3 ${showFlightCosts ? 'grid grid-cols-3' : 'grid grid-cols-2'}`}
-          data-testid={`breakdown-${city.cityId}`}
-        >
-          {showFlightCosts && (
-            <StatBox
-              label="Flight"
-              tooltip={getSourceTooltip(city.breakdown.flightSource, "flight", travelStyle)}
-              value={formatCurrency(city.breakdown.flight)}
-            />
-          )}
-
-          <StatBox
-            label={
-              <span className="whitespace-nowrap">Hotel&nbsp;/&nbsp;night</span>
-            }
-            tooltip={getSourceTooltip(city.breakdown.hotelSource, "hotel", travelStyle)}
-            value={formatCurrency(tierPricing.hotelPerNight)}
-            emphasized={!showFlightCosts}
-          />
-
-          <StatBox
-            label="Daily costs"
-            tooltip={getSourceTooltip(city.breakdown.dailySource, "daily", travelStyle)}
-            value={formatCurrency(tierPricing.adjustedDaily)}
-            emphasized={!showFlightCosts}
-          />
-        </div>
-
-        {/* Enhanced daily cost summary when flights are hidden */}
-        {!showFlightCosts && (
-          <div className="mt-4 rounded-lg bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100 p-4 text-center">
-            <div className="flex items-center justify-center gap-2 mb-2">
-              <Star className="h-4 w-4 text-blue-600" />
-              <div className="text-xl font-bold text-blue-700">
-                ${tierPricing.hotelPerNight + tierPricing.adjustedDaily}/day
+                
+                {/* Daily costs */}
+                <div className="text-center bg-white border border-gray-200 p-2 sm:p-3 rounded-lg shadow-sm">
+                  <div className="text-xs text-gray-600 font-medium mb-1 sm:mb-2">Daily costs</div>
+                  <div className="text-sm sm:text-lg font-bold text-gray-800">
+                    {formatCurrency(city.breakdown?.dailyPerDay || Math.round(displayTotal * 0.4 / city.nights))}
+                  </div>
+                </div>
               </div>
-              <Star className="h-4 w-4 text-blue-600" />
             </div>
-            <div className="text-xs text-blue-600 font-medium">
-              Daily cost to stay here
+          </div>
+        </div>
+
+        {/* FLIGHT COST (if enabled) */}
+        {showFlightCosts && (
+          <div className="mb-4">
+            <div className="bg-white border border-gray-200 rounded-lg p-2 sm:p-3 text-center shadow-sm">
+              <div className="text-xs text-gray-600 font-medium mb-1 sm:mb-2">Flight</div>
+              <div className="text-sm sm:text-lg font-bold text-gray-800">
+                {formatCurrency(city.breakdown?.flight || 0)}
+              </div>
             </div>
           </div>
         )}

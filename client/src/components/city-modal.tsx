@@ -2623,13 +2623,13 @@ export function CityModal({
             </div>
 
             {/* Overlaid Tabs */}
-            <div className="absolute bottom-0 left-0 right-0 p-4">
+            <div className="absolute bottom-0 left-0 right-0 p-2 sm:p-4">
               <div className="backdrop-blur-md bg-black/30 rounded-lg border border-white/20">
-                <TabsList className="grid w-full grid-cols-4 bg-transparent border-0 h-12">
-                  <TabsTrigger value="overview" className="text-white/80 data-[state=active]:text-white data-[state=active]:bg-white/20 border-0 text-sm">Overview</TabsTrigger>
-                  <TabsTrigger value="costs" className="text-white/80 data-[state=active]:text-white data-[state=active]:bg-white/20 border-0 text-sm">Cost Breakdown</TabsTrigger>
-                  <TabsTrigger value="insights" className="text-white/80 data-[state=active]:text-white data-[state=active]:bg-white/20 border-0 text-sm">Smart Insights</TabsTrigger>
-                  <TabsTrigger value="culture" className="text-white/80 data-[state=active]:text-white data-[state=active]:bg-white/20 border-0 text-sm">Cultural Guide</TabsTrigger>
+                <TabsList className="grid w-full grid-cols-4 bg-transparent border-0 h-10 sm:h-12">
+                  <TabsTrigger value="overview" className="text-white/80 data-[state=active]:text-white data-[state=active]:bg-white/20 border-0 text-xs sm:text-sm px-1 sm:px-3">Overview</TabsTrigger>
+                  <TabsTrigger value="costs" className="text-white/80 data-[state=active]:text-white data-[state=active]:bg-white/20 border-0 text-xs sm:text-sm px-1 sm:px-3">Cost Breakdown</TabsTrigger>
+                  <TabsTrigger value="insights" className="text-white/80 data-[state=active]:text-white data-[state=active]:bg-white/20 border-0 text-xs sm:text-sm px-1 sm:px-3">Smart Insights</TabsTrigger>
+                  <TabsTrigger value="culture" className="text-white/80 data-[state=active]:text-white data-[state=active]:bg-white/20 border-0 text-xs sm:text-sm px-1 sm:px-3">Cultural Guide</TabsTrigger>
                 </TabsList>
               </div>
             </div>

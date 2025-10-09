@@ -145,6 +145,80 @@ export function ProgressiveResults({
     return result;
   };
 
+  // Helper function to identify capital cities
+  const getCapitalCity = (countryName: string): string | null => {
+    const capitalMap: Record<string, string> = {
+      // Major Countries
+      "United States": "Washington",
+      "United Kingdom": "London", 
+      "France": "Paris",
+      "Germany": "Berlin",
+      "Italy": "Rome",
+      "Spain": "Madrid",
+      "Japan": "Tokyo",
+      "South Korea": "Seoul",
+      "China": "Beijing",
+      "Canada": "Ottawa",
+      "Australia": "Canberra",
+      "Brazil": "Brasília",
+      "Mexico": "Mexico City",
+      "Russia": "Moscow",
+      "India": "New Delhi",
+      "Netherlands": "Amsterdam",
+      "Switzerland": "Bern",
+      "Austria": "Vienna",
+      "Belgium": "Brussels",
+      "Portugal": "Lisbon",
+      "Ireland": "Dublin",
+      "Norway": "Oslo",
+      "Sweden": "Stockholm",
+      "Denmark": "Copenhagen",
+      "Finland": "Helsinki",
+      "Iceland": "Reykjavik",
+      "Czech Republic": "Prague",
+      "Poland": "Warsaw",
+      "Hungary": "Budapest",
+      "Croatia": "Zagreb",
+      "Greece": "Athens",
+      "Romania": "Bucharest",
+      "Bulgaria": "Sofia",
+      "Thailand": "Bangkok",
+      "Singapore": "Singapore",
+      "Malaysia": "Kuala Lumpur",
+      "Indonesia": "Jakarta",
+      "Philippines": "Manila",
+      "Vietnam": "Hanoi",
+      "Argentina": "Buenos Aires",
+      "Chile": "Santiago",
+      "Peru": "Lima",
+      "Colombia": "Bogotá",
+      "Uruguay": "Montevideo",
+      "Ecuador": "Quito",
+      "Bolivia": "La Paz",
+      "Paraguay": "Asunción",
+      "Venezuela": "Caracas",
+      "Egypt": "Cairo",
+      "Morocco": "Rabat",
+      "South Africa": "Cape Town",
+      "Kenya": "Nairobi",
+      "Ghana": "Accra",
+      "Nigeria": "Abuja",
+      "Tunisia": "Tunis",
+      "Jordan": "Amman",
+      "Israel": "Tel Aviv",
+      "Lebanon": "Beirut",
+      "Turkey": "Ankara",
+      "UAE": "Abu Dhabi",
+      "Saudi Arabia": "Riyadh",
+      "Qatar": "Doha",
+      "Kuwait": "Kuwait City",
+      "Bahrain": "Manama",
+      "Oman": "Muscat"
+    };
+    
+    return capitalMap[countryName] || null;
+  };
+
   // Helper functions for enhanced country headers
   const getCountryImage = (countryName: string) => {
     const imageMap: Record<string, string> = {
@@ -718,10 +792,10 @@ export function ProgressiveResults({
               <h4 className="text-sm font-medium text-gray-700">Filter by destination</h4>
             </div>
             
-            <div className="flex flex-wrap justify-center gap-2" data-testid="progressive-country-filters">
+            <div className="flex flex-wrap justify-center gap-1 sm:gap-2" data-testid="progressive-country-filters">
               <button
                 className={[
-                  "px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200",
+                  "px-2 py-1 sm:px-4 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-all duration-200",
                   "hover:scale-105 hover:shadow-sm active:scale-95",
                   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50",
                   selectedCountries.length === 0
@@ -731,9 +805,9 @@ export function ProgressiveResults({
                 onClick={() => setSelectedCountries([])}
                 data-testid="filter-progressive-all-countries"
               >
-                  <span className="flex items-center gap-2">
+                  <span className="flex items-center gap-1 sm:gap-2">
                     <span>All Countries</span>
-                    <span className="inline-flex items-center justify-center w-6 h-6 text-xs font-semibold rounded-full bg-white border border-gray-200 text-gray-700">
+                    <span className="inline-flex items-center justify-center w-5 h-5 sm:w-6 sm:h-6 text-xs font-semibold rounded-full bg-white border border-gray-200 text-gray-700">
                       {Object.keys(citiesByCountry).length}
                     </span>
                   </span>
@@ -745,7 +819,7 @@ export function ProgressiveResults({
                   <button
                     key={countryName}
                     className={[
-                      "px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200",
+                      "px-2 py-1 sm:px-4 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-all duration-200",
                       "hover:scale-105 hover:shadow-sm active:scale-95",
                       "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50",
                       selectedCountries.includes(countryName)
@@ -757,9 +831,9 @@ export function ProgressiveResults({
                       .toLowerCase()
                       .replace(/\s+/g, "-")}`}
                   >
-                    <span className="flex items-center gap-2">
+                    <span className="flex items-center gap-1 sm:gap-2">
                       <span>{countryName}</span>
-                      <span className="inline-flex items-center justify-center w-6 h-6 text-xs font-semibold rounded-full bg-white border border-gray-200 text-gray-700">
+                      <span className="inline-flex items-center justify-center w-5 h-5 sm:w-6 sm:h-6 text-xs font-semibold rounded-full bg-white border border-gray-200 text-gray-700">
                         {cities.length}
                       </span>
                     </span>
@@ -794,34 +868,35 @@ export function ProgressiveResults({
             {/* Within Budget Section */}
             {citiesByBudgetAndCountry.within_budget && Object.keys(citiesByBudgetAndCountry.within_budget).length > 0 && (
               <div className="space-y-6" ref={withinSectionRef}>
-                <div className="bg-white rounded-lg border border-gray-200 p-6">
-                  <div className="flex items-center gap-4 mb-2">
-                      <div className="flex-1 flex items-center justify-between">
-                      <div className="flex items-center gap-4">
-                        <div className="flex items-center justify-center w-10 h-10 bg-green-500 rounded-lg">
-                          <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
-                          </svg>
-                        </div>
-                        <div>
-                          <h3 className="text-xl font-bold text-gray-900" data-testid="header-within-budget">
-                            Within Your Budget ({Object.values(citiesByBudgetAndCountry.within_budget).reduce((sum, cities) => sum + cities.length, 0)} destinations)
-                          </h3>
-                          <p className="text-sm text-gray-600">
-                            These destinations fit comfortably within your budget
-                          </p>
+                <div className="bg-white rounded-lg border border-gray-200 p-4 sm:p-6">
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-2">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-4">
+                          <div className="flex items-center justify-center w-10 h-10 bg-green-500 rounded-lg">
+                            <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+                            </svg>
+                          </div>
+                          <div>
+                            <h3 className="text-lg sm:text-xl font-bold text-gray-900" data-testid="header-within-budget">
+                              Within Your Budget ({Object.values(citiesByBudgetAndCountry.within_budget).reduce((sum, cities) => sum + cities.length, 0)} destinations)
+                            </h3>
+                            <p className="text-xs sm:text-sm text-gray-600">
+                              These destinations fit comfortably within your budget
+                            </p>
+                          </div>
                         </div>
                       </div>
 
-                      <div className="ml-4">
+                      <div className="sm:ml-4">
                         <div className="flex items-center gap-2">
-                          <span className="text-sm text-gray-600">Sort by:</span>
+                          <span className="text-xs sm:text-sm text-gray-600">Sort by:</span>
                           <Select
                             value={sortOption}
                             onValueChange={(value) => setSortOption(value as any)}
                             data-testid="select-progressive-sort"
                           >
-                            <SelectTrigger className="h-8 w-[180px]">
+                            <SelectTrigger className="h-7 w-[140px] sm:h-8 sm:w-[180px] text-xs sm:text-sm">
                               <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
@@ -833,7 +908,6 @@ export function ProgressiveResults({
                           </Select>
                         </div>
                       </div>
-                    </div>
                   </div>
                 </div>
                 
@@ -884,9 +958,9 @@ export function ProgressiveResults({
                               onClick={() => toggleCountryAccordion(countryName)}
                             >
                               <CardContent className="p-0">
-                                <div className="flex items-stretch min-h-[140px]">
+                                <div className="flex items-stretch min-h-[160px] sm:min-h-[180px]">
                                   {/* Country Image with Flag Overlay */}
-                                  <div className="relative w-48 flex-shrink-0">
+                                  <div className="relative w-40 sm:w-48 flex-shrink-0">
                                     {getCountryImage(countryName) ? (
                                       <>
                                         <img
@@ -901,8 +975,14 @@ export function ProgressiveResults({
                                           }}
                                         />
                                         {/* Flag overlay on image */}
-                                        <div className="absolute top-3 left-3 bg-white/90 backdrop-blur-sm rounded-full p-2 shadow-sm">
+                                        <div className="absolute top-2 sm:top-3 left-2 sm:left-3 bg-white/90 backdrop-blur-sm rounded-full p-1.5 sm:p-2 shadow-sm">
                                           {getFlagImageComponent(countryName)}
+                                        </div>
+                                        {/* Region badge on image */}
+                                        <div className="absolute bottom-2 sm:bottom-3 right-2 sm:right-3">
+                                          <Badge variant="outline" className="text-xs bg-white/90 backdrop-blur-sm">
+                                            {getCountryDetails(countryName).region}
+                                          </Badge>
                                         </div>
                                       </>
                                     ) : null}
@@ -910,7 +990,7 @@ export function ProgressiveResults({
                                     <div 
                                       className={`absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-600 rounded-l-lg flex items-center justify-center ${getCountryImage(countryName) ? 'hidden' : ''}`}
                                     >
-                                      <div className="text-4xl">
+                                      <div className="text-3xl sm:text-4xl">
                                         {getFlagImageComponent(countryName)}
                                       </div>
                                     </div>
@@ -919,23 +999,20 @@ export function ProgressiveResults({
                                   </div>
 
                                   {/* Country Information */}
-                                  <div className="flex-1 p-6">
+                                  <div className="flex-1 p-3 sm:p-6">
                                     <div className="flex items-center justify-between">
                                       <div className="flex-1">
-                                        <div className="flex items-center space-x-3 mb-2">
-                                          <h4 className="text-xl font-semibold text-foreground">
+                                        <div className="flex items-center space-x-2 sm:space-x-3 mb-2">
+                                          <h4 className="text-base sm:text-xl font-semibold text-foreground">
                                             {countryName}
                                           </h4>
-                                          <Badge variant="outline" className="text-xs">
-                                            {getCountryDetails(countryName).region}
-                                          </Badge>
                                         </div>
                                         
-                                        <div className="space-y-1 mb-3">
-                                          <p className="text-sm text-muted-foreground">
+                                        <div className="space-y-1 mb-2 sm:mb-3">
+                                          <p className="text-xs sm:text-sm text-muted-foreground">
                                             {cities.length} destination{cities.length !== 1 ? 's' : ''}
                                           </p>
-                                          <p className="text-sm text-blue-600 font-medium">
+                                          <p className="text-xs sm:text-sm text-blue-600 font-medium">
                                             {getCountryDetails(countryName).highlights}
                                           </p>
                                         </div>
@@ -1081,9 +1158,9 @@ export function ProgressiveResults({
                               onClick={() => toggleCountryAccordion(countryName)}
                             >
                               <CardContent className="p-0">
-                                <div className="flex items-stretch min-h-[140px]">
+                                <div className="flex items-stretch min-h-[160px] sm:min-h-[180px]">
                                   {/* Country Image with Flag Overlay */}
-                                  <div className="relative w-48 flex-shrink-0">
+                                  <div className="relative w-40 sm:w-48 flex-shrink-0">
                                     {getCountryImage(countryName) ? (
                                       <>
                                         <img
@@ -1098,8 +1175,14 @@ export function ProgressiveResults({
                                           }}
                                         />
                                         {/* Flag overlay on image */}
-                                        <div className="absolute top-3 left-3 bg-white/90 backdrop-blur-sm rounded-full p-2 shadow-sm">
+                                        <div className="absolute top-2 sm:top-3 left-2 sm:left-3 bg-white/90 backdrop-blur-sm rounded-full p-1.5 sm:p-2 shadow-sm">
                                           {getFlagImageComponent(countryName)}
+                                        </div>
+                                        {/* Region badge on image */}
+                                        <div className="absolute bottom-2 sm:bottom-3 right-2 sm:right-3">
+                                          <Badge variant="outline" className="text-xs bg-white/90 backdrop-blur-sm">
+                                            {getCountryDetails(countryName).region}
+                                          </Badge>
                                         </div>
                                       </>
                                     ) : null}
@@ -1107,7 +1190,7 @@ export function ProgressiveResults({
                                     <div 
                                       className={`absolute inset-0 bg-gradient-to-r from-orange-500 to-red-600 rounded-l-lg flex items-center justify-center ${getCountryImage(countryName) ? 'hidden' : ''}`}
                                     >
-                                      <div className="text-3xl">
+                                      <div className="text-3xl sm:text-4xl">
                                         {getFlagImageComponent(countryName)}
                                       </div>
                                     </div>
@@ -1116,23 +1199,20 @@ export function ProgressiveResults({
                                   </div>
 
                                   {/* Country Information */}
-                                  <div className="flex-1 p-6">
+                                  <div className="flex-1 p-3 sm:p-6">
                                     <div className="flex items-center justify-between">
                                       <div className="flex-1">
-                                        <div className="flex items-center space-x-3 mb-2">
-                                          <h4 className="text-xl font-semibold text-foreground">
+                                        <div className="flex items-center space-x-2 sm:space-x-3 mb-2">
+                                          <h4 className="text-base sm:text-xl font-semibold text-foreground">
                                             {countryName}
                                           </h4>
-                                          <Badge variant="outline" className="text-xs">
-                                            {getCountryDetails(countryName).region}
-                                          </Badge>
                                         </div>
                                         
-                                        <div className="space-y-1 mb-3">
-                                          <p className="text-sm text-muted-foreground">
+                                        <div className="space-y-1 mb-2 sm:mb-3">
+                                          <p className="text-xs sm:text-sm text-muted-foreground">
                                             {cities.length} destination{cities.length !== 1 ? 's' : ''}
                                           </p>
-                                          <p className="text-sm text-orange-600 font-medium">
+                                          <p className="text-xs sm:text-sm text-orange-600 font-medium">
                                             {getCountryDetails(countryName).highlights}
                                           </p>
                                         </div>
@@ -1152,12 +1232,12 @@ export function ProgressiveResults({
                                         </div>
                                       </div>
                                       
-                                      <div className="flex items-center space-x-3 ml-4">
+                                      <div className="flex items-center space-x-2 sm:space-x-3 ml-2 sm:ml-4">
                                         {/* Expand/collapse icon */}
                                         {isExpanded ? (
-                                          <ChevronUp className="h-5 w-5 text-muted-foreground" />
+                                          <ChevronUp className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground" />
                                         ) : (
-                                          <ChevronDown className="h-5 w-5 text-muted-foreground" />
+                                          <ChevronDown className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground" />
                                         )}
                                       </div>
                                     </div>

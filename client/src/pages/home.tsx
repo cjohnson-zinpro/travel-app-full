@@ -101,10 +101,10 @@ export default function Home() {
             <div className="flex items-center">
               <div className="flex-shrink-0">
                 <h1
-                  className="text-2xl font-bold text-primary flex items-center"
+                  className="text-xl sm:text-2xl font-bold text-primary flex items-center"
                   data-testid="text-brand-title"
                 >
-                  <Globe className="h-6 w-6 mr-2" />
+                  <Globe className="h-5 w-5 sm:h-6 sm:w-6 mr-2" />
                   TravelBudget
                 </h1>
               </div>
