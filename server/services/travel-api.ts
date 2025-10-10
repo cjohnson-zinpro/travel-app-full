@@ -302,26 +302,6 @@ export class TravelApiService {
       if (Date.now() > deadline) return;
 
       try {
-        // Use Claude for cost-effective flight estimates instead of expensive Amadeus
-        let flightCost = 0;
-        let flightEstimate = false;
-
-        // Get flight cost using distance-based calculation if origin provided
-        if (params.origin) {
-          console.log(`🔍 Processing flight cost for city: ${city.name} (${city.iataCode}) in ${city.address?.countryName}`);
-          console.log(`🔍 City coordinates available: lat=${city.geoCode?.latitude}, lon=${city.geoCode?.longitude}`);
-          try {
-            flightCost = await this.calculateFlightCostByDistance(params.origin, city, params.month);
-            flightEstimate = false; // Distance-based calculations are precise, not estimates
-            console.log(`✅ Distance-based flight cost calculated: $${flightCost} for ${city.name}`);
-          } catch (error) {
-            console.warn(`❌ Distance calculation failed for ${city.name}:`, error);
-            flightCost = this.getFallbackFlightCost(city.address.countryName);
-            flightEstimate = true;
-            console.log(`🔄 Using fallback flight cost: $${flightCost} for ${city.name}`);
-          }
-        }
-
         // Get hotel pricing from Claude (cached estimates)
         let hotelPercentiles: any = null;
         let hotelEstimate = false;
@@ -381,101 +361,136 @@ export class TravelApiService {
           };
         }
 
-        // Get daily costs using Claude cached estimates
-        let dailyCost: number;
+        // Get daily costs using Claude cached estimates with travel style specificity
+        let dailyCosts: { budget: number; midRange: number; luxury: number };
         let dailyEstimate = false;
-        try {
-          const costs = await claudeService.getDailyCostsFromDatabase(
-            city.iataCode,
-            city.name,
-            city.address.countryName,
-            params.month,
-          );
+        
+        // First try to get travel-style-specific costs from Claude static data
+        const claudeStaticData = ClaudeDailyCosts.getDailyCosts(city.name);
+        if (claudeStaticData?.dailyCost) {
+          dailyCosts = {
+            budget: claudeStaticData.dailyCost.budget,
+            midRange: claudeStaticData.dailyCost.midRange,
+            luxury: claudeStaticData.dailyCost.luxury
+          };
+          dailyEstimate = false;
+          console.log(`✅ Using Claude static daily costs for ${city.name}:`, dailyCosts);
+        } else {
+          // Fallback to database/API costs (single value) and apply multipliers
+          try {
+            const costs = await claudeService.getDailyCostsFromDatabase(
+              city.iataCode,
+              city.name,
+              city.address.countryName,
+              params.month,
+            );
 
-          const foodCost = parseFloat(costs.dailyFoodUsd);
-          const transportCost = parseFloat(costs.dailyTransportUsd);
-          const miscCost = parseFloat(costs.dailyMiscUsd);
+            const foodCost = parseFloat(costs.dailyFoodUsd);
+            const transportCost = parseFloat(costs.dailyTransportUsd);
+            const miscCost = parseFloat(costs.dailyMiscUsd);
 
-          // Check for NaN values and use fallback if any parsing failed
-          if (isNaN(foodCost) || isNaN(transportCost) || isNaN(miscCost)) {
-            dailyCost = this.getFallbackDailyCosts(city.address.countryName);
+            let baseDailyCost: number;
+            // Check for NaN values and use fallback if any parsing failed
+            if (isNaN(foodCost) || isNaN(transportCost) || isNaN(miscCost)) {
+              baseDailyCost = this.getFallbackDailyCosts(city.address.countryName);
+              dailyEstimate = true;
+            } else {
+              baseDailyCost = foodCost + transportCost + miscCost;
+              dailyEstimate = false; // Claude data successfully obtained
+            }
+            
+            // Apply travel style multipliers to base cost
+            dailyCosts = {
+              budget: Math.round(baseDailyCost * 0.7),
+              midRange: Math.round(baseDailyCost * 1.0),
+              luxury: Math.round(baseDailyCost * 2.0)
+            };
+          } catch (error) {
+            // Fallback to estimates if Claude fails
+            const baseDailyCost = this.getFallbackDailyCosts(city.address.countryName);
+            dailyCosts = {
+              budget: Math.round(baseDailyCost * 0.7),
+              midRange: Math.round(baseDailyCost * 1.0),
+              luxury: Math.round(baseDailyCost * 2.0)
+            };
             dailyEstimate = true;
-          } else {
-            dailyCost = foodCost + transportCost + miscCost;
-            dailyEstimate = false; // Claude data successfully obtained
           }
-        } catch (error) {
-          // Fallback to estimates if Claude fails
-          dailyCost = this.getFallbackDailyCosts(city.address.countryName);
-          dailyEstimate = true;
         }
 
-        // Calculate totals using travel style adjustments (consistent with getLiveRecommendations)
+        // Calculate totals using travel style adjustments with style-specific daily costs
         const budgetCalculation = this.applyTravelStyleAdjustments(
-          flightCost,
+          0, // No flight costs - destination costs only
           hotelPercentiles.p25,
           hotelPercentiles.p50,
           hotelPercentiles.p75,
-          dailyCost,
+          dailyCosts.budget,
           params.nights,
           "budget"
         );
         
         const midRangeCalculation = this.applyTravelStyleAdjustments(
-          flightCost,
+          0, // No flight costs - destination costs only
           hotelPercentiles.p25,
           hotelPercentiles.p50,
           hotelPercentiles.p75,
-          dailyCost,
+          dailyCosts.midRange,
           params.nights,
           "mid"
         );
         
         const luxuryCalculation = this.applyTravelStyleAdjustments(
-          flightCost,
+          0, // No flight costs - destination costs only
           hotelPercentiles.p25,
           hotelPercentiles.p50,
           hotelPercentiles.p75,
-          dailyCost,
+          dailyCosts.luxury,
           params.nights,
           "luxury"
         );
 
         // Map travel styles to percentile structure for consistency
-        const totalP25 = budgetCalculation.total;           // Budget style
+        const totalP25 = budgetCalculation.total;           // Budget style (destination costs only)
         const totalP35 = budgetCalculation.total;           // Budget-focused (same as P25)
-        const totalP50 = midRangeCalculation.total;         // Mid-range style
-        const totalP75 = luxuryCalculation.total;           // Luxury style
+        const totalP50 = midRangeCalculation.total;         // Mid-range style (destination costs only)
+        const totalP75 = luxuryCalculation.total;           // Luxury style (destination costs only)
+
+        console.log(`🔍 COST BREAKDOWN DEBUG: ${city.name}`);
+        console.log(`  Budget Total (P25): $${totalP25} (destination costs only)`);
+        console.log(`  Mid-range Total (P50): $${totalP50} (destination costs only)`);
+        console.log(`  Luxury Total (P75): $${totalP75} (destination costs only)`);
+        console.log(`  Hotel P25/P50/P75: $${hotelPercentiles.p25}/$${hotelPercentiles.p50}/$${hotelPercentiles.p75} per night`);
 
         // Use the user's requested travel style for budget filtering
         const travelStyleAdjusted = params.travelStyle === "luxury" ? luxuryCalculation
           : params.travelStyle === "mid" ? midRangeCalculation
           : budgetCalculation;
 
+        // Budget filtering should ONLY compare destination costs (NO FLIGHT COSTS)
         // Use travel style adjusted total for budget filtering (matches frontend display)
         const travelStyle = params.travelStyle || "budget";
-        let budgetFilteringTotal: number;
+        let destinationCostsOnly: number;
         
-        // Match frontend behavior: use travel style appropriate percentile
+        // Use the travel style calculation totals directly (they already exclude flights)
         if (travelStyle === "luxury") {
-          budgetFilteringTotal = totalP75;
+          destinationCostsOnly = luxuryCalculation.total; // Already destination costs only
         } else if (travelStyle === "mid") {
-          budgetFilteringTotal = totalP50;
+          destinationCostsOnly = midRangeCalculation.total; // Already destination costs only
         } else {
-          budgetFilteringTotal = totalP25;
-        }
-        
-        // Match frontend flight cost behavior
-        const showFlightCosts = process.env.VITE_SHOW_FLIGHT_COSTS === 'true';
-        if (!showFlightCosts) {
-          // Frontend subtracts flight cost: (total - city.breakdown.flight)
-          budgetFilteringTotal = budgetFilteringTotal - flightCost;
+          destinationCostsOnly = budgetCalculation.total; // Already destination costs only
         }
 
-        // Budget filtering - use Claude-based total when available for consistency with display
+        // Budget filtering - compare ONLY destination costs (accommodation, meals, activities, etc.)
         // Exclude destinations more than 10% over budget
-        if (budgetFilteringTotal > params.budget * 1.1) {
+        console.log(`🔍 BUDGET DEBUG: ${city.name} - Budget: $${params.budget}, Destination Costs Only: $${destinationCostsOnly}, Over limit ($${params.budget * 1.1}): ${destinationCostsOnly > params.budget * 1.1}`);
+        
+        // SPECIAL ALERT FOR EXPENSIVE CITIES
+        if (city.name.toLowerCase().includes('seoul') || destinationCostsOnly > params.budget * 1.2) {
+          console.log(`🚨 EXPENSIVE CITY ALERT: ${city.name} - Destination: $${destinationCostsOnly}, Budget: $${params.budget}, Should be filtered: ${destinationCostsOnly > params.budget * 1.1}`);
+        }
+        
+        if (destinationCostsOnly > params.budget * 1.1) {
           // City over budget, count attempt and skip
+          console.log(`❌ BUDGET FILTER: ${city.name} rejected - destination costs $${destinationCostsOnly} > $${params.budget * 1.1} (budget + 10%)`);
           const session = progressSessions.get(sessionId);
           if (session) {
             session.progress.attempts++;
@@ -484,10 +499,9 @@ export class TravelApiService {
           return; // Skip if over budget
         }
 
-        // Determine budget category based on consistent calculation
-        // Determine budget category based on consistent calculation
+        // Determine budget category based on destination costs only (NO FLIGHTS)
         const budgetCategory: "within_budget" | "slightly_above_budget" =
-          budgetFilteringTotal <= params.budget
+          destinationCostsOnly <= params.budget
             ? "within_budget"
             : "slightly_above_budget";
 
@@ -506,10 +520,10 @@ export class TravelApiService {
           safetyLabel: safetyResult.safetyLabel,
           safetyLastUpdated: safetyResult.lastUpdated.toISOString(),
           totals: {
-            p25: Math.round(totalP25),
-            p35: Math.round(totalP35),
-            p50: Math.round(totalP50),
-            p75: Math.round(totalP75),
+            p25: Math.round(totalP25), // Destination costs only (no flights)
+            p35: Math.round(totalP35), // Destination costs only (no flights)
+            p50: Math.round(totalP50), // Destination costs only (no flights)
+            p75: Math.round(totalP75), // Destination costs only (no flights)
           },
           // Store travel-style-adjusted costs to avoid double adjustment on frontend
           travelStyleAdjusted: {
@@ -519,24 +533,24 @@ export class TravelApiService {
             style: params.travelStyle || "budget",
           },
           breakdown: {
-            flight: Math.round(flightCost),
-            flightEstimate,
-            flightSource: flightEstimate ? "estimate" : "claude", // Claude AI vs fallback
+            // Flight costs removed - focusing only on destination costs
             hotelPerNightP25: Math.round(budgetCalculation.hotelPerNight),      // Budget hotel
             hotelPerNightP35: Math.round(budgetCalculation.hotelPerNight),      // Budget-focused (same as P25)
             hotelPerNightP50: Math.round(midRangeCalculation.hotelPerNight),    // Mid-range hotel
             hotelPerNightP75: Math.round(luxuryCalculation.hotelPerNight),      // Luxury hotel
             hotelEstimate,
             hotelSource: hotelSourceFromClaude ? "claude" : "estimate", // Claude AI vs fallback
-            dailyPerDay: Math.round(dailyCost),
+            dailyPerDay: Math.round(params.travelStyle === "budget" ? dailyCosts.budget : 
+                                    params.travelStyle === "luxury" ? dailyCosts.luxury : 
+                                    dailyCosts.midRange),
             dailySource: dailyEstimate ? "estimate" : "claude", // Claude AI vs fallback
           },
           rangeNote:
-            flightEstimate || hotelEstimate || dailyEstimate
+            hotelEstimate || dailyEstimate
               ? "Mix of AI estimates and cached data"
-              : "AI-powered flight & hotel estimates (Claude)",
+              : "AI-powered destination estimates (Claude)",
           confidence: this.calculateLiveConfidence(
-            !flightEstimate, // Is flight data from Claude (not fallback)?
+            true, // No flight costs - only destination costs
             hotelSourceFromClaude, // Is hotel data from Claude (not fallback)?
             !dailyEstimate, // Is daily cost data from Claude (not fallback)?
           ),
@@ -572,7 +586,7 @@ export class TravelApiService {
         }
 
         console.log(
-          `${isPriority ? "🟢 Priority" : "🔵 Regular"} city processed: ${city.name} - Raw: $${Math.round(totalP50)}, Budget Filter (${params.travelStyle || 'budget'}): $${budgetFilteringTotal}, Category: ${budgetCategory}`,
+          `${isPriority ? "🟢 Priority" : "🔵 Regular"} city processed: ${city.name} - Raw: $${Math.round(totalP50)}, Destination Costs (${params.travelStyle || 'budget'}): $${destinationCostsOnly}, Category: ${budgetCategory}`,
         );
       } catch (error) {
         console.error(`Failed to process city ${city.name}:`, error);
@@ -839,14 +853,23 @@ export class TravelApiService {
     } else {
       // Default: get popular cities from all regions (sample from each)
       const allRegions = Object.keys(RegionCountriesMap);
+      console.log(`🔍 DEBUG: Processing ${allRegions.length} regions: ${allRegions.join(', ')}`);
+      
       for (const region of allRegions) {
         const countries = getCountriesForRegion(region as any);
-        // Take top 2 countries per region for default search
-        for (const countryCode of countries.slice(0, 2)) {
+        console.log(`🔍 DEBUG: Region '${region}' has ${countries.length} countries: ${countries.slice(0, 10).join(', ')}${countries.length > 10 ? '...' : ''}`);
+        
+        // Take ALL countries per region for default search (no limit)
+        for (const countryCode of countries) {
           const citiesInCountry = this.getCitiesForCountry(countryCode);
-          // Take top 2 cities per country for default
+          console.log(`🔍 DEBUG: Country '${countryCode}' has ${citiesInCountry.length} cities`);
+          
+          // Take ALL cities per country for default (no limit)
+          const selectedCities = citiesInCountry;
+          console.log(`🔍 DEBUG: Adding ${selectedCities.length} cities from ${countryCode}: ${selectedCities.map(c => c.name).join(', ')}`);
+          
           targetCities.push(
-            ...citiesInCountry.slice(0, 2).map((city) => ({
+            ...selectedCities.map((city) => ({
               name: city.name,
               iataCode: city.iata,
               geoCode: { latitude: city.lat, longitude: city.lon },
@@ -956,7 +979,7 @@ export class TravelApiService {
   // PERFORMANCE: Limit cities to prevent long processing times
   // If this is an explicit country search, process all allowlisted cities for that country
   const isCountrySearch = Boolean(params && params.country);
-  const maxCities = isCountrySearch ? cities.length : Math.min(cities.length, 32);
+  const maxCities = isCountrySearch ? cities.length : Math.min(cities.length, 200);
     const limitedCities = cities.slice(0, maxCities);
     console.log(
       `🚀 Performance optimization: Processing ${limitedCities.length} of ${cities.length} cities for faster response`,
@@ -1044,39 +1067,6 @@ export class TravelApiService {
           ]);
         }
 
-        // Process flight results from Claude
-        let flightCost = 0;
-        let flightEstimate = false;
-        let flightConfidence = 'medium';
-        if (
-          flightResult.status === "fulfilled" &&
-          flightResult.value &&
-          (flightResult.value as any)?.cost > 0
-        ) {
-          const claudeFlightData = flightResult.value as any;
-          flightCost = claudeFlightData.cost;
-          flightConfidence = claudeFlightData.confidence || 'medium';
-          console.log(
-            `✈️  Claude flight estimate: ${params.origin} → ${city.iataCode} = $${flightCost} (${flightConfidence} confidence)`,
-          );
-        } else if (params.origin) {
-          // QUALITY GATE 2: No flight data found - use fallback
-          if (!params.includeEstimates) {
-            console.warn(
-              `❌ Skipping ${city.name} - no flight data and estimates disabled`,
-            );
-            skipReasons.noFlightData++;
-            skippedCount++;
-            return;
-          }
-          flightEstimate = true;
-          flightCost = this.getFallbackFlightCost(city.address.countryName);
-          flightConfidence = 'low';
-          console.log(
-            `📊 Using fallback flight estimate for ${city.name}: $${flightCost}`,
-          );
-        }
-
         // Process hotel results from Claude cached pricing
         let hotelPercentiles;
         let hotelEstimate = false;
@@ -1141,82 +1131,109 @@ export class TravelApiService {
           );
         }
 
-        // Get daily costs using Claude with deadline guard and soft timeout
-        let dailyCost: number;
+        // Get daily costs using Claude with deadline guard and soft timeout - travel style specific
+        let dailyCosts: { budget: number; midRange: number; luxury: number };
         let dailyEstimate = false;
-        try {
-          // Recompute remaining time after flight/hotel processing
-          const remainingTimeForClaude = deadline - Date.now();
-          const MINIMUM_TIME_FOR_CLAUDE = 5000; // 5s buffer
+        
+        // First try to get travel-style-specific costs from Claude static data
+        const claudeStaticData = ClaudeDailyCosts.getDailyCosts(city.name);
+        if (claudeStaticData?.dailyCost) {
+          dailyCosts = {
+            budget: claudeStaticData.dailyCost.budget,
+            midRange: claudeStaticData.dailyCost.midRange,
+            luxury: claudeStaticData.dailyCost.luxury
+          };
+          dailyEstimate = false;
+          console.log(`✅ Using Claude static daily costs for ${city.name}:`, dailyCosts);
+        } else {
+          // Fallback to API costs with travel style multipliers
+          try {
+            // Recompute remaining time after flight/hotel processing
+            const remainingTimeForClaude = deadline - Date.now();
+            const MINIMUM_TIME_FOR_CLAUDE = 5000; // 5s buffer
 
-          if (remainingTimeForClaude < MINIMUM_TIME_FOR_CLAUDE) {
-            dailyCost = this.getFallbackDailyCost(city.address.countryName);
-            dailyEstimate = true;
-            console.log(
-              `⏰ Using fallback daily costs for ${city.name} due to low remaining time (${Math.round(remainingTimeForClaude / 1000)}s)`,
-            );
-          } else {
-            // Soft per-call timeout to prevent stall
-            const timeoutMs = Math.min(
-              Math.max(remainingTimeForClaude - 1000, 3000),
-              7000,
-            ); // leave 1s slack, cap 7s
-            const rawClaudePromise = claudeRateLimiter.schedule(() =>
-              this.getLiveDailyCosts(city, params.month),
-            );
-            const safeClaudePromise = rawClaudePromise.catch((_e) => NaN); // prevent unhandled rejection if later rejects
-            const result = await Promise.race([
-              safeClaudePromise,
-              new Promise<number>((resolve) =>
-                setTimeout(() => resolve(NaN), timeoutMs),
-              ),
-            ]);
-            if (Number.isNaN(result)) {
-              console.warn(
-                `⏰ Claude timed out for ${city.name} in ${timeoutMs}ms, using fallback`,
-              );
-              dailyCost = this.getFallbackDailyCost(city.address.countryName);
+            let baseDailyCost: number;
+            if (remainingTimeForClaude < MINIMUM_TIME_FOR_CLAUDE) {
+              baseDailyCost = this.getFallbackDailyCost(city.address.countryName);
               dailyEstimate = true;
+              console.log(
+                `⏰ Using fallback daily costs for ${city.name} due to low remaining time (${Math.round(remainingTimeForClaude / 1000)}s)`,
+              );
             } else {
-              dailyCost = result;
-              dailyEstimate = false; // Claude data successfully obtained
+              // Soft per-call timeout to prevent stall
+              const timeoutMs = Math.min(
+                Math.max(remainingTimeForClaude - 1000, 3000),
+                7000,
+              ); // leave 1s slack, cap 7s
+              const rawClaudePromise = claudeRateLimiter.schedule(() =>
+                this.getLiveDailyCosts(city, params.month),
+              );
+              const safeClaudePromise = rawClaudePromise.catch((_e) => NaN); // prevent unhandled rejection if later rejects
+              const result = await Promise.race([
+                safeClaudePromise,
+                new Promise<number>((resolve) =>
+                  setTimeout(() => resolve(NaN), timeoutMs),
+                ),
+              ]);
+              if (Number.isNaN(result)) {
+                console.warn(
+                  `⏰ Claude timed out for ${city.name} in ${timeoutMs}ms, using fallback`,
+                );
+                baseDailyCost = this.getFallbackDailyCost(city.address.countryName);
+                dailyEstimate = true;
+              } else {
+                baseDailyCost = result;
+                dailyEstimate = false; // Claude data successfully obtained
+              }
             }
+            
+            // Apply travel style multipliers to base cost
+            dailyCosts = {
+              budget: Math.round(baseDailyCost * 0.7),
+              midRange: Math.round(baseDailyCost * 1.0),
+              luxury: Math.round(baseDailyCost * 2.0)
+            };
+          } catch (error) {
+            console.warn(
+              `❌ Daily costs API error for ${city.name} (${(error as any)?.message || error}), using fallback`,
+            );
+            const baseDailyCost = this.getFallbackDailyCost(city.address.countryName);
+            dailyCosts = {
+              budget: Math.round(baseDailyCost * 0.7),
+              midRange: Math.round(baseDailyCost * 1.0),
+              luxury: Math.round(baseDailyCost * 2.0)
+            };
+            dailyEstimate = true;
           }
-        } catch (error) {
-          console.warn(
-            `❌ Daily costs API error for ${city.name} (${(error as any)?.message || error}), using fallback`,
-          );
-          dailyCost = this.getFallbackDailyCost(city.address.countryName);
-          dailyEstimate = true;
         }
 
-        // Calculate totals using NEW travel style adjustments (SEPARATE hotel and daily calculations)
+        // Calculate totals using NEW travel style adjustments with style-specific daily costs
         const budgetCalculation = this.applyTravelStyleAdjustments(
-          flightCost,
+          0, // No flight costs - destination costs only
           hotelPercentiles.p25,
           hotelPercentiles.p50,
           hotelPercentiles.p75,
-          dailyCost,
+          dailyCosts.budget,
           params.nights,
           "budget"
         );
         
         const midRangeCalculation = this.applyTravelStyleAdjustments(
-          flightCost,
+          0, // No flight costs - destination costs only
           hotelPercentiles.p25,
           hotelPercentiles.p50,
           hotelPercentiles.p75,
-          dailyCost,
+          dailyCosts.midRange,
           params.nights,
           "mid"
         );
         
         const luxuryCalculation = this.applyTravelStyleAdjustments(
-          flightCost,
+          0, // No flight costs - destination costs only
           hotelPercentiles.p25,
           hotelPercentiles.p50,
           hotelPercentiles.p75,
-          dailyCost,
+          dailyCosts.luxury,
           params.nights,
           "luxury"
         );
@@ -1237,15 +1254,7 @@ export class TravelApiService {
           return;
         }
 
-        // QUALITY GATE 6: Final data quality check - ensure no $0 flights unless estimate
-        if (flightCost <= 0 && params.origin && !flightEstimate) {
-          console.warn(
-            `❌ Skipping ${city.name} - $0 flight cost without estimate flag`,
-          );
-          skipReasons.noFlightData++;
-          skippedCount++;
-          return;
-        }
+        // Flight costs removed - focusing only on destination pricing quality
 
         // Calculate safety score
         const regionKey = this.getRegionFromCountry(city.address.countryName);
@@ -1267,9 +1276,7 @@ export class TravelApiService {
             p75: Math.round(totalP75),
           },
           breakdown: {
-            flight: Math.round(flightCost),
-            flightEstimate,
-            flightSource: flightEstimate ? "estimate" : "claude", // Claude AI vs fallback
+            // Flight costs removed - focusing only on destination costs
             hotelPerNightP25: Math.round(budgetCalculation.hotelPerNight),      // Budget hotel (cost-of-living adjusted)
             hotelPerNightP35: Math.round(budgetCalculation.hotelPerNight),      // Budget-focused (same as P25)
             hotelPerNightP50: Math.round(midRangeCalculation.hotelPerNight),    // Mid-range hotel (cost-of-living adjusted)
@@ -1282,11 +1289,11 @@ export class TravelApiService {
             dailySource: dailyEstimate ? "estimate" : "claude", // Claude AI vs fallback
           },
           rangeNote:
-            flightEstimate || hotelEstimate || dailyEstimate
+            hotelEstimate || dailyEstimate
               ? "Mix of AI estimates and cached data"
-              : "AI-powered flight & hotel estimates (Claude)",
+              : "AI-powered destination estimates (Claude)",
           confidence: this.calculateLiveConfidence(
-            !flightEstimate, // Is flight data from Claude (not fallback)?
+            true, // No flight costs - only destination costs
             hotelSourceFromClaude, // Is hotel data from Claude (not fallback)?
             !dailyEstimate, // Is daily cost data from Claude (not fallback)?
           ),
@@ -1647,6 +1654,7 @@ export class TravelApiService {
 
   /**
    * Apply travel style adjustments with SEPARATE hotel and daily calculations based on cost-of-living
+   * NOTE: dailyCost parameter is ALREADY the travel-style-specific daily cost from Claude data
    */
   private applyTravelStyleAdjustments(
     flightCost: number,
@@ -1660,46 +1668,61 @@ export class TravelApiService {
     let hotelPerNight = 0;
     let adjustedDaily = 0;
     
-    // Get cost of living for BOTH hotel and daily adjustments
+    // Get cost of living for hotel adjustments only
     const costOfLiving = this.estimateCostOfLiving(hotelP50, dailyCost);
 
     switch (travelStyle) {
       case "budget":
-        // Budget hotel calculation (cost-of-living based)
-        const budgetMultiplier = this.getBudgetHotelMultiplier(costOfLiving);
-        const maxBudgetPrice = this.getMaxBudgetHotelPrice(costOfLiving);
-        const minBudgetPrice = this.getMinBudgetHotelPrice(costOfLiving);
+        // Use Claude accommodation data directly if available, otherwise apply multipliers
+        if (hotelP25 > 0) {
+          hotelPerNight = hotelP25; // Claude data is already budget-appropriate
+        } else {
+          // Fallback to multiplier-based calculation
+          const budgetMultiplier = this.getBudgetHotelMultiplier(costOfLiving);
+          const maxBudgetPrice = this.getMaxBudgetHotelPrice(costOfLiving);
+          const minBudgetPrice = this.getMinBudgetHotelPrice(costOfLiving);
+          
+          const budgetBase = Math.round((hotelP50 || hotelP75) * budgetMultiplier);
+          hotelPerNight = Math.min(maxBudgetPrice, Math.max(minBudgetPrice, budgetBase));
+        }
         
-        const budgetBase = Math.round((hotelP25 || hotelP50 || hotelP75) * budgetMultiplier);
-        hotelPerNight = Math.min(maxBudgetPrice, Math.max(minBudgetPrice, budgetBase));
-        
-        // Budget daily calculation (separate from hotel)
-        adjustedDaily = this.getBudgetDailyCost(dailyCost, costOfLiving);
+        // Use Claude daily cost DIRECTLY - it's already calculated for budget style
+        adjustedDaily = dailyCost;
         break;
         
       case "mid":
-        // Mid-range hotel calculation (cost-of-living based)
-        const midMultiplier = this.getMidRangeHotelMultiplier(costOfLiving);
-        const minMidPrice = this.getMinMidRangeHotelPrice(costOfLiving);
-        const maxMidPrice = this.getMaxMidRangeHotelPrice(costOfLiving);
+        // Use Claude accommodation data directly if available, otherwise apply multipliers
+        if (hotelP50 > 0) {
+          hotelPerNight = hotelP50; // Claude data is already mid-range appropriate
+        } else {
+          // Fallback to multiplier-based calculation
+          const midMultiplier = this.getMidRangeHotelMultiplier(costOfLiving);
+          const minMidPrice = this.getMinMidRangeHotelPrice(costOfLiving);
+          const maxMidPrice = this.getMaxMidRangeHotelPrice(costOfLiving);
+          
+          const midBase = Math.round((hotelP75 || hotelP25) * midMultiplier);
+          hotelPerNight = Math.min(maxMidPrice, Math.max(minMidPrice, midBase));
+        }
         
-        const midBase = Math.round((hotelP50 || hotelP75 || hotelP25) * midMultiplier);
-        hotelPerNight = Math.min(maxMidPrice, Math.max(minMidPrice, midBase));
-        
-        // Mid-range daily calculation (separate from hotel)
-        adjustedDaily = this.getMidRangeDailyCost(dailyCost, costOfLiving);
+        // Use Claude daily cost DIRECTLY - it's already calculated for mid-range style
+        adjustedDaily = dailyCost;
         break;
         
       case "luxury":
-        // Luxury calculations (already cost-of-living based)
-        const luxuryMultiplier = this.getLuxuryHotelMultiplier(costOfLiving);
-        const minLuxuryPrice = this.getMinLuxuryHotelPrice(costOfLiving);
+        // Use Claude accommodation data directly if available, otherwise apply multipliers
+        if (hotelP75 > 0) {
+          hotelPerNight = hotelP75; // Claude data is already luxury-appropriate
+        } else {
+          // Fallback to multiplier-based calculation
+          const luxuryMultiplier = this.getLuxuryHotelMultiplier(costOfLiving);
+          const minLuxuryPrice = this.getMinLuxuryHotelPrice(costOfLiving);
+          
+          const luxuryBase = Math.round((hotelP50 || hotelP25) * luxuryMultiplier);
+          hotelPerNight = Math.max(minLuxuryPrice, luxuryBase);
+        }
         
-        const luxuryBase = Math.round((hotelP75 || hotelP50 || hotelP25) * luxuryMultiplier);
-        hotelPerNight = Math.max(minLuxuryPrice, luxuryBase);
-        
-        // Luxury daily calculation
-        adjustedDaily = this.getLuxuryDailyCost(dailyCost, costOfLiving);
+        // Use Claude daily cost DIRECTLY - it's already calculated for luxury style
+        adjustedDaily = dailyCost;
         break;
     }
 
@@ -1710,13 +1733,13 @@ export class TravelApiService {
                      this.getMinLuxuryHotelPrice(costOfLiving);
     }
 
-    // Calculate total
-    const total = flightCost + nights * (hotelPerNight + adjustedDaily);
+    // Calculate total destination costs ONLY (NO FLIGHT COSTS)
+    const destinationTotal = nights * (hotelPerNight + adjustedDaily);
 
     return {
       hotelPerNight,
       adjustedDaily,
-      total,
+      total: destinationTotal, // DESTINATION COSTS ONLY
     };
   }
 

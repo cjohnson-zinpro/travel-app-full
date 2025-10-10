@@ -194,7 +194,7 @@ export const travelSearchSchema = z.object({
     .enum(["alphabetical", "price-low-high", "confidence", "region"])
     .default("alphabetical"),
   includeEstimates: z.boolean().default(true),
-  limit: z.number().min(1).max(100).default(50),
+  limit: z.number().min(1).max(300).default(200),
   page: z.number().min(1).default(1),
   travelStyle: z.enum(["budget", "mid", "luxury"]).optional(),
 });
@@ -219,9 +219,7 @@ export type CityRecommendation = {
     p75: number;
   };
   breakdown?: {
-    flight: number;
-    flightEstimate?: boolean;
-    flightSource: "amadeus" | "estimate";
+    // Flight costs removed - destination costs only
     hotelPerNightP25: number;
     hotelPerNightP35: number;
     hotelPerNightP50: number;

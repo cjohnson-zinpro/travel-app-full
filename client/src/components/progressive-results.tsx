@@ -103,8 +103,7 @@ export function ProgressiveResults({
         p75: Math.round(totalForStyle * 1.15),
       },
       breakdown: {
-        flight: 0, // No flight cost from home city
-        flightSource: 'estimate' as const,
+        // Flight costs removed - only destination costs
         hotelPerNightP25: Math.round(totalForStyle * 0.4 * 0.85),
         hotelPerNightP35: Math.round(totalForStyle * 0.4 * 0.92),
         hotelPerNightP50: Math.round(totalForStyle * 0.4),
@@ -145,80 +144,6 @@ export function ProgressiveResults({
     return result;
   };
 
-  // Helper function to identify capital cities
-  const getCapitalCity = (countryName: string): string | null => {
-    const capitalMap: Record<string, string> = {
-      // Major Countries
-      "United States": "Washington",
-      "United Kingdom": "London", 
-      "France": "Paris",
-      "Germany": "Berlin",
-      "Italy": "Rome",
-      "Spain": "Madrid",
-      "Japan": "Tokyo",
-      "South Korea": "Seoul",
-      "China": "Beijing",
-      "Canada": "Ottawa",
-      "Australia": "Canberra",
-      "Brazil": "Brasília",
-      "Mexico": "Mexico City",
-      "Russia": "Moscow",
-      "India": "New Delhi",
-      "Netherlands": "Amsterdam",
-      "Switzerland": "Bern",
-      "Austria": "Vienna",
-      "Belgium": "Brussels",
-      "Portugal": "Lisbon",
-      "Ireland": "Dublin",
-      "Norway": "Oslo",
-      "Sweden": "Stockholm",
-      "Denmark": "Copenhagen",
-      "Finland": "Helsinki",
-      "Iceland": "Reykjavik",
-      "Czech Republic": "Prague",
-      "Poland": "Warsaw",
-      "Hungary": "Budapest",
-      "Croatia": "Zagreb",
-      "Greece": "Athens",
-      "Romania": "Bucharest",
-      "Bulgaria": "Sofia",
-      "Thailand": "Bangkok",
-      "Singapore": "Singapore",
-      "Malaysia": "Kuala Lumpur",
-      "Indonesia": "Jakarta",
-      "Philippines": "Manila",
-      "Vietnam": "Hanoi",
-      "Argentina": "Buenos Aires",
-      "Chile": "Santiago",
-      "Peru": "Lima",
-      "Colombia": "Bogotá",
-      "Uruguay": "Montevideo",
-      "Ecuador": "Quito",
-      "Bolivia": "La Paz",
-      "Paraguay": "Asunción",
-      "Venezuela": "Caracas",
-      "Egypt": "Cairo",
-      "Morocco": "Rabat",
-      "South Africa": "Cape Town",
-      "Kenya": "Nairobi",
-      "Ghana": "Accra",
-      "Nigeria": "Abuja",
-      "Tunisia": "Tunis",
-      "Jordan": "Amman",
-      "Israel": "Tel Aviv",
-      "Lebanon": "Beirut",
-      "Turkey": "Ankara",
-      "UAE": "Abu Dhabi",
-      "Saudi Arabia": "Riyadh",
-      "Qatar": "Doha",
-      "Kuwait": "Kuwait City",
-      "Bahrain": "Manama",
-      "Oman": "Muscat"
-    };
-    
-    return capitalMap[countryName] || null;
-  };
-
   // Helper functions for enhanced country headers
   const getCountryImage = (countryName: string) => {
     const imageMap: Record<string, string> = {
@@ -244,8 +169,8 @@ export function ProgressiveResults({
       "Norway": "https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=400&h=200&fit=crop",
       "Sweden": "https://images.unsplash.com/photo-1509356843151-3e7d96241e11?w=400&h=200&fit=crop",
       "Denmark": "https://images.unsplash.com/photo-1513622470522-26c3c8a854bc?w=400&h=200&fit=crop",
-      "Finland": "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=200&fit=crop",
-      "Iceland": "https://images.unsplash.com/photo-1539650116574-75c0c6d0f864?w=400&h=200&fit=crop",
+      "Finland": "https://images.unsplash.com/photo-1514416200815-39d4dd6ba363?w=400&h=200&fit=crop", // Finnish Lapland Northern Lights
+      "Iceland": "https://images.unsplash.com/photo-1578644081060-0e2eb630b25c?w=400&h=200&fit=crop", // Blue Lagoon geothermal spa
       
       // Europe - Eastern
       "Czech Republic": "https://images.unsplash.com/photo-1541849546-216549ae216d?w=400&h=200&fit=crop",
@@ -253,8 +178,8 @@ export function ProgressiveResults({
       "Hungary": "https://images.unsplash.com/photo-1541432901042-2d8bd64b4a9b?w=400&h=200&fit=crop",
       "Croatia": "https://images.unsplash.com/photo-1555993539-1732b0258a95?w=400&h=200&fit=crop",
       "Greece": "https://images.unsplash.com/photo-1613395877344-13d4a8e0d49e?w=400&h=200&fit=crop",
-      "Romania": "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=200&fit=crop",
-      "Bulgaria": "https://images.unsplash.com/photo-1578906536077-72bc8b8b79fb?w=400&h=200&fit=crop",
+      "Romania": "https://images.unsplash.com/photo-1556983703-27576442c99d?w=400&h=200&fit=crop", // Bucharest Parliament Palace
+      "Bulgaria": "https://images.unsplash.com/photo-1555742746-7ad3c0bcc4f6?w=400&h=200&fit=crop", // Rila Monastery
       
       // Asia - East
       "Japan": "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=400&h=200&fit=crop",
@@ -278,17 +203,17 @@ export function ProgressiveResults({
       "India": "https://images.unsplash.com/photo-1524492412937-b28074a5d7da?w=400&h=200&fit=crop",
       "Nepal": "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=400&h=200&fit=crop",
       "Sri Lanka": "https://images.unsplash.com/photo-1566552881560-0be862a7c445?w=400&h=200&fit=crop",
-      "Bangladesh": "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=200&fit=crop",
+      "Bangladesh": "https://images.unsplash.com/photo-1562570553-0b3d52df7ec0?w=400&h=200&fit=crop", // Cox's Bazar Beach
       "Pakistan": "https://images.unsplash.com/photo-1571596206116-19e682d3fb85?w=400&h=200&fit=crop",
       
       // Middle East
       "United Arab Emirates": "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=400&h=200&fit=crop",
       "Turkey": "https://images.unsplash.com/photo-1524231757912-21f4fe3a7200?w=400&h=200&fit=crop",
       "Israel": "https://images.unsplash.com/photo-1544966503-7cc5ac882d5f?w=400&h=200&fit=crop",
-      "Jordan": "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=200&fit=crop",
-      "Qatar": "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=200&fit=crop",
-      "Saudi Arabia": "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=200&fit=crop",
-      "Oman": "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=200&fit=crop",
+      "Jordan": "https://images.unsplash.com/photo-1539650116574-75c0c6d0f864?w=400&h=200&fit=crop", // Petra
+      "Qatar": "https://images.unsplash.com/photo-1579952363873-27d3bfdc9f9b?w=400&h=200&fit=crop", // Doha skyline
+      "Saudi Arabia": "https://images.unsplash.com/photo-1578662827621-dc03aef04838?w=400&h=200&fit=crop", // Riyadh
+      "Oman": "https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=400&h=200&fit=crop", // Desert landscape
       
       // Africa
       "Egypt": "https://images.unsplash.com/photo-1539650116574-75c0c6d0f864?w=400&h=200&fit=crop",
@@ -296,42 +221,98 @@ export function ProgressiveResults({
       "Morocco": "https://images.unsplash.com/photo-1489749798305-4fea3ae436d3?w=400&h=200&fit=crop",
       "Kenya": "https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?w=400&h=200&fit=crop",
       "Tanzania": "https://images.unsplash.com/photo-1516652473400-1875bc1c148f?w=400&h=200&fit=crop",
-      "Ethiopia": "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=200&fit=crop",
-      "Ghana": "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=200&fit=crop",
-      "Nigeria": "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=200&fit=crop",
-      "Tunisia": "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=200&fit=crop",
+      "Ethiopia": "https://images.unsplash.com/photo-1568454537842-d933259bb258?w=400&h=200&fit=crop", // Ethiopian Highlands
+      "Ghana": "https://images.unsplash.com/photo-1570366583862-f91883984fde?w=400&h=200&fit=crop", // Accra cityscape
+      "Nigeria": "https://images.unsplash.com/photo-1569948734493-2329d4b0fdbc?w=400&h=200&fit=crop", // Lagos
+      "Tunisia": "https://images.unsplash.com/photo-1539037116277-4db20889f2d4?w=400&h=200&fit=crop", // Sidi Bou Said
       
       // Oceania
       "Australia": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=200&fit=crop",
       "New Zealand": "https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=400&h=200&fit=crop",
-      "Fiji": "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=200&fit=crop",
+      "Fiji": "https://images.unsplash.com/photo-1540979388789-6cee28a1cdc9?w=400&h=200&fit=crop", // Fiji beaches
       
       // South America
       "Brazil": "https://images.unsplash.com/photo-1483729558449-99ef09a8c325?w=400&h=200&fit=crop",
       "Argentina": "https://images.unsplash.com/photo-1589909202802-8f4aadce1849?w=400&h=200&fit=crop",
       "Chile": "https://images.unsplash.com/photo-1544966503-7cc5ac882d5f?w=400&h=200&fit=crop",
       "Peru": "https://images.unsplash.com/photo-1587595431973-160d0d94add1?w=400&h=200&fit=crop",
-      "Colombia": "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=200&fit=crop",
-      "Ecuador": "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=200&fit=crop",
-      "Bolivia": "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=200&fit=crop",
-      "Uruguay": "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=200&fit=crop",
-      "Venezuela": "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=200&fit=crop",
+      "Colombia": "https://images.unsplash.com/photo-1570366583862-f91883984fde?w=400&h=200&fit=crop", // Cartagena colorful buildings
+      "Ecuador": "https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=400&h=200&fit=crop", // Andes mountains
+      "Bolivia": "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=400&h=200&fit=crop", // Salar de Uyuni
+      "Uruguay": "https://images.unsplash.com/photo-1583417267826-aebc4d1542e1?w=400&h=200&fit=crop", // Montevideo
+      "Venezuela": "https://images.unsplash.com/photo-1562570553-0b3d52df7ec0?w=400&h=200&fit=crop", // Angel Falls
       
       // Central America & Caribbean
-      "Costa Rica": "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=200&fit=crop",
-      "Panama": "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=200&fit=crop",
-      "Guatemala": "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=200&fit=crop",
-      "Jamaica": "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=200&fit=crop",
-      "Cuba": "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=200&fit=crop",
-      "Dominican Republic": "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=200&fit=crop",
-      "Barbados": "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=200&fit=crop",
+      "Costa Rica": "https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=400&h=200&fit=crop", // Rainforest
+      "Panama": "https://images.unsplash.com/photo-1554919063-b2f7a4ecb7b9?w=400&h=200&fit=crop", // Panama Canal
+      "Guatemala": "https://images.unsplash.com/photo-1583161075176-0b38a4bb0e21?w=400&h=200&fit=crop", // Antigua Guatemala
+      "Jamaica": "https://images.unsplash.com/photo-1540979388789-6cee28a1cdc9?w=400&h=200&fit=crop", // Blue Mountains
+      "Cuba": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=200&fit=crop", // Havana classic cars
+      "Dominican Republic": "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=400&h=200&fit=crop", // Punta Cana beach
+      "Barbados": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=400&h=200&fit=crop", // Barbados beach
       
       // Additional destinations
       "Russia": "https://images.unsplash.com/photo-1547036967-23d11aacaee0?w=400&h=200&fit=crop",
-      "Kazakhstan": "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=200&fit=crop",
-      "Mongolia": "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=200&fit=crop",
-      "Uzbekistan": "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=200&fit=crop"
+      "Kazakhstan": "https://images.unsplash.com/photo-1544966503-7cc5ac882d5f?w=400&h=200&fit=crop", // Almaty mountains
+      "Mongolia": "https://images.unsplash.com/photo-1582639590640-f73b9d3ba011?w=400&h=200&fit=crop", // Mongolian steppes
+      "Uzbekistan": "https://images.unsplash.com/photo-1541432901042-2d8bd64b4a9b?w=400&h=200&fit=crop", // Registan, Samarkand
+      "Maldives": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=400&h=200&fit=crop", // Maldives overwater bungalows
+      "Algeria": "https://images.unsplash.com/photo-1544966503-7cc5ac882d5f?w=400&h=200&fit=crop", // Sahara Desert
+      "Libya": "https://images.unsplash.com/photo-1539650116574-75c0c6d0f864?w=400&h=200&fit=crop", // Ancient ruins
+      "Sudan": "https://images.unsplash.com/photo-1544966503-7cc5ac882d5f?w=400&h=200&fit=crop", // Nile confluence
+      "Iran": "https://images.unsplash.com/photo-1544966503-7cc5ac882d5f?w=400&h=200&fit=crop", // Isfahan mosque
+      "Iraq": "https://images.unsplash.com/photo-1539650116574-75c0c6d0f864?w=400&h=200&fit=crop", // Mesopotamian heritage
+      "Afghanistan": "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=400&h=200&fit=crop", // Hindu Kush mountains
+      "Yemen": "https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=400&h=200&fit=crop", // Socotra Island
+      "Syria": "https://images.unsplash.com/photo-1539650116574-75c0c6d0f864?w=400&h=200&fit=crop", // Ancient Palmyra
+      "Lebanon": "https://images.unsplash.com/photo-1544966503-7cc5ac882d5f?w=400&h=200&fit=crop", // Beirut Mediterranean
+      
+      // Additional popular destinations
+      "Slovakia": "https://images.unsplash.com/photo-1541849546-216549ae216d?w=400&h=200&fit=crop", // Spiš Castle
+      "Slovenia": "https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=400&h=200&fit=crop", // Lake Bled
+      "Estonia": "https://images.unsplash.com/photo-1513622470522-26c3c8a854bc?w=400&h=200&fit=crop", // Tallinn medieval
+      "Latvia": "https://images.unsplash.com/photo-1513622470522-26c3c8a854bc?w=400&h=200&fit=crop", // Riga Art Nouveau
+      "Lithuania": "https://images.unsplash.com/photo-1513622470522-26c3c8a854bc?w=400&h=200&fit=crop", // Vilnius Old Town
+      "Serbia": "https://images.unsplash.com/photo-1541432901042-2d8bd64b4a9b?w=400&h=200&fit=crop", // Belgrade fortress
+      "North Macedonia": "https://images.unsplash.com/photo-1541849546-216549ae216d?w=400&h=200&fit=crop", // Ohrid Lake
+      "Albania": "https://images.unsplash.com/photo-1555993539-1732b0258a95?w=400&h=200&fit=crop", // Albanian Riviera
+      "Montenegro": "https://images.unsplash.com/photo-1555993539-1732b0258a95?w=400&h=200&fit=crop", // Bay of Kotor
+      "Bosnia and Herzegovina": "https://images.unsplash.com/photo-1541849546-216549ae216d?w=400&h=200&fit=crop", // Mostar Bridge
+      "Belarus": "https://images.unsplash.com/photo-1578895101408-1a36b834405b?w=400&h=200&fit=crop", // Minsk architecture
+      "Ukraine": "https://images.unsplash.com/photo-1578895101408-1a36b834405b?w=400&h=200&fit=crop", // Kiev golden domes
+      "Moldova": "https://images.unsplash.com/photo-1556983703-27576442c99d?w=400&h=200&fit=crop", // Wine cellars
+      "Georgia": "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=400&h=200&fit=crop", // Caucasus mountains
+      "Armenia": "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=400&h=200&fit=crop", // Mount Ararat
+      "Azerbaijan": "https://images.unsplash.com/photo-1579952363873-27d3bfdc9f9b?w=400&h=200&fit=crop", // Baku Flame Towers
+      
+      // Alternative country name formats (in case of naming inconsistencies)
+      "Republic of Croatia": "https://images.unsplash.com/photo-1555993539-1732b0258a95?w=400&h=200&fit=crop", // Croatia alternative
+      "Kingdom of Belgium": "https://images.unsplash.com/photo-1559564484-0b8a4aa3c6b5?w=400&h=200&fit=crop", // Belgium alternative  
+      "French Republic": "https://images.unsplash.com/photo-1502602898536-47ad22581b52?w=400&h=200&fit=crop", // France alternative
+      "Romania Republic": "https://images.unsplash.com/photo-1556983703-27576442c99d?w=400&h=200&fit=crop", // Romania alternative
+      
+      // Additional European countries that might be missing
+      "Luxembourg": "https://images.unsplash.com/photo-1559564484-0b8a4aa3c6b5?w=400&h=200&fit=crop", // Luxembourg City
+      "Malta": "https://images.unsplash.com/photo-1555993539-1732b0258a95?w=400&h=200&fit=crop", // Valletta
+      "Cyprus": "https://images.unsplash.com/photo-1613395877344-13d4a8e0d49e?w=400&h=200&fit=crop", // Mediterranean beaches
+      "Andorra": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=200&fit=crop", // Pyrenees mountains
+      "San Marino": "https://images.unsplash.com/photo-1515542622106-78bda8ba0e5b?w=400&h=200&fit=crop", // Medieval towers
+      "Monaco": "https://images.unsplash.com/photo-1502602898536-47ad22581b52?w=400&h=200&fit=crop", // Monte Carlo
+      "Vatican City": "https://images.unsplash.com/photo-1515542622106-78bda8ba0e5b?w=400&h=200&fit=crop", // St. Peter's Basilica
+      "Liechtenstein": "https://images.unsplash.com/photo-1476209446441-5ad72f223207?w=400&h=200&fit=crop" // Alpine principality
     };
+    
+    // Debug logging to see what country names we're receiving
+    if (process.env.NODE_ENV === 'development') {
+      console.log(`🗺️ Looking for image for country: "${countryName}"`);
+      const result = imageMap[countryName];
+      if (!result) {
+        console.log(`❌ No image found for "${countryName}". Available countries:`, Object.keys(imageMap).slice(0, 10));
+      } else {
+        console.log(`✅ Found image for "${countryName}"`);
+      }
+    }
+    
     return imageMap[countryName] || null;
   };
 
@@ -792,10 +773,10 @@ export function ProgressiveResults({
               <h4 className="text-sm font-medium text-gray-700">Filter by destination</h4>
             </div>
             
-            <div className="flex flex-wrap justify-center gap-1 sm:gap-2" data-testid="progressive-country-filters">
+            <div className="flex flex-wrap justify-center gap-2" data-testid="progressive-country-filters">
               <button
                 className={[
-                  "px-2 py-1 sm:px-4 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-all duration-200",
+                  "px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200",
                   "hover:scale-105 hover:shadow-sm active:scale-95",
                   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50",
                   selectedCountries.length === 0
@@ -805,11 +786,9 @@ export function ProgressiveResults({
                 onClick={() => setSelectedCountries([])}
                 data-testid="filter-progressive-all-countries"
               >
-                  <span className="flex items-center gap-1 sm:gap-2">
+                  <span className="flex items-center gap-2">
                     <span>All Countries</span>
-                    <span className="inline-flex items-center justify-center w-5 h-5 sm:w-6 sm:h-6 text-xs font-semibold rounded-full bg-white border border-gray-200 text-gray-700">
-                      {Object.keys(citiesByCountry).length}
-                    </span>
+                    <span className="text-lg">🌍</span>
                   </span>
               </button>
 
@@ -819,7 +798,7 @@ export function ProgressiveResults({
                   <button
                     key={countryName}
                     className={[
-                      "px-2 py-1 sm:px-4 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-all duration-200",
+                      "px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200",
                       "hover:scale-105 hover:shadow-sm active:scale-95",
                       "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50",
                       selectedCountries.includes(countryName)
@@ -831,11 +810,9 @@ export function ProgressiveResults({
                       .toLowerCase()
                       .replace(/\s+/g, "-")}`}
                   >
-                    <span className="flex items-center gap-1 sm:gap-2">
+                    <span className="flex items-center gap-2">
                       <span>{countryName}</span>
-                      <span className="inline-flex items-center justify-center w-5 h-5 sm:w-6 sm:h-6 text-xs font-semibold rounded-full bg-white border border-gray-200 text-gray-700">
-                        {cities.length}
-                      </span>
+                      {getFlagImageComponent(countryName)}
                     </span>
                   </button>
                 ))}
@@ -868,35 +845,34 @@ export function ProgressiveResults({
             {/* Within Budget Section */}
             {citiesByBudgetAndCountry.within_budget && Object.keys(citiesByBudgetAndCountry.within_budget).length > 0 && (
               <div className="space-y-6" ref={withinSectionRef}>
-                <div className="bg-white rounded-lg border border-gray-200 p-4 sm:p-6">
-                  <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-2">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-4">
-                          <div className="flex items-center justify-center w-10 h-10 bg-green-500 rounded-lg">
-                            <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
-                            </svg>
-                          </div>
-                          <div>
-                            <h3 className="text-lg sm:text-xl font-bold text-gray-900" data-testid="header-within-budget">
-                              Within Your Budget ({Object.values(citiesByBudgetAndCountry.within_budget).reduce((sum, cities) => sum + cities.length, 0)} destinations)
-                            </h3>
-                            <p className="text-xs sm:text-sm text-gray-600">
-                              These destinations fit comfortably within your budget
-                            </p>
-                          </div>
+                <div className="bg-white rounded-lg border border-gray-200 p-6">
+                  <div className="flex items-center gap-4 mb-2">
+                      <div className="flex-1 flex items-center justify-between">
+                      <div className="flex items-center gap-4">
+                        <div className="flex items-center justify-center w-10 h-10 bg-green-500 rounded-lg">
+                          <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+                          </svg>
+                        </div>
+                        <div>
+                          <h3 className="text-xl font-bold text-gray-900" data-testid="header-within-budget">
+                            Within Your Budget ({Object.values(citiesByBudgetAndCountry.within_budget).reduce((sum, cities) => sum + cities.length, 0)} destinations)
+                          </h3>
+                          <p className="text-sm text-gray-600">
+                            These destinations fit comfortably within your budget
+                          </p>
                         </div>
                       </div>
 
-                      <div className="sm:ml-4">
+                      <div className="ml-4">
                         <div className="flex items-center gap-2">
-                          <span className="text-xs sm:text-sm text-gray-600">Sort by:</span>
+                          <span className="text-sm text-gray-600">Sort by:</span>
                           <Select
                             value={sortOption}
                             onValueChange={(value) => setSortOption(value as any)}
                             data-testid="select-progressive-sort"
                           >
-                            <SelectTrigger className="h-7 w-[140px] sm:h-8 sm:w-[180px] text-xs sm:text-sm">
+                            <SelectTrigger className="h-8 w-[180px]">
                               <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
@@ -908,6 +884,7 @@ export function ProgressiveResults({
                           </Select>
                         </div>
                       </div>
+                    </div>
                   </div>
                 </div>
                 
@@ -958,9 +935,9 @@ export function ProgressiveResults({
                               onClick={() => toggleCountryAccordion(countryName)}
                             >
                               <CardContent className="p-0">
-                                <div className="flex items-stretch min-h-[160px] sm:min-h-[180px]">
+                                <div className="flex items-stretch min-h-[140px]">
                                   {/* Country Image with Flag Overlay */}
-                                  <div className="relative w-40 sm:w-48 flex-shrink-0">
+                                  <div className="relative w-48 flex-shrink-0">
                                     {getCountryImage(countryName) ? (
                                       <>
                                         <img
@@ -975,14 +952,8 @@ export function ProgressiveResults({
                                           }}
                                         />
                                         {/* Flag overlay on image */}
-                                        <div className="absolute top-2 sm:top-3 left-2 sm:left-3 bg-white/90 backdrop-blur-sm rounded-full p-1.5 sm:p-2 shadow-sm">
+                                        <div className="absolute top-3 left-3 bg-white/90 backdrop-blur-sm rounded-full p-2 shadow-sm">
                                           {getFlagImageComponent(countryName)}
-                                        </div>
-                                        {/* Region badge on image */}
-                                        <div className="absolute bottom-2 sm:bottom-3 right-2 sm:right-3">
-                                          <Badge variant="outline" className="text-xs bg-white/90 backdrop-blur-sm">
-                                            {getCountryDetails(countryName).region}
-                                          </Badge>
                                         </div>
                                       </>
                                     ) : null}
@@ -990,7 +961,7 @@ export function ProgressiveResults({
                                     <div 
                                       className={`absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-600 rounded-l-lg flex items-center justify-center ${getCountryImage(countryName) ? 'hidden' : ''}`}
                                     >
-                                      <div className="text-3xl sm:text-4xl">
+                                      <div className="text-4xl">
                                         {getFlagImageComponent(countryName)}
                                       </div>
                                     </div>
@@ -999,20 +970,23 @@ export function ProgressiveResults({
                                   </div>
 
                                   {/* Country Information */}
-                                  <div className="flex-1 p-3 sm:p-6">
+                                  <div className="flex-1 p-6">
                                     <div className="flex items-center justify-between">
                                       <div className="flex-1">
-                                        <div className="flex items-center space-x-2 sm:space-x-3 mb-2">
-                                          <h4 className="text-base sm:text-xl font-semibold text-foreground">
+                                        <div className="flex items-center space-x-3 mb-2">
+                                          <h4 className="text-xl font-semibold text-foreground">
                                             {countryName}
                                           </h4>
+                                          <Badge variant="outline" className="text-xs">
+                                            {getCountryDetails(countryName).region}
+                                          </Badge>
                                         </div>
                                         
-                                        <div className="space-y-1 mb-2 sm:mb-3">
-                                          <p className="text-xs sm:text-sm text-muted-foreground">
+                                        <div className="space-y-1 mb-3">
+                                          <p className="text-sm text-muted-foreground">
                                             {cities.length} destination{cities.length !== 1 ? 's' : ''}
                                           </p>
-                                          <p className="text-xs sm:text-sm text-blue-600 font-medium">
+                                          <p className="text-sm text-blue-600 font-medium">
                                             {getCountryDetails(countryName).highlights}
                                           </p>
                                         </div>
@@ -1158,9 +1132,9 @@ export function ProgressiveResults({
                               onClick={() => toggleCountryAccordion(countryName)}
                             >
                               <CardContent className="p-0">
-                                <div className="flex items-stretch min-h-[160px] sm:min-h-[180px]">
+                                <div className="flex items-stretch min-h-[140px]">
                                   {/* Country Image with Flag Overlay */}
-                                  <div className="relative w-40 sm:w-48 flex-shrink-0">
+                                  <div className="relative w-48 flex-shrink-0">
                                     {getCountryImage(countryName) ? (
                                       <>
                                         <img
@@ -1175,14 +1149,8 @@ export function ProgressiveResults({
                                           }}
                                         />
                                         {/* Flag overlay on image */}
-                                        <div className="absolute top-2 sm:top-3 left-2 sm:left-3 bg-white/90 backdrop-blur-sm rounded-full p-1.5 sm:p-2 shadow-sm">
+                                        <div className="absolute top-3 left-3 bg-white/90 backdrop-blur-sm rounded-full p-2 shadow-sm">
                                           {getFlagImageComponent(countryName)}
-                                        </div>
-                                        {/* Region badge on image */}
-                                        <div className="absolute bottom-2 sm:bottom-3 right-2 sm:right-3">
-                                          <Badge variant="outline" className="text-xs bg-white/90 backdrop-blur-sm">
-                                            {getCountryDetails(countryName).region}
-                                          </Badge>
                                         </div>
                                       </>
                                     ) : null}
@@ -1190,7 +1158,7 @@ export function ProgressiveResults({
                                     <div 
                                       className={`absolute inset-0 bg-gradient-to-r from-orange-500 to-red-600 rounded-l-lg flex items-center justify-center ${getCountryImage(countryName) ? 'hidden' : ''}`}
                                     >
-                                      <div className="text-3xl sm:text-4xl">
+                                      <div className="text-3xl">
                                         {getFlagImageComponent(countryName)}
                                       </div>
                                     </div>
@@ -1199,20 +1167,23 @@ export function ProgressiveResults({
                                   </div>
 
                                   {/* Country Information */}
-                                  <div className="flex-1 p-3 sm:p-6">
+                                  <div className="flex-1 p-6">
                                     <div className="flex items-center justify-between">
                                       <div className="flex-1">
-                                        <div className="flex items-center space-x-2 sm:space-x-3 mb-2">
-                                          <h4 className="text-base sm:text-xl font-semibold text-foreground">
+                                        <div className="flex items-center space-x-3 mb-2">
+                                          <h4 className="text-xl font-semibold text-foreground">
                                             {countryName}
                                           </h4>
+                                          <Badge variant="outline" className="text-xs">
+                                            {getCountryDetails(countryName).region}
+                                          </Badge>
                                         </div>
                                         
-                                        <div className="space-y-1 mb-2 sm:mb-3">
-                                          <p className="text-xs sm:text-sm text-muted-foreground">
+                                        <div className="space-y-1 mb-3">
+                                          <p className="text-sm text-muted-foreground">
                                             {cities.length} destination{cities.length !== 1 ? 's' : ''}
                                           </p>
-                                          <p className="text-xs sm:text-sm text-orange-600 font-medium">
+                                          <p className="text-sm text-orange-600 font-medium">
                                             {getCountryDetails(countryName).highlights}
                                           </p>
                                         </div>
@@ -1232,12 +1203,12 @@ export function ProgressiveResults({
                                         </div>
                                       </div>
                                       
-                                      <div className="flex items-center space-x-2 sm:space-x-3 ml-2 sm:ml-4">
+                                      <div className="flex items-center space-x-3 ml-4">
                                         {/* Expand/collapse icon */}
                                         {isExpanded ? (
-                                          <ChevronUp className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground" />
+                                          <ChevronUp className="h-5 w-5 text-muted-foreground" />
                                         ) : (
-                                          <ChevronDown className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground" />
+                                          <ChevronDown className="h-5 w-5 text-muted-foreground" />
                                         )}
                                       </div>
                                     </div>
@@ -1406,8 +1377,7 @@ export function ProgressiveResults({
         <div className="mt-8 rounded-lg border border-border bg-muted/50 p-4">
           <div className="text-sm text-muted-foreground">
             <p className="mb-2">
-              <strong>Data Sources:</strong> Amadeus (flights), Claude AI
-              (hotels & daily costs)
+              <strong>Data Sources:</strong> Claude AI (hotels & daily costs)
             </p>
             <p>
               Estimates for planning purposes only. Verify prices before

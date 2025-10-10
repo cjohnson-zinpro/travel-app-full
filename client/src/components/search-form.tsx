@@ -122,7 +122,7 @@ export function SearchForm({
       nights: data.nights,
       sort: "alphabetical",
       includeEstimates: true,
-      limit: 25,
+      limit: 200,
       travelStyle: data.travelStyle, // ADD THIS LINE
     };
 
@@ -279,14 +279,14 @@ export function SearchForm({
                       <div className="space-y-1 flex-1">
                         <div className="text-sm font-medium">Mid-range</div>
                         <p className="text-xs text-muted-foreground">
-                          3★ hotels, mix dining
+                          3-4★ hotels, mix dining
                         </p>
                       </div>
                     </div>
                   </TooltipTrigger>
                   <TooltipContent className="max-w-xs">
                     <p className="text-xs">
-                      Mid-Range Travel: 3-star hotels, mix of local and tourist transport, standard restaurants, typical attractions.
+                      Mid-Range Travel: 3-4 star hotels, mix of local and tourist transport, standard restaurants and some street food, typical attractions.
                     </p>
                   </TooltipContent>
                 </Tooltip>
@@ -316,7 +316,7 @@ export function SearchForm({
                   </TooltipTrigger>
                   <TooltipContent className="max-w-xs">
                     <p className="text-xs">
-                      Luxury Travel: 4-5 star hotels, premium transport, fine dining, and curated experiences.
+                      Luxury Travel: 4-5 star hotels, premium/private transport, mainly higher-end dining, and curated experiences.
                     </p>
                   </TooltipContent>
                 </Tooltip>

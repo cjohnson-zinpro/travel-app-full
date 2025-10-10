@@ -7,7 +7,7 @@ interface DisclaimerSectionProps {
 }
 
 export function DisclaimerSection({ 
-  sources = ["Amadeus", "Claude AI"], 
+  sources = ["Claude AI"], 
   disclaimer = "Ballpark estimates, not live quotes. Events/holidays may raise prices." 
 }: DisclaimerSectionProps) {
   return (
@@ -25,7 +25,7 @@ export function DisclaimerSection({
               <strong>These are ballpark estimates, not live quotes.</strong> Actual prices may vary based on booking dates, availability, seasonality, and local events.
             </p>
             <p data-testid="text-disclaimer-variance">
-              Flight estimates include variance of ±20%. Hotel prices show 25th-75th percentile ranges.
+              Hotel prices show 25th-75th percentile ranges. Daily costs include meals, activities, and local transport.
             </p>
           </div>
           <div>

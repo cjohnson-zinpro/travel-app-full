@@ -137,22 +137,9 @@ function CityCard({
         </div>
       )}
 
-      {/* Breakdown */}
+      {/* Breakdown - Destination costs only */}
       <div className="border-t border-border pt-3">
-        <div className="grid grid-cols-3 gap-4 text-sm">
-          <div className="text-center">
-            <div className="flex items-center justify-center text-muted-foreground mb-1">
-              <Plane className="h-3 w-3 mr-1" />
-              Flight
-            </div>
-            <div className="font-medium">
-              ${city.breakdown.flight.toLocaleString()}
-            </div>
-            <div className="text-xs text-muted-foreground">
-              {city.breakdown.flightSource === "amadeus" ? "Live" : "Est."}
-            </div>
-          </div>
-
+        <div className="grid grid-cols-2 gap-4 text-sm">
           <div className="text-center">
             <div className="flex items-center justify-center text-muted-foreground mb-1">
               <Building className="h-3 w-3 mr-1" />
@@ -319,7 +306,7 @@ export function ResultsGrid({
                 </TooltipTrigger>
                 <TooltipContent className="max-w-xs">
                   <p className="text-sm">
-                    We use live flight prices from Amadeus and AI-powered hotel &amp; daily cost estimates from Claude. Look for data source indicators on each city to see what's live vs estimated.
+                    Claude AI provides hotel &amp; daily cost estimates. Flight prices are provided as internal estimates when live feeds are unavailable. Look for data source indicators on each city to see what's live vs estimated.
                   </p>
                 </TooltipContent>
               </Tooltip>
@@ -361,9 +348,7 @@ export function ResultsGrid({
           >
             <span className="flex items-center gap-2">
               <span>All Countries</span>
-              <span className="inline-flex items-center justify-center w-6 h-6 text-xs font-semibold rounded-full bg-white border border-gray-200 text-gray-700">
-                {Object.keys(citiesByCountry).length}
-              </span>
+              <span className="text-lg">🌍</span>
             </span>
           </button>
 
@@ -385,9 +370,7 @@ export function ResultsGrid({
               >
                 <span className="flex items-center gap-2">
                   <span>{countryName}</span>
-                  <span className="inline-flex items-center justify-center w-6 h-6 text-xs font-semibold rounded-full bg-white border border-gray-200 text-gray-700">
-                    {cities.length}
-                  </span>
+                  {getFlagImageComponent(countryName)}
                 </span>
               </button>
             ))}

@@ -26,9 +26,7 @@ export function CityCard({
   travelStyle = "budget",
   originAirport,
 }: CityCardProps) {
-  // Feature flag to show/hide flight costs
-  // In Vite, environment variables are accessed via import.meta.env
-  const showFlightCosts = import.meta.env.VITE_SHOW_FLIGHT_COSTS === 'true';
+  // Removed flight costs feature - only showing accommodation and daily costs
   
   // Hero image mapping for cities (starting with New York for testing)
   const getCityHeroImage = (cityName: string): string => {
@@ -43,94 +41,6 @@ export function CityCard({
     };
     
     return cityImages[cityName] || "https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=800&h=400&fit=crop&crop=center&auto=format&q=80"; // Generic city fallback
-  };
-
-  // Function to identify capital cities
-  const isCapitalCity = (cityName: string, country: string): boolean => {
-    const capitals: Record<string, string[]> = {
-      "United States": ["Washington", "Washington D.C."],
-      "United Kingdom": ["London"],
-      "Canada": ["Ottawa"],
-      "France": ["Paris"],
-      "Germany": ["Berlin"],
-      "Italy": ["Rome"],
-      "Spain": ["Madrid"],
-      "Japan": ["Tokyo"],
-      "China": ["Beijing"],
-      "India": ["New Delhi", "Delhi"],
-      "Australia": ["Canberra"],
-      "Brazil": ["Brasília", "Brasilia"],
-      "Mexico": ["Mexico City"],
-      "Russia": ["Moscow"],
-      "South Korea": ["Seoul"],
-      "Thailand": ["Bangkok"],
-      "Egypt": ["Cairo"],
-      "South Africa": ["Cape Town", "Pretoria", "Bloemfontein"], // Multiple capitals
-      "Netherlands": ["Amsterdam", "The Hague"], // Amsterdam is capital, The Hague is seat of government
-      "Turkey": ["Ankara"],
-      "Greece": ["Athens"],
-      "Argentina": ["Buenos Aires"],
-      "Chile": ["Santiago"],
-      "Colombia": ["Bogotá", "Bogota"],
-      "Peru": ["Lima"],
-      "Malaysia": ["Kuala Lumpur"],
-      "Singapore": ["Singapore"],
-      "Indonesia": ["Jakarta"],
-      "Philippines": ["Manila"],
-      "Vietnam": ["Hanoi"],
-      "Cambodia": ["Phnom Penh"],
-      "Myanmar": ["Naypyidaw", "Yangon"], // Naypyidaw is capital, Yangon is largest city
-      "Sri Lanka": ["Colombo", "Sri Jayawardenepura Kotte"],
-      "Bangladesh": ["Dhaka"],
-      "Pakistan": ["Islamabad"],
-      "Nepal": ["Kathmandu"],
-      "Israel": ["Jerusalem"],
-      "Jordan": ["Amman"],
-      "United Arab Emirates": ["Abu Dhabi"],
-      "Qatar": ["Doha"],
-      "Saudi Arabia": ["Riyadh"],
-      "Morocco": ["Rabat"],
-      "Kenya": ["Nairobi"],
-      "Tanzania": ["Dodoma"],
-      "Ethiopia": ["Addis Ababa"],
-      "Ghana": ["Accra"],
-      "Nigeria": ["Abuja"],
-      "New Zealand": ["Wellington"],
-      "Fiji": ["Suva"],
-      "Costa Rica": ["San José", "San Jose"],
-      "Panama": ["Panama City"],
-      "Guatemala": ["Guatemala City"],
-      "Jamaica": ["Kingston"],
-      "Cuba": ["Havana"],
-      "Dominican Republic": ["Santo Domingo"],
-      "Czech Republic": ["Prague"],
-      "Poland": ["Warsaw"],
-      "Hungary": ["Budapest"],
-      "Croatia": ["Zagreb"],
-      "Romania": ["Bucharest"],
-      "Bulgaria": ["Sofia"],
-      "Norway": ["Oslo"],
-      "Sweden": ["Stockholm"],
-      "Denmark": ["Copenhagen"],
-      "Finland": ["Helsinki"],
-      "Iceland": ["Reykjavik"],
-      "Austria": ["Vienna"],
-      "Switzerland": ["Bern"],
-      "Belgium": ["Brussels"],
-      "Portugal": ["Lisbon"],
-      "Ireland": ["Dublin"],
-      "Kazakhstan": ["Nur-Sultan", "Astana"],
-      "Mongolia": ["Ulaanbaatar"],
-      "Uzbekistan": ["Tashkent"],
-    };
-
-    const countryCapitals = capitals[country];
-    if (!countryCapitals) return false;
-    
-    return countryCapitals.some(capital => 
-      cityName.toLowerCase().includes(capital.toLowerCase()) || 
-      capital.toLowerCase().includes(cityName.toLowerCase())
-    );
   };
 
   // Removed budget status badges - will add comprehensive badges once other filtering criteria (activity level, etc.) are defined
@@ -190,9 +100,6 @@ export function CityCard({
     
     switch (source) {
       case "amadeus":
-        if (type === "flight") {
-          return "Live flight pricing: Averages 5 economy searches across multiple dates, removes luxury outliers (top 15%)";
-        }
         return `Live ${type} pricing from Amadeus API`;
       case "claude":
         if (type === "hotel") {
@@ -248,9 +155,8 @@ export function CityCard({
         const dailyCost = claudeCosts.dailyCost[styleKey as keyof typeof claudeCosts.dailyCost];
         const adjustedDaily = dailyCost;
         
-        // Calculate total (flights unchanged if available, or 0 if no flight data)
-        const flightCost = city.breakdown?.flight || 0;
-        const total = flightCost + city.nights * (hotelPerNight + adjustedDaily);
+        // Calculate total (accommodation and daily costs only)
+        const total = city.nights * (hotelPerNight + adjustedDaily);
         
         // Debug logging
         console.log(`🔍 ${city.city} Claude accommodation data (${style}):`, {
@@ -288,9 +194,8 @@ export function CityCard({
       // Daily costs from Claude are already the complete daily expenses
       const adjustedDaily = dailyCost;
       
-      // Calculate total (flights unchanged if available, or 0 if no flight data)
-      const flightCost = city.breakdown?.flight || 0;
-      const total = flightCost + city.nights * (hotelPerNight + adjustedDaily);
+      // Calculate total (accommodation and daily costs only)
+      const total = city.nights * (hotelPerNight + adjustedDaily);
       
       // Debug logging
       console.log(`🔍 ${city.city} Claude daily costs data (${style}):`, {
@@ -335,8 +240,7 @@ export function CityCard({
     const multiplier = style === "budget" ? 0.85 : style === "mid" ? 1.0 : 1.6;
     const adjustedDaily = Math.round(baseDaily * multiplier);
     const hotelPerNight = style === "budget" ? 45 : style === "mid" ? 85 : 185;
-    const flightCost = city.breakdown?.flight || 0;
-    const total = flightCost + city.nights * (hotelPerNight + adjustedDaily);
+    const total = city.nights * (hotelPerNight + adjustedDaily);
 
     // Debug logging
     console.log(`🔍 ${city.city} fallback data (${style}):`, {
@@ -359,14 +263,7 @@ export function CityCard({
   };
 
   const getDisplayTotal = (city: CityRecommendation, style: "budget" | "mid" | "luxury") => {
-    // First try Claude calculation for more accurate and differentiated pricing
-    const claudeCalculation = getClaudeDailyCosts(city, style);
-    if (claudeCalculation.source === 'claude-accommodation' || claudeCalculation.source === 'claude') {
-      console.log(`🔍 ${city.city} using Claude data (${style}):`, claudeCalculation);
-      return claudeCalculation.total;
-    }
-    
-    // Use backend's calculated totals based on travel style as fallback
+    // Always use backend's calculated totals for consistency with modal
     if (city.totals) {
       let result = 0;
       if (style === "luxury") {
@@ -390,90 +287,29 @@ export function CityCard({
       return result;
     }
     
-    // Final fallback
-    console.log(`🔍 ${city.city} using fallback calculation (${style}):`, claudeCalculation);
+    // Fallback to Claude calculation only if no backend totals
+    const claudeCalculation = getClaudeDailyCosts(city, style);
+    console.log(`🔍 ${city.city} using fallback Claude calculation (${style}):`, claudeCalculation);
     return claudeCalculation.total;
   };
 
-  // Cost comparison logic using shared utility
-  const getCostComparisonData = () => {
-    if (!originAirport) return null;
-    
-    const cityKey = city.city.toLowerCase().replace(/\s+/g, '-');
-    const travelStyleKey = travelStyle === "mid" ? "midRange" : travelStyle;
-    
-    try {
-      const comparison = getCostComparison(cityKey, originAirport, travelStyleKey);
-      if (!comparison) {
-        // Fall through to local fallback below
-        throw new Error('No shared comparison available');
-      }
-      
-      const percentageDiff = comparison.overallComparison.percentageDifference;
-      const neutralThreshold = 5; // consider ~same when <5%
-
-      return {
-        percentage: Math.abs(percentageDiff),
-        isMoreExpensive: percentageDiff > 0,
-        neutral: Math.abs(percentageDiff) < neutralThreshold,
-        comparisonCityName: comparison.homeCity.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())
-      } as const;
-    } catch (error) {
-      // Fallback: derive a comparison using a small local map of origin cities with style totals (10-night trip)
-      const airportToCityMap: Record<string, { city: string, country: string, pricing: { budget: number, mid: number, luxury: number } }> = {
-        PHX: { city: 'Phoenix', country: 'United States', pricing: { budget: 1200, mid: 1800, luxury: 3200 } },
-        LAX: { city: 'Los Angeles', country: 'United States', pricing: { budget: 1800, mid: 2800, luxury: 5000 } },
-        JFK: { city: 'New York', country: 'United States', pricing: { budget: 2200, mid: 3500, luxury: 6000 } },
-        ORD: { city: 'Chicago', country: 'United States', pricing: { budget: 1600, mid: 2400, luxury: 4200 } },
-        DFW: { city: 'Dallas', country: 'United States', pricing: { budget: 1400, mid: 2200, luxury: 3800 } },
-        SFO: { city: 'San Francisco', country: 'United States', pricing: { budget: 2000, mid: 3200, luxury: 5500 } },
-        YYZ: { city: 'Toronto', country: 'Canada', pricing: { budget: 1500, mid: 2300, luxury: 4000 } },
-        YVR: { city: 'Vancouver', country: 'Canada', pricing: { budget: 1600, mid: 2500, luxury: 4300 } },
-        LHR: { city: 'London', country: 'United Kingdom', pricing: { budget: 1800, mid: 2800, luxury: 5200 } },
-        CDG: { city: 'Paris', country: 'France', pricing: { budget: 1700, mid: 2600, luxury: 4800 } },
-        FRA: { city: 'Frankfurt', country: 'Germany', pricing: { budget: 1600, mid: 2400, luxury: 4400 } },
-        NRT: { city: 'Tokyo', country: 'Japan', pricing: { budget: 1900, mid: 3000, luxury: 5500 } },
-        SIN: { city: 'Singapore', country: 'Singapore', pricing: { budget: 1400, mid: 2200, luxury: 4000 } },
-        SYD: { city: 'Sydney', country: 'Australia', pricing: { budget: 1800, mid: 2800, luxury: 5000 } }
-      };
-
-      const home = airportToCityMap[originAirport];
-      if (!home) {
-        console.warn('No fallback mapping for origin airport', originAirport);
-        return null;
-      }
-
-      // City cost excluding flights (align with UI default)
-      const cityCostNoFlight = (getClaudeDailyCosts(city, travelStyle).hotelPerNight + getClaudeDailyCosts(city, travelStyle).adjustedDaily) * (city.nights || 10);
-      const styleKey = travelStyle === 'mid' ? 'mid' : travelStyle;
-      const homeCostNoFlight = home.pricing[styleKey as 'budget' | 'mid' | 'luxury'];
-      if (!homeCostNoFlight || homeCostNoFlight <= 0) return null;
-
-      const diff = cityCostNoFlight - homeCostNoFlight;
-      const percentage = (diff / homeCostNoFlight) * 100;
-      const neutralThreshold = 5;
-
-      return {
-        percentage: Math.abs(percentage),
-        isMoreExpensive: percentage > 0,
-        neutral: Math.abs(percentage) < neutralThreshold,
-        comparisonCityName: home.city,
-      } as const;
-    }
-  };
-
-  const costComparison = getCostComparisonData();
+  // Removed cost comparison function as it's no longer needed without flight costs
   const displayTotal = getDisplayTotal(city, travelStyle);
   const tierPricing = getClaudeDailyCosts(city, travelStyle);
   const heroImage = getCityHeroImage(city.city);
 
-  // Cost Comparison Indicator Component
+  // Cost Comparison Indicator Component (preserved for city-to-city comparison)
   const CostComparisonIndicator = () => {
-    if (!costComparison) return null;
+    const cityKey = city.city.toLowerCase().replace(/\s+/g, '-');
+    if (!canCompareCosts(cityKey, originAirport)) return null;
 
-    const { percentage, isMoreExpensive, comparisonCityName, neutral } = costComparison as {
-      percentage: number; isMoreExpensive: boolean; comparisonCityName: string; neutral?: boolean;
-    };
+    const comparison = getCostComparison(cityKey, originAirport, travelStyle === "mid" ? "midRange" : travelStyle);
+    if (!comparison) return null;
+
+    const percentageDiff = comparison.overallComparison.percentageDifference;
+    const neutralThreshold = 5;
+    const neutral = Math.abs(percentageDiff) < neutralThreshold;
+    const isMoreExpensive = percentageDiff > 0;
 
     const baseClasses = "absolute bottom-3 right-3 flex items-center gap-1 rounded-full px-2 py-1 text-xs font-medium shadow-sm z-20 border";
     const colorClasses = neutral
@@ -495,18 +331,18 @@ export function CityCard({
                 <TrendingDown className="h-3 w-3" />
               )}
               <span className="tabular-nums">
-                {neutral ? '≈' : isMoreExpensive ? '+' : '-'}{percentage.toFixed(0)}%
+                {neutral ? '≈' : isMoreExpensive ? '+' : '-'}{Math.abs(percentageDiff).toFixed(0)}%
               </span>
               <span className="text-[10px] opacity-75">
-                vs {comparisonCityName.split(' ')[0]}
+                vs {comparison.homeCity.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase()).split(' ')[0]}
               </span>
             </div>
           </TooltipTrigger>
           <TooltipContent className="max-w-xs">
             <p className="text-xs">
               {neutral
-                ? `About the same cost as ${comparisonCityName}`
-                : `${isMoreExpensive ? 'More expensive' : 'Less expensive'} than ${comparisonCityName}`}
+                ? `About the same cost as ${comparison.homeCity.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}`
+                : `${isMoreExpensive ? 'More expensive' : 'Less expensive'} than ${comparison.homeCity.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}`}
             </p>
           </TooltipContent>
         </Tooltip>
@@ -561,7 +397,7 @@ export function CityCard({
       data-testid={`card-city-${city.cityId}`}
     >
       {/* Hero Image Section */}
-      <div className="relative h-40 sm:h-48 overflow-hidden">
+      <div className="relative h-48 overflow-hidden">
         <img
           src={heroImage}
           alt={`${city.city} hero image`}
@@ -586,25 +422,16 @@ export function CityCard({
         <CostComparisonIndicator />
         
         {/* City Name Overlay */}
-        <div className="absolute bottom-0 left-0 right-0 p-2 sm:p-4">
-          <div className="flex items-center gap-2 mb-1">
-            <h5
-              className="text-xl sm:text-2xl font-bold text-white drop-shadow-lg"
-              data-testid={`text-city-name-${city.cityId}`}
-              title={city.city}
-            >
-              {city.city}
-            </h5>
-            {isCapitalCity(city.city, city.country) && (
-              <div className="flex items-center">
-                <span className="text-yellow-400 drop-shadow-lg" title="Capital City">
-                  👑
-                </span>
-              </div>
-            )}
-          </div>
+        <div className="absolute bottom-0 left-0 right-0 p-4">
+          <h5
+            className="text-2xl font-bold text-white drop-shadow-lg"
+            data-testid={`text-city-name-${city.cityId}`}
+            title={city.city}
+          >
+            {city.city}
+          </h5>
           <p
-            className="text-white/90 text-xs sm:text-sm drop-shadow-md flex items-center"
+            className="text-white/90 text-sm drop-shadow-md flex items-center"
             data-testid={`text-city-info-${city.cityId}`}
             title={`${city.country} • ${city.region}`}
           >
@@ -620,20 +447,24 @@ export function CityCard({
         </div>
       </div>
 
-      <CardContent className="p-3 sm:p-5">
+      <CardContent className="p-5">
         {/* TOP ROW — Accuracy and Travel Style Badges */}
-        <div className="flex items-center justify-between gap-1 sm:gap-3 mb-3 sm:mb-4">
+        <div className="flex items-center justify-between gap-3 mb-4">
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
                 <Badge
                   variant="outline"
-                  className={`whitespace-nowrap border px-1 sm:px-2 py-0.5 text-xs sm:text-xs font-medium ${accuracyClasses[getAccuracyLevel(city)]}`}
+                  className={`whitespace-nowrap border px-2 py-0.5 text-xs font-medium ${accuracyClasses[getAccuracyLevel(city)]}`}
                   data-testid={`badge-accuracy-${city.cityId}`}
                 >
                   {(() => {
                     const level = getAccuracyLevel(city);
-                    return level.charAt(0).toUpperCase() + level.slice(1);
+                    // Show a clear "Verified Pricing" label for verified data
+                    if (level === 'verified') {
+                      return 'Verified Pricing';
+                    }
+                    return level.charAt(0).toUpperCase() + level.slice(1) + ' Pricing';
                   })()}
                 </Badge>
               </TooltipTrigger>
@@ -650,10 +481,10 @@ export function CityCard({
               <TooltipTrigger asChild>
                 <Badge
                   variant="secondary"
-                  className="whitespace-nowrap bg-muted text-muted-foreground cursor-help px-1 sm:px-2 py-0.5 text-xs sm:text-xs"
+                  className="whitespace-nowrap bg-muted text-muted-foreground cursor-help"
                   data-testid={`text-total-range-${city.cityId}`}
                 >
-                  {travelStyle.charAt(0).toUpperCase() + travelStyle.slice(1)}
+                  {travelStyle === 'mid' ? 'Mid-range Travel' : `${travelStyle.charAt(0).toUpperCase() + travelStyle.slice(1)} Travel`}
                 </Badge>
               </TooltipTrigger>
               <TooltipContent className="max-w-xs">
@@ -670,97 +501,48 @@ export function CityCard({
           </TooltipProvider>
         </div>
 
-        {/* WEB-LIKE CONNECTED COST STRUCTURE */}
-        <div className="bg-gradient-to-r from-primary/5 to-primary/10 rounded-lg p-3 sm:p-6 mb-5">
-          <div className="space-y-4 sm:space-y-6">
-            <div className="text-center">
-              <p className="text-xs sm:text-sm text-muted-foreground">
-                {showFlightCosts ? 'Trip Total' : 'Trip Total (no flights)'}
-              </p>
-              <p className="text-xs sm:text-sm text-primary/80 font-medium">{city.nights} nights</p>
-              
-              {/* Top Level - Total Trip Cost */}
-              <div className="relative flex justify-center mb-6 sm:mb-8 mt-3 sm:mt-4">
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <div className="bg-white border-2 border-gray-300 px-4 sm:px-8 py-3 sm:py-4 rounded-lg shadow-sm cursor-help w-48 sm:w-60 h-16 sm:h-20 flex flex-col justify-center">
-                        <div className="flex items-center justify-center gap-2 mb-1">
-                       
-                            <div className="text-xl sm:text-3xl font-extrabold text-gray-800">
-                            ~{formatCurrency(showFlightCosts ? displayTotal : (displayTotal - (city.breakdown?.flight || 0)))}
-                          </div>
-                   
-                        </div>
-                        <div className="text-xs text-gray-600">Estimated trip total</div>
-                      </div>
-                    </TooltipTrigger>
-                    <TooltipContent className="max-w-xs">
-                      <p className="text-xs">
-                        Estimated total cost for {city.nights} nights using {travelStyle === 'mid' ? 'mid-range' : travelStyle} travel style.
-                      </p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-                
-                {/* Connecting line down */}
-                <div className="absolute top-full w-0.5 h-6 sm:h-8 bg-gray-300"></div>
-              </div>
+        {/* CLEAN PRICE SECTION */}
+        <div className="space-y-4 mb-5">
+          {/* Main Total */}
+          <div className="text-center">
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div className="cursor-help">
+                    <div className="text-3xl font-bold text-foreground">
+                      {formatCurrency(displayTotal)}
+                    </div>
+                    <div className="text-sm text-muted-foreground">
+                      {city.nights} nights • {travelStyle === 'mid' ? 'Mid-range' : travelStyle.charAt(0).toUpperCase() + travelStyle.slice(1)}
+                    </div>
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent className="max-w-xs">
+                  <p className="text-xs">
+                    Total estimated cost for {city.nights} nights using {travelStyle === 'mid' ? 'mid-range' : travelStyle} travel style
+                  </p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
 
-              {/* Middle Level - Daily Total */}
-              <div className="relative flex justify-center mb-6 sm:mb-8">
-                <div className="bg-white border-2 border-gray-300 px-4 sm:px-8 py-3 sm:py-4 rounded-lg shadow-sm w-48 sm:w-60 h-16 sm:h-20 flex flex-col justify-center">
-                  <div className="text-base sm:text-lg font-bold text-gray-800 mb-1">
-                    ${Math.round((showFlightCosts ? displayTotal : (displayTotal - (city.breakdown?.flight || 0))) / city.nights)}/day
-                  </div>
-                  <div className="text-xs text-gray-600">Daily cost to stay here</div>
-                </div>
-                
-                {/* Connecting lines - T-junction */}
-                <div className="absolute top-full w-0.5 h-4 sm:h-6 bg-gray-300"></div>
-                <div className="absolute top-full left-1/2 transform -translate-x-1/2 translate-y-4 sm:translate-y-6">
-                  <div className="w-32 sm:w-40 h-0.5 bg-gray-300"></div>
-                </div>
+          {/* Simple Breakdown */}
+          <div className="flex justify-center gap-6 text-center">
+            <div>
+              <div className="text-lg font-semibold text-foreground">
+                {formatCurrency(tierPricing.hotelPerNight)}
               </div>
-
-              {/* Bottom Level - Hotel and Daily Costs */}
-              <div className="grid grid-cols-2 gap-4 sm:gap-8 relative">
-                {/* Left connecting line */}
-                <div className="absolute left-1/4 -top-4 sm:-top-6 w-0.5 h-4 sm:h-6 bg-gray-300"></div>
-                {/* Right connecting line */}
-                <div className="absolute right-1/4 -top-4 sm:-top-6 w-0.5 h-4 sm:h-6 bg-gray-300"></div>
-                
-                {/* Hotel per night */}
-                <div className="text-center bg-white border border-gray-200 p-2 sm:p-3 rounded-lg shadow-sm">
-                  <div className="text-xs text-gray-600 font-medium mb-1 sm:mb-2">Hotel / night</div>
-                  <div className="text-sm sm:text-lg font-bold text-gray-800">
-                    {formatCurrency(city.breakdown?.hotelPerNightP50 || Math.round(displayTotal * 0.6 / city.nights))}
-                  </div>
-                </div>
-                
-                {/* Daily costs */}
-                <div className="text-center bg-white border border-gray-200 p-2 sm:p-3 rounded-lg shadow-sm">
-                  <div className="text-xs text-gray-600 font-medium mb-1 sm:mb-2">Daily costs</div>
-                  <div className="text-sm sm:text-lg font-bold text-gray-800">
-                    {formatCurrency(city.breakdown?.dailyPerDay || Math.round(displayTotal * 0.4 / city.nights))}
-                  </div>
-                </div>
+              <div className="text-xs text-muted-foreground">Hotel / night</div>
+            </div>
+            <div className="w-px bg-border"></div>
+            <div>
+              <div className="text-lg font-semibold text-foreground">
+                {formatCurrency(tierPricing.adjustedDaily)}
               </div>
+              <div className="text-xs text-muted-foreground">Daily costs</div>
             </div>
           </div>
         </div>
-
-        {/* FLIGHT COST (if enabled) */}
-        {showFlightCosts && (
-          <div className="mb-4">
-            <div className="bg-white border border-gray-200 rounded-lg p-2 sm:p-3 text-center shadow-sm">
-              <div className="text-xs text-gray-600 font-medium mb-1 sm:mb-2">Flight</div>
-              <div className="text-sm sm:text-lg font-bold text-gray-800">
-                {formatCurrency(city.breakdown?.flight || 0)}
-              </div>
-            </div>
-          </div>
-        )}
 
         {/* FOOTER */}
         <div className="mt-5 border-t border-border pt-4">

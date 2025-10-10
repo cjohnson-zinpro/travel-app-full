@@ -2913,6 +2913,7 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
 
   'cairns': {
     dailyCost: { budget: 48, midRange: 105, luxury: 380 },
+    accommodation: { budget: 58, midRange: 118, luxury: 228 }, // Blended: Australian regional city with good backpacker culture (18% savings)
     breakdown: {
       budget: { total: 48, meals: 20, transport: 8, activities: 15, drinks: 7, incidentals: 8 },
       midRange: { total: 105, meals: 40, transport: 20, activities: 30, drinks: 20, incidentals: 15 },
@@ -2923,6 +2924,7 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
 
   'queenstown': {
     dailyCost: { budget: 52, midRange: 115, luxury: 420 },
+    accommodation: { budget: 68, midRange: 135, luxury: 248 }, // Blended: New Zealand adventure tourism hub with good hostel/apartment culture (16% savings)
     breakdown: {
       budget: { total: 52, meals: 22, transport: 8, activities: 17, drinks: 7, incidentals: 8 },
       midRange: { total: 115, meals: 42, transport: 20, activities: 38, drinks: 20, incidentals: 15 },
@@ -2934,6 +2936,7 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
   // AFRICA
   'cairo': {
     dailyCost: { budget: 36, midRange: 62, luxury: 180 },
+    accommodation: { budget: 25, midRange: 48, luxury: 125 }, // Blended: ancient city with growing tourism accommodation (20% savings)
     breakdown: {
       budget: { total: 36, meals: 15, transport: 8, activities: 12, drinks: 8, incidentals: 8 },
       midRange: { total: 69, meals: 24, transport: 20, activities: 20, drinks: 15, incidentals: 12 },
@@ -2944,6 +2947,7 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
 
   'cape-town': {
     dailyCost: { budget: 28, midRange: 62, luxury: 230 },
+    accommodation: { budget: 35, midRange: 68, luxury: 148 }, // Blended: South African tourism hub with strong guesthouse culture (18% savings)
     breakdown: {
       budget: { total: 28, meals: 12, transport: 8, activities: 9, drinks: 3, incidentals: 8 },
       midRange: { total: 68, meals: 24, transport: 20, activities: 20, drinks: 12, incidentals: 12 },
@@ -2954,6 +2958,7 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
 
   'marrakech': {
     dailyCost: { budget: 24, midRange: 52, luxury: 195 },
+    accommodation: { budget: 28, midRange: 58, luxury: 128 }, // Blended: Moroccan tourism with riads and budget accommodations (20% savings)
     breakdown: {
       budget: { total: 24, meals: 10, transport: 8, activities: 8, drinks: 3, incidentals: 8 },
       midRange: { total: 52, meals: 20, transport: 20, activities: 17, drinks: 10, incidentals: 12 },
@@ -3009,6 +3014,7 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
 
   'athens': {
     dailyCost: { budget: 32, midRange: 70, luxury: 260 },
+    accommodation: { budget: 38, midRange: 78, luxury: 158 }, // Blended: Greek city with good Airbnb market and guesthouses (18% savings)
     breakdown: {
       budget: { total: 32, meals: 14, transport: 8, activities: 10, drinks: 6, incidentals: 8 },
       midRange: { total: 70, meals: 26, transport: 20, activities: 22, drinks: 14, incidentals: 12 },
@@ -3019,6 +3025,7 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
 
   'santorini': {
     dailyCost: { budget: 65, midRange: 135, luxury: 480 },
+    accommodation: { budget: 85, midRange: 168, luxury: 345 }, // Blended: Greek island premium destination with some apartment rentals (12% savings)
     breakdown: {
       budget: { total: 65, meals: 28, transport: 12, activities: 18, drinks: 9, incidentals: 12 },
       midRange: { total: 135, meals: 52, transport: 30, activities: 38, drinks: 25, incidentals: 20 },
@@ -3029,6 +3036,7 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
 
   'warsaw': {
     dailyCost: { budget: 30, midRange: 65, luxury: 240 },
+    accommodation: { budget: 32, midRange: 65, luxury: 128 }, // Blended: Eastern European capital with growing Airbnb market (20% savings)
     breakdown: {
       budget: { total: 30, meals: 12, transport: 8, activities: 10, drinks: 5, incidentals: 8 },
       midRange: { total: 65, meals: 24, transport: 20, activities: 21, drinks: 12, incidentals: 12 },
@@ -3039,6 +3047,7 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
 
   'krakow': {
     dailyCost: { budget: 28, midRange: 60, luxury: 220 },
+    accommodation: { budget: 28, midRange: 58, luxury: 118 }, // Blended: Polish tourist city with excellent guesthouse culture (22% savings)
     breakdown: {
       budget: { total: 28, meals: 11, transport: 8, activities: 10, drinks: 5, incidentals: 8 },
       midRange: { total: 60, meals: 22, transport: 20, activities: 20, drinks: 12, incidentals: 12 },
@@ -3093,6 +3102,7 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
 
   'bucharest': {
     dailyCost: { budget: 26, midRange: 55, luxury: 205 },
+    accommodation: { budget: 25, midRange: 52, luxury: 108 }, // Blended: Romanian capital with emerging tourism accommodation (22% savings)
     breakdown: {
       budget: { total: 26, meals: 11, transport: 8, activities: 9, drinks: 5, incidentals: 8 },
       midRange: { total: 55, meals: 20, transport: 20, activities: 18, drinks: 12, incidentals: 12 },
@@ -3159,6 +3169,7 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
 
   'penang': {
     dailyCost: { budget: 22, midRange: 48, luxury: 180 },
+    accommodation: { budget: 22, midRange: 45, luxury: 95 }, // Blended: Malaysian food capital with excellent guesthouse culture (25% savings)
     breakdown: {
       budget: { total: 22, meals: 9, transport: 8, activities: 7, drinks: 3, incidentals: 8 },
       midRange: { total: 48, meals: 18, transport: 20, activities: 14, drinks: 10, incidentals: 12 },
@@ -3169,6 +3180,7 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
 
   'cebu': {
     dailyCost: { budget: 20, midRange: 45, luxury: 170 },
+    accommodation: { budget: 18, midRange: 38, luxury: 85 }, // Blended: Philippine island city with good resort and guesthouse culture (22% savings)
     breakdown: {
       budget: { total: 20, meals: 8, transport: 8, activities: 6, drinks: 3, incidentals: 8 },
       midRange: { total: 45, meals: 16, transport: 20, activities: 14, drinks: 10, incidentals: 12 },
@@ -3179,6 +3191,7 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
 
   'bangalore': {
     dailyCost: { budget: 36, midRange: 62, luxury: 180 },
+    accommodation: { budget: 22, midRange: 45, luxury: 95 }, // Blended: Indian tech hub with excellent guesthouse and apartment culture (25% savings)
     breakdown: {
       budget: { total: 36, meals: 15, transport: 8, activities: 12, drinks: 8, incidentals: 8 },
       midRange: { total: 62, meals: 24, transport: 20, activities: 20, drinks: 15, incidentals: 12 },
@@ -3189,6 +3202,7 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
 
   'chennai': {
     dailyCost: { budget: 16, midRange: 38, luxury: 145 },
+    accommodation: { budget: 18, midRange: 38, luxury: 82 }, // Blended: Indian coastal city with good guesthouse culture (23% savings)
     breakdown: {
       budget: { total: 16, meals: 7, transport: 8, activities: 4, drinks: 3, incidentals: 8 },
       midRange: { total: 38, meals: 14, transport: 20, activities: 10, drinks: 10, incidentals: 12 },
@@ -3199,6 +3213,7 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
 
   'abu-dhabi': {
     dailyCost: { budget: 55, midRange: 125, luxury: 450 },
+    accommodation: { budget: 68, midRange: 128, luxury: 248 }, // Blended: UAE business city with growing Airbnb market (15% savings)
     breakdown: {
       budget: { total: 55, meals: 24, transport: 10, activities: 16, drinks: 5, incidentals: 12 },
       midRange: { total: 125, meals: 48, transport: 25, activities: 32, drinks: 25, incidentals: 20 },
@@ -3209,6 +3224,7 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
 
   'doha': {
     dailyCost: { budget: 52, midRange: 118, luxury: 420 },
+    accommodation: { budget: 72, midRange: 135, luxury: 268 }, // Blended: Qatar business city with modern accommodation (14% savings)
     breakdown: {
       budget: { total: 52, meals: 22, transport: 10, activities: 15, drinks: 5, incidentals: 12 },
       midRange: { total: 118, meals: 45, transport: 25, activities: 30, drinks: 25, incidentals: 20 },
@@ -3219,6 +3235,7 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
 
   'taipei': {
     dailyCost: { budget: 32, midRange: 70, luxury: 260 },
+    accommodation: { budget: 42, midRange: 85, luxury: 168 }, // Blended: modern Asian city with good Airbnb culture (15% savings)
     breakdown: {
       budget: { total: 32, meals: 14, transport: 8, activities: 10, drinks: 4, incidentals: 8 },
       midRange: { total: 70, meals: 26, transport: 20, activities: 22, drinks: 14, incidentals: 12 },
@@ -3229,6 +3246,7 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
 
   'colombo': {
     dailyCost: { budget: 16, midRange: 38, luxury: 145 },
+    accommodation: { budget: 18, midRange: 35, luxury: 78 }, // Blended: Sri Lankan capital with excellent guesthouse culture (22% savings)
     breakdown: {
       budget: { total: 16, meals: 7, transport: 8, activities: 4, drinks: 3, incidentals: 8 },
       midRange: { total: 38, meals: 14, transport: 20, activities: 10, drinks: 10, incidentals: 12 },
@@ -3239,6 +3257,7 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
 
   'male': {
     dailyCost: { budget: 85, midRange: 180, luxury: 650 },
+    accommodation: { budget: 125, midRange: 248, luxury: 485 }, // Blended: Maldives tourism with some guesthouse islands (10% savings from hotel-only pricing)
     breakdown: {
       budget: { total: 85, meals: 38, transport: 15, activities: 24, drinks: 8, incidentals: 12 },
       midRange: { total: 180, meals: 70, transport: 30, activities: 50, drinks: 30, incidentals: 20 },
@@ -3249,6 +3268,7 @@ export const CLAUDE_DAILY_COSTS_DATABASE: Record<string, CityDailyCosts> = {
 
   'bali': {
     dailyCost: { budget: 20, midRange: 45, luxury: 170 },
+    accommodation: { budget: 18, midRange: 42, luxury: 98 }, // Blended: Indonesian island with excellent villa/guesthouse culture (25% savings)
     breakdown: {
       budget: { total: 20, meals: 8, transport: 8, activities: 6, drinks: 3, incidentals: 8 },
       midRange: { total: 45, meals: 16, transport: 20, activities: 14, drinks: 10, incidentals: 12 },

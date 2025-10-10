@@ -25,9 +25,7 @@ export interface CityRecommendation {
     p75: number;
   };
   breakdown: {
-    flight: number;
-    flightEstimate?: boolean;
-    flightSource: 'amadeus' | 'estimate'; // Live Amadeus API vs fallback estimate
+    // Flight costs removed - destination costs only
     hotelPerNightP25: number;
     hotelPerNightP35: number; // Budget-focused hotel pricing
     hotelPerNightP50: number;
